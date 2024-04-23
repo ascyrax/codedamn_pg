@@ -1,21 +1,17 @@
 import { useState } from "react";
-import MonacoEditor from "./components/MonacoEditor";
 import FrontendTerminal from "./components/FrontendTerminal";
+import MonacoEditor from "./components/MonacoEditor/MonacoEditor";
+import "./styles/app.css";
 
 function App() {
   const [count, setCount] = useState(0);
 
   return (
     <>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
+      <div className="MonacoEditor">
+        <MonacoEditor></MonacoEditor>
       </div>
-      <div className="Editor">
-        <MonacoEditor />
-      </div>
-      <div className="Terminal">
+      {/* <div className="Terminal">
         <header className="App-header">
           <h1>React Terminal Emulator</h1>
         </header>
@@ -29,7 +25,7 @@ function App() {
         >
           <FrontendTerminal />
         </div>
-      </div>
+      </div> */}
     </>
   );
 }
