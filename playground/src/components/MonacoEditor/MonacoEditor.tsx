@@ -10,7 +10,7 @@ import CodeEditor from "./CodeEditor";
 import Explorer from "./Explorer";
 import Tabs from "./Tabs";
 
-import { Rnd } from "react-rnd";
+import { Rnd, RndResizeCallback } from "react-rnd";
 
 // all this needs to come from the backend.
 
@@ -49,6 +49,9 @@ const filesData: Record<string, FileDescription> = {
   },
 };
 
+const initialExplorerWidth = 250,
+  initialEditorHeight = 700;
+
 // frontend
 const MonacoEditor: React.FC = () => {
   const [tabNames, setTabNames] = useState<string[]>([]);
@@ -58,6 +61,11 @@ const MonacoEditor: React.FC = () => {
   // const [directoryNames, setDirectoryNames] = useState([]);
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
   const monacoRef = useRef<Monaco | null>(null);
+
+  // for resizing the explorer & the editor
+  const [widthExplorer, setWidthExplorer] =
+    useState<number>(initialExplorerWidth);
+  const [heightEditor, setheightEditor] = useState<number>(initialEditorHeight);
 
   useEffect(() => {
     // make a get request to the backend for filesData
@@ -97,59 +105,139 @@ const MonacoEditor: React.FC = () => {
     setFocusedTabName(target.innerText);
     setFocusedFileName(target.innerText);
   }
-  const [size, setSize] = useState(200);
 
-  const handleDragFinished = (newSize: number) => {
-    console.log("Resize finished. New size:", newSize);
-    setSize(newSize);
+  const monacoEditor = document.getElementById("monacoEditor");
+
+  const handleExplorerResize: RndResizeCallback = (
+    e,
+    dir,
+    elementRef,
+    delta,
+    position
+  ) => {
+    let currentWidth = elementRef.offsetWidth;
+    // currentWidth = getExplorerWidth(currentWidth);
+    setWidthExplorer(currentWidth);
   };
 
-  const handleChange = (newSize: number) => {
-    console.log("Current size:", newSize);
+  const handleEditorResize: RndResizeCallback = (
+    e,
+    dir,
+    elementRef,
+    delta,
+    position
+  ) => {
+    setheightEditor(elementRef.offsetHeight);
   };
 
+  // terminal
+  const minTerminalHeight = 100;
+  // editor
+  const minEditorWidth = 100,
+    minEditorHeight = 100,
+    maxEditorHeight =
+      (monacoEditor ? monacoEditor.offsetHeight : window.innerHeight) -
+      minTerminalHeight;
+  // explorer
+  const minExplorerWidth = 100,
+    maxExplorerWidth =
+      (monacoEditor ? monacoEditor.offsetWidth : window.innerWidth) -
+      minEditorWidth;
+
+  const getEditorWidth = () => {
+    let result =
+      (monacoEditor ? monacoEditor.offsetWidth : window.innerWidth) -
+      widthExplorer;
+    return result;
+  };
+  const getTerminalHeight = () => {
+    let result = monacoEditor
+      ? monacoEditor.offsetHeight - heightEditor
+      : window.innerHeight - heightEditor;
+    return result;
+  };
   return (
     <div id="monacoEditor">
       <Rnd
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          border: "solid 1px #ddd",
-          background: "#f0f0f0",
-        }}
+        size={{ width: widthExplorer, height: "100vh" }}
+        position={{ x: 0, y: 0 }}
+        disableDragging={true}
         bounds="parent"
-        minWidth="150"
-        minHeight="150"
         enableResizing={{
-          top: false,
           right: true,
-          bottom: false,
-          left: false,
-          topRight: false,
-          bottomRight: false,
-          bottomLeft: false,
-          topLeft: false,
         }}
+        onResize={handleExplorerResize}
+        style={{
+          background: "rgba(0,255,0,0.5)",
+        }}
+        minWidth={minExplorerWidth}
+        maxWidth={maxExplorerWidth}
       >
-        <div id="left">
-          <Explorer />
-        </div>
+        <Explorer />
       </Rnd>
-      <div id="right">
-        <Tabs
-          tabNames={tabNames}
-          focusedTabName={focusedTabName}
-          handleTabClick={handleTabClick}
-        />
-        <CodeEditor
-          focusedFileName={focusedFileName}
-          focusedTabName={focusedTabName}
-          handleCodeChange={handleCodeChange}
-          handleEditorMount={handleEditorMount}
-          filesData={filesData}
-        />
-      </div>
+
+      <Rnd
+        size={{
+          width: getEditorWidth(),
+          height: "100vh",
+        }}
+        position={{ x: widthExplorer, y: 0 }}
+        bounds="parent"
+        style={{
+          background: "rgba(0,255,0,0.5)",
+        }}
+        enableResizing={false}
+        disableDragging={true}
+      >
+        <Rnd
+          size={{
+            width: "100%",
+            height: heightEditor,
+          }}
+          position={{ x: 0, y: 0 }}
+          disableDragging={true}
+          bounds="parent"
+          enableResizing={{
+            bottom: true,
+          }}
+          onResize={handleEditorResize}
+          style={{
+            background: "#0000ff",
+            // display: "flex",
+            // flexDirection: "column",
+          }}
+          minHeight={minEditorHeight}
+          maxHeight={maxEditorHeight}
+        >
+          <Tabs
+            tabNames={tabNames}
+            focusedTabName={focusedTabName}
+            handleTabClick={handleTabClick}
+          />
+          <CodeEditor
+            focusedFileName={focusedFileName}
+            focusedTabName={focusedTabName}
+            handleCodeChange={handleCodeChange}
+            handleEditorMount={handleEditorMount}
+            filesData={filesData}
+          />
+        </Rnd>
+        <Rnd
+          size={{
+            width: "100%",
+            height: getTerminalHeight(),
+          }}
+          position={{ x: 0, y: heightEditor }}
+          bounds="parent"
+          style={{
+            background: "#00a000",
+            display: "flex",
+            flexDirection: "column",
+          }}
+          disableDragging={true}
+          enableResizing={false}
+        ></Rnd>
+      </Rnd>
     </div>
   );
 };

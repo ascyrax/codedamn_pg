@@ -18,6 +18,7 @@ const Tabs: React.FC<TabsProps> = ({
       {tabNames.map((el, index) => {
         return (
           <button
+            className="tab-button"
             key={el}
             disabled={focusedTabName == el}
             onClick={handleTabClick}

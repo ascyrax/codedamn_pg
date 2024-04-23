@@ -13,8 +13,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "typeRoots": ["./node_modules/@types", "./types/react-split-pane.d.ts", "./types"],
-    "baseUrl": "./",
+    "typeRoots": ["./node_modules/@types", "./types"],
 
     /* Linting */
     "strict": true,
@@ -22,6 +21,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "types/react-split-pane.d.ts"],
+  "include": ["src", "types"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

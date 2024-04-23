@@ -1,5 +1,5 @@
 import { useState } from "react";
-import FrontendTerminal from "./components/FrontendTerminal";
+// import FrontendTerminal from "./components/FrontendTerminal";
 import MonacoEditor from "./components/MonacoEditor/MonacoEditor";
 import "./styles/app.css";
 
