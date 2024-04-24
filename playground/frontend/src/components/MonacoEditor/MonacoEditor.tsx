@@ -11,6 +11,7 @@ import Explorer from "./Explorer";
 import Tabs from "./Tabs";
 import { Rnd, RndResizeCallback } from "react-rnd";
 import { debounce } from "lodash-es";
+import axios from "axios";
 
 // all this needs to come from the backend.
 
@@ -22,29 +23,24 @@ interface FileDescription {
   isAnOpenedTab: boolean;
 }
 
-// Assuming some example contents for each type of file
-const someJSCodeExample: string = `console.log('Hello, world!');`;
-const someCSSCodeExample: string = `body { background-color: #f0f0f0; }`;
-const someHTMLCodeExample: string = `<html><body>Hello, world!</body></html>`;
-
 // Define the files object with type annotations
 const filesData: Record<string, FileDescription> = {
   "script.js": {
     name: "script.js",
     language: "javascript",
-    value: someJSCodeExample,
+    value: `console.log('Hello, world!');`,
     isAnOpenedTab: true,
   },
   "style.css": {
     name: "style.css",
     language: "css",
-    value: someCSSCodeExample,
+    value: `body { background-color: #f0f0f0; }`,
     isAnOpenedTab: true,
   },
   "index.html": {
     name: "index.html",
     language: "html",
-    value: someHTMLCodeExample,
+    value: `<html><body>Hello, world!</body></html>`,
     isAnOpenedTab: true,
   },
 };
@@ -81,8 +77,22 @@ const MonacoEditor: React.FC = () => {
     setTabNames(listTabNames);
   }, []);
 
-  function putCodeChange(value: string | undefined) {
-    console.log("putCodeChange", value);
+  function postCodeChange() {
+    // post request
+    async function makePostRequest() {
+      try {
+        const response = await axios.post("http://localhost:3000/editordata", {
+          title: "batch update for file edits",
+          body: filesData,
+          userId: 1,
+        });
+        console.log(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    makePostRequest();
   }
 
   function handleCodeChange(
@@ -92,16 +102,13 @@ const MonacoEditor: React.FC = () => {
     if (focusedFileName && value) {
       filesData[focusedFileName].value = value;
     }
-
     // todo: send a PUT request to the backend :)
     // debounce ie batch the change requests,
     // also keep a maxWait after which the function is forced to be executed
 
-    console.log("handleCodeChange");
-    temp(value);
-    // debounce(putCodeChange, 3000)(value);
+    batchUpdate();
   }
-  const temp = debounce(putCodeChange, 3000);
+  const batchUpdate = debounce(postCodeChange, 1000);
 
   function handleEditorMount(
     editorInstance: monaco.editor.IStandaloneCodeEditor,
