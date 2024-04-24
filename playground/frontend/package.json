@@ -13,6 +13,8 @@
     "@atlaskit/css-reset": "^6.9.0",
     "@atlaskit/tree": "^8.8.8",
     "@monaco-editor/react": "^4.6.0",
+    "@types/lodash-es": "^4.17.12",
+    "lodash-es": "^4.17.21",
     "monaco-editor": "^0.47.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

@@ -70,7 +70,17 @@ const initialData: CustomTreeData = {
   },
 };
 
-const Explorer: React.FC = () => {
+interface ExplorerProprs {
+  setFocusedTabName: React.Dispatch<React.SetStateAction<string | undefined>>;
+  setFocusedFileName: React.Dispatch<React.SetStateAction<string | undefined>>;
+  focusedFileName: string | undefined;
+}
+
+const Explorer: React.FC<ExplorerProprs> = ({
+  setFocusedTabName,
+  setFocusedFileName,
+  focusedFileName
+}) => {
   const [tree, setTree] = useState<TreeData>(initialData);
 
   const handleExpand = (itemId: string | number) => {
@@ -83,22 +93,33 @@ const Explorer: React.FC = () => {
     setTree(newTree);
   };
 
-  const handleClick = ({ item, onExpand, onCollapse, provided }: RenderItemParams) => {
-    item.isExpanded ? onCollapse(item.id) : onExpand(item.id);
+  const handleClick = (renderItemParams: RenderItemParams) => {
+    let item = renderItemParams.item;
+    if (item.data.type == "folder")
+      renderItemParams.item.isExpanded
+        ? renderItemParams.onCollapse(renderItemParams.item.id)
+        : renderItemParams.onExpand(renderItemParams.item.id);
+    else if (item.data.type == "file") {
+      setFocusedTabName(item.data.title);
+      setFocusedFileName(item.data.title);
+    }
   };
 
-  const renderItem = ({ item, onExpand, onCollapse, provided }: RenderItemParams) => {
-    console.log(item, onExpand, onCollapse, provided);
+  const renderItem = (renderItemParams: RenderItemParams) => {
     return (
       <div
-        ref={provided.innerRef}
-        {...provided.draggableProps}
-        {...provided.dragHandleProps}
+        ref={renderItemParams.provided.innerRef}
+        {...renderItemParams.provided.draggableProps}
+        // {...renderItemParams.provided.dragHandleProps}
+        className={`${
+          focusedFileName == renderItemParams.item.data.title ? "focused" : ""
+        }`}
       >
-        <span
-          onClick={() => handleClick({ item, onExpand, onCollapse, provided })}
-        >
-          {item.data.type === "folder" ? "📁" : "📄"} {item.data.title}
+        <span onClick={() => handleClick(renderItemParams)}>
+          {renderItemParams.item.data.type === "folder"
+            ? "\u{1F4C1}"
+            : "\u{1F4C4}"}{" "}
+          {renderItemParams.item.data.title}
         </span>
       </div>
     );

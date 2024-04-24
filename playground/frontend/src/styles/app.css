@@ -46,6 +46,11 @@ div[data-react-beautiful-dnd-droppable="1"] {
   width: 100%;
 }
 
+#explorer div.focused, #explorer div.focused * {
+  background-color: #555555;
+  border-radius: 5px;
+}
+
 /*  RIGHT */
 
 #monacoEditor #right {
@@ -88,4 +93,9 @@ div[data-react-beautiful-dnd-droppable="1"] {
 #codeEditor {
   height: 100%;
   background-color: #111111;
+}
+
+.tab-button.focused {
+  border-top: 1px solid #00fffb;
+  background-color: #555555;
 }

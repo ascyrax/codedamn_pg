@@ -9,8 +9,8 @@ import * as monaco from "monaco-editor";
 import CodeEditor from "./CodeEditor";
 import Explorer from "./Explorer";
 import Tabs from "./Tabs";
-
 import { Rnd, RndResizeCallback } from "react-rnd";
+import { debounce } from "lodash-es";
 
 // all this needs to come from the backend.
 
@@ -81,6 +81,10 @@ const MonacoEditor: React.FC = () => {
     setTabNames(listTabNames);
   }, []);
 
+  function putCodeChange(value: string | undefined) {
+    console.log("putCodeChange", value);
+  }
+
   function handleCodeChange(
     value: string | undefined,
     ev: monaco.editor.IModelContentChangedEvent
@@ -90,7 +94,14 @@ const MonacoEditor: React.FC = () => {
     }
 
     // todo: send a PUT request to the backend :)
+    // debounce ie batch the change requests,
+    // also keep a maxWait after which the function is forced to be executed
+
+    console.log("handleCodeChange");
+    temp(value);
+    // debounce(putCodeChange, 3000)(value);
   }
+  const temp = debounce(putCodeChange, 3000);
 
   function handleEditorMount(
     editorInstance: monaco.editor.IStandaloneCodeEditor,
@@ -173,7 +184,11 @@ const MonacoEditor: React.FC = () => {
         minWidth={minExplorerWidth}
         maxWidth={maxExplorerWidth}
       >
-        <Explorer />
+        <Explorer
+          setFocusedTabName={setFocusedTabName}
+          setFocusedFileName={setFocusedFileName}
+          focusedFileName={focusedFileName}
+        />
       </Rnd>
 
       <Rnd
@@ -230,7 +245,7 @@ const MonacoEditor: React.FC = () => {
           position={{ x: 0, y: heightEditor }}
           bounds="parent"
           style={{
-            background: "#00a000",
+            background: "#252526",
             display: "flex",
             flexDirection: "column",
           }}
