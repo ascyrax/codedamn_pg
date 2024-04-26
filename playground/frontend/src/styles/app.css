@@ -26,9 +26,10 @@ body {
   flex-direction: column; */
   width: 100%;
   height: 100%;
-  padding: 2rem;
-  padding-top: 1rem;
+  padding: 1rem 1rem 1rem 2rem;
   background-color: #252526;
+
+  cursor: pointer;
 }
 
 #explorer * {
@@ -46,9 +47,55 @@ div[data-react-beautiful-dnd-droppable="1"] {
   width: 100%;
 }
 
-#explorer div.focused, #explorer div.focused * {
+#explorer div.focused,
+#explorer div.focused * {
   background-color: #555555;
   border-radius: 5px;
+}
+
+#workspace {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.span-newButton {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.newButton {
+  width: 25px;
+  height: 25px;
+  background-color: transparent;
+  padding: 2px;
+  border-radius: 5px;
+  margin-left: 1rem;
+}
+
+#newFileButton,
+#newFolderButton {
+  background-color: #73733d; /* Slightly lighter color on hover/focus */
+}
+
+#newFileButton:hover,
+#newFileButton:focus {
+  background-color: #999999; /* Slightly lighter color on hover/focus */
+}
+
+#newFileButton:active {
+  background-color: #007acc; /* VSCode selection color when active */
+}
+
+#newFolderButton:hover,
+#newFolderButton:focus {
+  background-color: #999999; /* Slightly lighter color on hover/focus */
+}
+
+#newFolderButton:active {
+  background-color: #007acc; /* VSCode selection color when active */
 }
 
 /*  RIGHT */
@@ -98,4 +145,14 @@ div[data-react-beautiful-dnd-droppable="1"] {
 .tab-button.focused {
   border-top: 1px solid #00fffb;
   background-color: #555555;
+}
+
+/* preview */
+
+#monacoEditor div.react-draggable {
+  background-color: #252526;
+}
+#preview {
+  background-color: #252526;
+  padding: 1rem 1rem 5rem 2rem;
 }

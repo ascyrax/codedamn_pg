@@ -1,14 +1,7 @@
 import React from "react";
+import * as interfaces from "../../models/interfaces";
 
-interface TabsProps {
-  tabNames: string[];
-  focusedTabName: string | undefined;
-  handleTabClick: (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => void;
-}
-
-const Tabs: React.FC<TabsProps> = ({
+const Tabs: React.FC<interfaces.TabsProps> = ({
   tabNames,
   focusedTabName,
   handleTabClick,
@@ -18,7 +11,7 @@ const Tabs: React.FC<TabsProps> = ({
       {tabNames.map((el, index) => {
         return (
           <button
-            className={`tab-button ${focusedTabName==el?"focused":""}`}
+            className={`tab-button ${focusedTabName == el ? "focused" : ""}`}
             key={el}
             // disabled={focusedTabName == el}
             onClick={handleTabClick}
