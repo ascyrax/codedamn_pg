@@ -63,7 +63,6 @@ const MonacoEditor: React.FC = () => {
 
   useEffect(() => {
     if (filesData) {
-      console.log(filesData);
       let listFileNames: string[] = [],
         listTabNames: string[] = [];
       for (const [fileName, fileData] of Object.entries(filesData)) {

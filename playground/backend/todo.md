@@ -1,0 +1,1 @@
+remove the editorServices.js specific code from editorController.js

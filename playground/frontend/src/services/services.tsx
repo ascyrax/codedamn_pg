@@ -36,3 +36,19 @@ export async function getEditorData() {
     return undefined;
   }
 }
+
+export async function postCommandToNodepty(bufferCommand: string) {
+  // post request
+  try {
+    const response = await axios.post("http://localhost:3000/terminal/", {
+      title: "run the command in a shell",
+      body: bufferCommand,
+      userId: 1,
+    });
+    if (response && response.data) {
+      return response.data;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}

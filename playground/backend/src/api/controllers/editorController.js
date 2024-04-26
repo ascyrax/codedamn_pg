@@ -18,7 +18,6 @@ const setEditorData = async (req, res) => {
   // create OR update the model :)
   // todo check for req.body first :)
   const reqBody = req.body.body;
-
   for (const [key, val] of Object.entries(reqBody)) {
     try {
       const foundFiles = await FileDataModel.find({ name: key });

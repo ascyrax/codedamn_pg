@@ -2,9 +2,12 @@ import React, { useRef, useEffect } from "react";
 import { Terminal } from "@xterm/xterm";
 import { FitAddon } from "xterm-addon-fit";
 import "@xterm/xterm/css/xterm.css";
+import axios from "axios";
+import { postCommandToNodepty } from "../../services/services";
 
 function TerminalXTerm() {
   const terminalRef = useRef(null);
+
   const terminal = new Terminal({
     // letterSpacing: 0,
     cursorBlink: true,
@@ -14,6 +17,8 @@ function TerminalXTerm() {
     fontFamily: "Lato",
     // fontSize: 15,
   });
+
+  let bufferCommand = "";
 
   useEffect(() => {
     renderTerminal();
@@ -37,10 +42,30 @@ function TerminalXTerm() {
     fitAddon.fit();
   }
 
-  terminal.onData((data) => {
-    console.log(data);
-    terminal.write(data);
+  terminal.onKey(({ key, domEvent }) => {
+    switch (key) {
+      case "\x7F":
+        terminal.write("\b \b");
+        if (bufferCommand.length > 0)
+          bufferCommand = bufferCommand.slice(0, -1);
+        break;
+      case "\r":
+        terminal.writeln("");
+        processCommand(bufferCommand);
+        bufferCommand = "";
+        break;
+      default:
+        terminal.write(key);
+        bufferCommand += key;
+    }
   });
+
+  async function processCommand(bufferCommand: string) {
+    console.log(bufferCommand);
+    const data = await postCommandToNodepty(bufferCommand);
+    console.log(data);
+  }
+
   return (
     <>
       <div
