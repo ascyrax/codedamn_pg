@@ -9,13 +9,13 @@ function TerminalXTerm() {
   const terminalRef = useRef(null);
 
   const terminal = new Terminal({
-    // letterSpacing: 0,
+    letterSpacing: 2,
     cursorBlink: true,
     cursorStyle: "bar",
     cursorWidth: 1,
     cursorInactiveStyle: "bar",
-    fontFamily: "Lato",
-    // fontSize: 15,
+    fontFamily: '"Courier New", "Fira Code", "Roboto Mono", monospace',
+    fontSize: 14,
   });
 
   let bufferCommand = "";
@@ -50,7 +50,8 @@ function TerminalXTerm() {
           bufferCommand = bufferCommand.slice(0, -1);
         break;
       case "\r":
-        terminal.writeln("");
+        terminal.writeln("\r");
+        bufferCommand += "\r";
         processCommand(bufferCommand);
         bufferCommand = "";
         break;
@@ -63,6 +64,7 @@ function TerminalXTerm() {
   async function processCommand(bufferCommand: string) {
     console.log(bufferCommand);
     const data = await postCommandToNodepty(bufferCommand);
+    terminal.write(data);
     console.log(data);
   }
 

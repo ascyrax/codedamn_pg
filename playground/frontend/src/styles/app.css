@@ -147,6 +147,12 @@ div[data-react-beautiful-dnd-droppable="1"] {
   background-color: #555555;
 }
 
+/* terminal */
+
+#xterm * {
+  font-family: "Fira Code", monospace;
+}
+
 /* preview */
 
 #monacoEditor div.react-draggable {
