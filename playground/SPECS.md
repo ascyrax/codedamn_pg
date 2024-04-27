@@ -66,7 +66,7 @@ WebSocket:
 
 MongoDB:
 
-- It has a document-oriented model, hence good for json-like documents generated from
+- It has a document-oriented model, hence good for unstructured data generated from
   code snippets.
 - It has very good horizontal scalability. hence, data sharding can be used to handle large data loads.
 
@@ -80,46 +80,127 @@ Docker:
 
 # b. Decisions on Infrastructure
 
-## Development Environment
+## Frontend Hosting
 
-Local Environment:
+Netlify:
 
-- Docker containers locally to mimic the production environment closely.
+- Automatically builds & deploys the site (CI/CD), whenever I push any code change to the corresponding Git repository.
+- Netlify offers excellent support for single-page applications, which are typical with React.
 
-Version Control:
+OR
 
-- Git along with GitHub for source control management.
-- It also integrates well with various CI/CD pipelines.
+AWS S3 and CloudFront:
 
-## Deployment and Operations
+- S3 (Simple Storage Service) will be used to store and serve the static files of the React application (HTML, CSS, JavaScript).
 
-Vercel/Netlify:
+- CloudFront is Amazon's CDN service that will distribute these static files globally. This setup reduces latency, increases the speed of content delivery, and enhances user experience by serving content from locations nearest to the user.
 
-- For hosting the Next.js application, leveraging their global CDN and serverless functions for dynamic content and API routes.
+1. Core Infrastructure Setup
 
-CI/CD:
+## Amazon EKS (Elastic Kubernetes Service)
 
-- GitHub Actions or Vercel’s built-in CI/CD for automating builds, tests, and deployment processes. This ensures that updates are smoothly rolled out.
+AWS provides a managed Kubernetes service, viz. we don't need to do any installation & maintenance for the K8s control plane (master nodes).
 
-Monitoring and Logging:
+- purpose:
+  Handle backend services & editor(monaco on the frontend) coding environments
 
-- Integration of tools like Sentry for real-time error tracking and LogRocket for session replay debugging to maintain high availability and quick troubleshooting.
+- security & isolation:
+  EKS is integrated with IAM & VPC
 
-## Security Measures
+- High Availability:
+  k8s clusters are automatically spread across multiple AZs (Availability Zones) to enhance fault tolerance.
 
-Authentication:
+  Moreover, K8s services are run on multiple pods spread across the worker nodes.
 
-- Implement OAuth for user authentication with options to log in via GitHub, Google, etc.
+## Amazon EC2 Instances
 
-Isolation in Docker: Each coding terminal session runs in an isolated Docker container, preventing users from affecting others' sessions and safeguarding the host system.
-HTTPS: Ensure all data in transit is encrypted using TLS by default.
+- purpose:
+  Serve as worker nodes for the EKS clusters.
 
-## Scalability
+- Instance Type:
+  m2.micro, becz i will be working within the FREE TIER :)
 
-Load Balancers:
+2. Networking and Connectivity
 
-- Use of load balancers to distribute client requests efficiently across multiple instances, improving responsiveness and availability during high load.
+## Amazon VPC (Virtual Private Cloud)
 
-Docker Kubernetes:
+- Security & isolation:
+  VPC defines subnets, route tables, and gateways. All the infrastructure is present inside a secure & isolated network.
 
-- Depending on scale, use orchestration tools to manage and scale the Docker containers across multiple servers.
+- Configuration:
+  Subnets across multiple AZs for high availability and fault tolerance.
+  Security Groups and Network ACLs to tightly control inbound and outbound traffic.
+
+## Amazon Route 53
+
+- Purpose:
+  Manage DNS and routing of domain traffic to the EKS cluster effectively.
+
+  It resolves the domain name to the IP address of a load balancer, configured to handle incoming traffic for the application
+
+- Benefits:
+  Route traffic globally with high availability.
+  Integrates with AWS health checks to route traffic away from failed instances or endpoints.
+
+## AWS Load Balancer (ELB)
+
+- Purpose:
+  Distribute incoming traffic efficiently to the application's backend services running on Kubernetes pods.
+
+## Ingress Processing in EKS
+
+- Ingress Controller:
+  Once the request reaches the Kubernetes cluster, it is first intercepted by an Ingress Controller. This controller, typically running as a set of pods within the cluster, uses rules defined in Kubernetes Ingress Resources to further route the traffic to the appropriate service.
+
+- SSL/TLS Termination:
+  If SSL/TLS is used (which is recommended for production), the termination can happen at the ALB or at the Ingress Controller, decrypting requests before sending them to backend services.
+
+## Service Routing
+
+- Kubernetes Services:
+  The Ingress Controller forwards the request to a Kubernetes Service. This service acts as an abstract layer that provides a single IP address and DNS name by which pods can be accessed. It routes the request to one of the pods that it manages, based on load-balancing strategies such as round-robin.
+
+3. Data Management
+
+Hybrid approach using DynamoDB for higher latency stuff, and S3 for large datasets.
+
+## Amazon DynamoDB
+
+- purpose:
+  For real-time data that require low-latency access and high availability.
+
+  Session Management: Store session states that are frequently read and written during user interactions.
+
+  User Settings and Preferences: Quickly access and update user-specific settings and preferences.
+
+  Metadata Storage: Store metadata for projects and files, which requires quick retrieval for editing and management interfaces.
+
+## Amazon S3
+
+- purpose:
+  For storing large files, backups, and serving static content.
+
+  Code Files and Projects: Store user projects and code files, which can be large and don’t require frequent writes.
+
+  Archives and Backups: Keep backups of user data and project histories.
+
+4. Security and Compliance
+
+## AWS Identity and Access Management (IAM)
+
+- Purpose: Manage user authentication and authorization for EKS and other AWS services.
+
+- Configuration:
+  Define roles and policies for secure access to AWS resources.
+  Use IAM roles for service accounts in Kubernetes to allow cluster pods to access AWS resources securely.
+
+5. Development and Deployment
+
+## GitHub
+
+I will be hosting my code on a public GitHub repository.
+
+I won't be using a CI/CD pipeline.
+
+I will be using the github repo to MANUALLY tag the image and create a container, and host it on
+dockerhub or aws ecr maybe.
