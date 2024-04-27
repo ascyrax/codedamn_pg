@@ -1,18 +1,11 @@
-import { useEffect, useRef, useState } from "react";
-import Editor, {
-  DiffEditor,
-  useMonaco,
-  loader,
-  Monaco,
-} from "@monaco-editor/react";
+import { useEffect, useState } from "react";
+import { Monaco } from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
 import CodeEditor from "../layout/CodeEditor";
 import Explorer from "../layout/Explorer";
 import Tabs from "../layout/Tabs";
 import { Rnd, RndResizeCallback } from "react-rnd";
 import { debounce } from "lodash-es";
-import axios from "axios";
-import { FileDescription } from "../../models/interfaces";
 import * as utils from "../../utils/utils";
 import * as services from "../../services/services";
 import * as interfaces from "../../models/interfaces";
@@ -24,7 +17,7 @@ const MonacoEditor: React.FC = () => {
   const [filesData, setFilesData] =
     useState<Record<string, interfaces.FileDescription>>();
   const [tabNames, setTabNames] = useState<string[]>([]);
-  const [fileNames, setFileNames] = useState<string[]>([]);
+  const [_, setFileNames] = useState<string[]>([]);
   const [focusedTabName, setFocusedTabName] = useState<string>();
   const [focusedFileName, setFocusedFileName] = useState<string>();
   // const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
@@ -76,7 +69,7 @@ const MonacoEditor: React.FC = () => {
 
   function handleCodeChange(
     value: string | undefined,
-    ev: monaco.editor.IModelContentChangedEvent
+    _: monaco.editor.IModelContentChangedEvent
   ) {
     if (filesData && focusedFileName && value) {
       filesData[focusedFileName].value = value;
@@ -90,6 +83,8 @@ const MonacoEditor: React.FC = () => {
     editorInstance: monaco.editor.IStandaloneCodeEditor,
     monacoInstance: Monaco
   ) {
+    editorInstance = editorInstance;
+    monacoInstance = monacoInstance;
     // editorRef.current = editorInstance;
     // monacoRef.current = monacoInstance;
   }
@@ -107,6 +102,10 @@ const MonacoEditor: React.FC = () => {
     delta,
     position
   ) => {
+    e = e;
+    dir = dir;
+    delta = delta;
+    position = position;
     setWidthExplorer(elementRef.offsetWidth);
   };
   const handlePreviewResize: RndResizeCallback = (
@@ -116,6 +115,10 @@ const MonacoEditor: React.FC = () => {
     delta,
     position
   ) => {
+    e = e;
+    dir = dir;
+    delta = delta;
+    position = position;
     setWidthPreview(elementRef.offsetWidth);
   };
 
@@ -126,6 +129,10 @@ const MonacoEditor: React.FC = () => {
     delta,
     position
   ) => {
+    e = e;
+    dir = dir;
+    delta = delta;
+    position = position;
     setheightEditor(elementRef.offsetHeight);
   };
 

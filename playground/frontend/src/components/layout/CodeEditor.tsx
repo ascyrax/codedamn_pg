@@ -1,15 +1,8 @@
-import Editor, {
-  DiffEditor,
-  useMonaco,
-  loader,
-  Monaco,
-} from "@monaco-editor/react";
-import * as monaco from "monaco-editor";
+import Editor from "@monaco-editor/react";
 import * as interfaces from "../../models/interfaces";
 
 const CodeEditor: React.FC<interfaces.CodeEditorProps> = ({
   focusedFileName,
-  focusedTabName,
   handleCodeChange,
   handleEditorMount,
   filesData,

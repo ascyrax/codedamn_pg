@@ -1,11 +1,6 @@
 // src/Explorer.tsx
 import React, { useState } from "react";
-import Tree, {
-  RenderItemParams,
-  TreeData,
-  TreeItem,
-  mutateTree,
-} from "@atlaskit/tree";
+import Tree, { RenderItemParams, TreeData, mutateTree } from "@atlaskit/tree";
 import "@atlaskit/css-reset";
 import NewButton from "../common/NewButton";
 import * as interfaces from "../../models/interfaces";

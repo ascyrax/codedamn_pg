@@ -1,17 +1,7 @@
-import Editor, {
-  DiffEditor,
-  useMonaco,
-  loader,
-  Monaco,
-} from "@monaco-editor/react";
+import { Monaco } from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
 import * as interfaces from "../models/interfaces";
-import Tree, {
-  RenderItemParams,
-  TreeData,
-  TreeItem,
-  mutateTree,
-} from "@atlaskit/tree";
+import { TreeData } from "@atlaskit/tree";
 
 export interface FileDescription {
   name: string;

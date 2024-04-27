@@ -1,3 +1,5 @@
+<!-- https://github.com/ascyrax/codedamn_pg/blob/main/playground/SPECS.md -->
+
 # a. Technologies that I've decided upon
 
 ## Basic Frontend
@@ -80,25 +82,44 @@ Docker:
 
 ## Development Environment
 
-Local Environment: Developers will use Docker containers locally to mimic the production environment closely, reducing the "it works on my machine" problem.
-Version Control: Git along with GitHub for source control management, which also integrates well with various CI/CD pipelines.
+Local Environment:
+
+- Docker containers locally to mimic the production environment closely.
+
+Version Control:
+
+- Git along with GitHub for source control management.
+- It also integrates well with various CI/CD pipelines.
 
 ## Deployment and Operations
 
-Vercel/Netlify: For hosting the Next.js application, leveraging their global CDN and serverless functions for dynamic content and API routes.
-CI/CD: GitHub Actions or Vercel’s built
--in CI/CD for automating builds, tests, and deployment processes. This ensures that updates are smoothly rolled out.
+Vercel/Netlify:
 
-Monitoring and Logging: Integration of tools like Sentry for real
--time error tracking and LogRocket for session replay debugging to maintain high availability and quick troubleshooting.
-Security Measures
+- For hosting the Next.js application, leveraging their global CDN and serverless functions for dynamic content and API routes.
 
-Authentication: Implement OAuth for user authentication with options to log in via GitHub, Google, etc.
+CI/CD:
+
+- GitHub Actions or Vercel’s built-in CI/CD for automating builds, tests, and deployment processes. This ensures that updates are smoothly rolled out.
+
+Monitoring and Logging:
+
+- Integration of tools like Sentry for real-time error tracking and LogRocket for session replay debugging to maintain high availability and quick troubleshooting.
+
+## Security Measures
+
+Authentication:
+
+- Implement OAuth for user authentication with options to log in via GitHub, Google, etc.
 
 Isolation in Docker: Each coding terminal session runs in an isolated Docker container, preventing users from affecting others' sessions and safeguarding the host system.
 HTTPS: Ensure all data in transit is encrypted using TLS by default.
 
 ## Scalability
 
-Load Balancers: Use of load balancers to distribute client requests efficiently across multiple instances, improving responsiveness and availability during high load.
-Docker Swarm/Kubernetes: Depending on scale, use orchestration tools to manage and scale the Docker containers across multiple servers.
+Load Balancers:
+
+- Use of load balancers to distribute client requests efficiently across multiple instances, improving responsiveness and availability during high load.
+
+Docker Kubernetes:
+
+- Depending on scale, use orchestration tools to manage and scale the Docker containers across multiple servers.

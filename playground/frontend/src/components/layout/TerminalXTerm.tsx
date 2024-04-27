@@ -1,8 +1,7 @@
-import React, { useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { Terminal } from "@xterm/xterm";
 import { FitAddon } from "xterm-addon-fit";
 import "@xterm/xterm/css/xterm.css";
-import axios from "axios";
 import { postCommandToNodepty } from "../../services/services";
 
 function TerminalXTerm() {
@@ -43,6 +42,7 @@ function TerminalXTerm() {
   }
 
   terminal.onKey(({ key, domEvent }) => {
+    domEvent = domEvent;
     switch (key) {
       case "\x7F":
         terminal.write("\b \b");

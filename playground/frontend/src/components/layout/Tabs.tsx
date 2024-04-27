@@ -8,7 +8,7 @@ const Tabs: React.FC<interfaces.TabsProps> = ({
 }) => {
   return (
     <div id="tabs">
-      {tabNames.map((el, index) => {
+      {tabNames.map((el, _) => {
         return (
           <button
             className={`tab-button ${focusedTabName == el ? "focused" : ""}`}
