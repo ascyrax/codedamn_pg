@@ -19,7 +19,7 @@ TypeScript: (this was mandatory too)
 
 Monaco Editor: (this was mandatory too)
 
-- this is also used in Visual Studio Code which is my preferred editor personally
+- this is also used in Visual Studio Code which is my preferred editor currenlty
 - features like syntax highlighting, code completion, multiple files support etc.
 
 ## Terminal preview:
@@ -41,9 +41,7 @@ React-rnd:
 Atlaskit/tree:
 
 - only few libraries pair up nicely with React+Typescript, I guess. Since, I failed to use some libraries prior to using this
-- highly customizable, with drag
-  -and
-  -drop support too
+- highly customizable, with drag-and-drop support too
 
 ## Backend
 
@@ -58,17 +56,15 @@ Express.js:
 
 WebSocket:
 
-- Best candidate for communication between the xterm on the frontend & the node-pty on the backend, because of the way node
-  -pty generates multiple asynchronous events.
+- Best candidate for communication between the xterm on the frontend & the node-pty on the backend, because of the way node-pty generates multiple asynchronous events.
 - Code changes in the Code Editor on the frontend, needs to be saved smartly at proper intervals, & before refreshing the page or quitting the session.
 
-## Database
+## Database (DURING DEVELOPMENT ONLY)
 
 MongoDB:
 
 - It has a document-oriented model, hence good for unstructured data generated from
   code snippets.
-- It has very good horizontal scalability. hence, data sharding can be used to handle large data loads.
 
 ## Containerization Technology
 
@@ -94,6 +90,8 @@ AWS S3 and CloudFront:
 - S3 (Simple Storage Service) will be used to store and serve the static files of the React application (HTML, CSS, JavaScript).
 
 - CloudFront is Amazon's CDN service that will distribute these static files globally. This setup reduces latency, increases the speed of content delivery, and enhances user experience by serving content from locations nearest to the user.
+
+## BACKEND HOSTING
 
 1. Core Infrastructure Setup
 
@@ -162,7 +160,7 @@ AWS provides a managed Kubernetes service, viz. we don't need to do any installa
 
 3. Data Management
 
-Hybrid approach using DynamoDB for higher latency stuff, and S3 for large datasets.
+Hybrid approach using DynamoDB for higher latency stuff, and S3 for large datasets of project code.
 
 ## Amazon DynamoDB
 
@@ -202,5 +200,7 @@ I will be hosting my code on a public GitHub repository.
 
 I won't be using a CI/CD pipeline.
 
+## dockerHub / AWS ECR
+
 I will be using the github repo to MANUALLY tag the image and create a container, and host it on
-dockerhub or aws ecr maybe.
+dockerhub or aws ecr(elastic container registry).
