@@ -51,7 +51,7 @@ function TerminalXTerm() {
         break;
       case "\r":
         terminal.writeln("\r");
-        bufferCommand += "\r";
+        // bufferCommand += "\r";
         processCommand(bufferCommand);
         bufferCommand = "";
         break;
@@ -64,8 +64,8 @@ function TerminalXTerm() {
   async function processCommand(bufferCommand: string) {
     console.log(bufferCommand);
     const data = await postCommandToNodepty(bufferCommand);
-    terminal.write(data);
     console.log(data);
+    terminal.write(data.output);
   }
 
   return (

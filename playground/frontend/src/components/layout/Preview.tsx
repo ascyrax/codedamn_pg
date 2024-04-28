@@ -51,11 +51,12 @@ const Preview: React.FC<PreviewProps> = ({ filesData }) => {
   }, [iFrameContent]);
 
   return (
-    <div id="preview" style={{height:"100vh", padding:0}}>
+    <div id="preview" style={{ height: "100vh", padding: 0 }}>
       <iframe
         id="iFrame"
         ref={refIframe}
         style={{ width: "100%", height: "100%" }}
+        sandbox={"allow-scripts"}
       ></iframe>
     </div>
   );

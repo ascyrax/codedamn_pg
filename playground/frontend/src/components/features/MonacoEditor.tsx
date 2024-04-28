@@ -12,6 +12,9 @@ import * as interfaces from "../../models/interfaces";
 import { Preview } from "../layout/Preview";
 import TerminalXTerm from "../layout/TerminalXTerm";
 
+// batch update to the api endpoint
+const batchUploadFilesData = debounce(services.postCodeChange, 200);
+
 // frontend
 const MonacoEditor: React.FC = () => {
   const [filesData, setFilesData] =
@@ -34,10 +37,6 @@ const MonacoEditor: React.FC = () => {
     utils.initialPreviewWidth
   );
 
-  // batch update to the api endpoint
-  const batchUploadFilesData = debounce(services.postCodeChange, 1000);
-  const batchUpdatePreview = debounce(updatePreview, 1000);
-
   useEffect(() => {
     // make a get request to the backend for filesData
     const fetchEditorData = async () => {
@@ -45,6 +44,7 @@ const MonacoEditor: React.FC = () => {
         const responseData = await services.getEditorData();
         // console.log(responseData);
         if (responseData) {
+          // console.log(responseData);
           setFilesData(responseData);
         }
       } catch (error) {
@@ -65,10 +65,12 @@ const MonacoEditor: React.FC = () => {
       }
       setFileNames(listFileNames);
       setTabNames(listTabNames);
+
+      // debounce ie batch the change requests,
+      // also keep a maxWait after which the function is forced to be executed
+      batchUploadFilesData(filesData);
     }
   }, [filesData]);
-
-  function updatePreview() {}
 
   function handleCodeChange(
     changedValue: string | undefined,
@@ -85,10 +87,6 @@ const MonacoEditor: React.FC = () => {
             },
           };
       });
-      // debounce ie batch the change requests,
-      // also keep a maxWait after which the function is forced to be executed
-      batchUploadFilesData(filesData);
-      batchUpdatePreview();
     }
   }
 

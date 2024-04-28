@@ -2,7 +2,7 @@ import * as interfaces from "../models/interfaces";
 
 export const initialExplorerWidth = 250,
   initialEditorHeight = 700,
-  initialPreviewWidth = 250;
+  initialPreviewWidth = 350;
 
 export const monacoEditor = document.getElementById("monacoEditor");
 
