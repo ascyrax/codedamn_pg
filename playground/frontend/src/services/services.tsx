@@ -13,7 +13,7 @@ export function postCodeChange(
         body: filesData,
         userId: 1,
       });
-      console.log(response.data);
+      console.log("serverResponse:",response.data);
     } catch (error) {
       console.error(error);
     }

@@ -44,7 +44,7 @@ export interface CustomTreeData extends TreeData {
   };
 }
 
-export interface ExplorerProprs {
+export interface ExplorerProps {
   setFocusedTabName: React.Dispatch<React.SetStateAction<string | undefined>>;
   setFocusedFileName: React.Dispatch<React.SetStateAction<string | undefined>>;
   focusedFileName: string | undefined;
@@ -56,4 +56,8 @@ export interface TabsProps {
   handleTabClick: (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => void;
+}
+
+export interface PreviewProps {
+  filesData: Record<string, FileDescription> | undefined;
 }

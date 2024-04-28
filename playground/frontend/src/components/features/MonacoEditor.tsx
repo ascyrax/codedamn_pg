@@ -9,7 +9,7 @@ import { debounce } from "lodash-es";
 import * as utils from "../../utils/utils";
 import * as services from "../../services/services";
 import * as interfaces from "../../models/interfaces";
-import Preview from "../layout/Preview";
+import { Preview } from "../layout/Preview";
 import TerminalXTerm from "../layout/TerminalXTerm";
 
 // frontend
@@ -35,7 +35,8 @@ const MonacoEditor: React.FC = () => {
   );
 
   // batch update to the api endpoint
-  const batchUpdate = debounce(services.postCodeChange, 1000);
+  const batchUploadFilesData = debounce(services.postCodeChange, 1000);
+  const batchUpdatePreview = debounce(updatePreview, 1000);
 
   useEffect(() => {
     // make a get request to the backend for filesData
@@ -67,15 +68,27 @@ const MonacoEditor: React.FC = () => {
     }
   }, [filesData]);
 
+  function updatePreview() {}
+
   function handleCodeChange(
-    value: string | undefined,
+    changedValue: string | undefined,
     _: monaco.editor.IModelContentChangedEvent
   ) {
-    if (filesData && focusedFileName && value) {
-      filesData[focusedFileName].value = value;
+    if (filesData && focusedFileName && changedValue) {
+      setFilesData((prevFilesData) => {
+        if (prevFilesData)
+          return {
+            ...prevFilesData,
+            [focusedFileName]: {
+              ...prevFilesData[focusedFileName],
+              value: changedValue,
+            },
+          };
+      });
       // debounce ie batch the change requests,
       // also keep a maxWait after which the function is forced to be executed
-      batchUpdate(filesData);
+      batchUploadFilesData(filesData);
+      batchUpdatePreview();
     }
   }
 
@@ -248,7 +261,7 @@ const MonacoEditor: React.FC = () => {
         onResize={handlePreviewResize}
         disableDragging={true}
       >
-        <Preview />
+        <Preview filesData={filesData} />
       </Rnd>
     </div>
   );

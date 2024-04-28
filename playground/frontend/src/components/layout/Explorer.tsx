@@ -6,7 +6,7 @@ import NewButton from "../common/NewButton";
 import * as interfaces from "../../models/interfaces";
 import * as utils from "../../utils/utils";
 
-const Explorer: React.FC<interfaces.ExplorerProprs> = ({
+const Explorer: React.FC<interfaces.ExplorerProps> = ({
   setFocusedTabName,
   setFocusedFileName,
   focusedFileName,
