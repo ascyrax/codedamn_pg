@@ -2,7 +2,7 @@ import * as Docker from "dockerode";
 // import {wss} from "../../server.js";
 
 // dockerode
-const docker = new Docker.default({ socketPath: "/var/run/docker.sock" });
+export const docker = new Docker.default({ socketPath: "/var/run/docker.sock" });
 
 function createAndStartContainer(containerOptions) {
   // Create and start the container
@@ -33,67 +33,8 @@ function createAndStartContainer(containerOptions) {
   });
 }
 
-async function executeCommand(container, command) {
-  const execOptions = {
-    Cmd: ["bash", "-c", command],
-    AttachStdout: true,
-    AttachStderr: true,
-    Tty: false,
-  };
+export async function executeCommand(ws, container, command) {
 
-  try {
-    const exec = await container.exec(execOptions);
-    const stream = await exec.start({ hijack: true, stdin: false });
-
-    // // Collect output data from the stream
-    // let output = "";
-
-    // // Set up to receive output from the command
-    //  stream.on("data",  (data) => {
-    //   output += data.toString();
-    //   console.log(output);
-    // });
-
-    // // Handle the end of the stream
-    //  stream.on("end",  () => {
-    //   console.log("Stream End: Command execution completed.[executeCommand]");
-    //   return { err: null, output: output };
-    // });
-
-    // // Error handling
-    // stream.on("error", (error) => {
-    //   console.error("Error from exec stream:", error);
-    // });
-
-    // Create a promise to handle the output
-    const output = await new Promise((resolve, reject) => {
-      let data = "";
-
-      stream.on("data", (chunk) => {
-        data += chunk.toString();
-      });
-
-      stream.on("end", () => {
-        console.log("Stream End: Command execution completed.");
-        resolve(data);
-      });
-
-      stream.on("error", (error) => {
-        console.error("Error from exec stream:", error);
-        reject(error);
-      });
-
-      // Optionally handle stdout and stderr separately if needed
-      // docker.modem.demuxStream(stream, process.stdout, process.stderr);
-    });
-
-    // Optionally, you might want to demux the stream if stdout and stderr need to be separated
-    // docker.modem.demuxStream(stream, process.stdout, process.stderr);
-    return { err: null, output: output };
-  } catch (error) {
-    console.error(":( Error executing command:", error);
-    return { err: error, output: null };
-  }
 }
 
 async function isContainerRunning(container, userContainerId) {
@@ -156,10 +97,7 @@ async function createInteractiveShell(container, containerName) {
   process.stdin.setRawMode(true);
 }
 
-export async function executeCommandInContainer(command) {
-  // console.log("command ----> ", command);
-  // command = "ls";
-  // execute in container
+export async function startContainer() {
   let userContainerId = "user01"; // container corresponding to the user
 
   let container;
@@ -170,7 +108,7 @@ export async function executeCommandInContainer(command) {
       ":( could not get the coontainer using docker.getContainer: ",
       err
     );
-    res.status(500).send({ error: "Failed to execute command" });
+    return null;
   }
 
   // create the container if it doesn't exits
@@ -197,16 +135,9 @@ export async function executeCommandInContainer(command) {
       console.log(
         `:( could not start the paused/stopped container ${userContainerId}`
       );
-      return err;
+      return null;
     }
   }
 
-  // createInteractiveShell(container, userContainerId);
-
-  let { err, output } = await executeCommand(container, command);
-  if (err) {
-    return { err: err, output: ":( command execution failed" };
-  } else {
-    return { err: null, output: output };
-  }
+  return container;
 }

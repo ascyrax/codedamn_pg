@@ -5,7 +5,11 @@ import dotenv from "dotenv";
 import cors from "cors";
 import http from "http";
 import { WebSocketServer } from "ws";
-import { executeCommandInContainer } from "./api/controllers/terminalController.js";
+import {
+  startContainer,
+  executeCommand,
+  docker,
+} from "./api/controllers/terminalController.js";
 
 dotenv.config();
 
@@ -31,32 +35,72 @@ const httpServer = http.createServer(app);
 const wss = new WebSocketServer({ server: httpServer });
 
 // Set up the WebSocket connection
-wss.on("connection", (ws) => {
+wss.on("connection", async (ws) => {
   console.log("Client connected to the WebSocket Server");
+  let container;
 
-  // Echo received messages back to the client
-  ws.on("message", async (xtermCommand) => {
-    console.log(`ws received: ${xtermCommand}`);
-    ws.send(`Server received: ${xtermCommand}`);
+  try {
+    container = await startContainer();
+    const execOptions = {
+      Cmd: ["bash"], // Command to start bash
+      AttachStdin: true,
+      AttachStdout: true,
+      AttachStderr: true,
+      Tty: true, // This allocates a pseudo-TTY, important for interactive shells
+    };
+
     try {
-      let result = await executeCommandInContainer(xtermCommand.toString());
-      // console.log("result --------->  ", result);
-      if (result) {
-        if (result.err) {
-          console.error(":( error executing the command", err);
-          ws.send(err);
-        } else if (result.output) {
-          console.log("output -> ", result.output);
-          ws.send(result.output);
-        } else {
-          console.log(":( empty output. command not valid");
-          ws.send(":( empty output. command not valid");
+      const exec = await container.exec(execOptions);
+      const execStream = await exec.start({
+        hijack: true,
+        stdin: true,
+        stdout: true,
+        stderr: true,
+      });
+
+      // Relay output from the Docker exec to the WebSocket client
+      docker.modem.demuxStream(execStream, process.stdout, process.stderr);
+
+      ws.on("message", async (xtermCommand) => {
+        console.log(`ws received: ${xtermCommand}`);
+        ws.send(`Server received: ${xtermCommand}`);
+        if (execStream.writable) {
+          execStream.write(xtermCommand + "\r");
         }
-      }
-    } catch (err) {
-      console.error(":( error in executeCommandInContainer", err);
+      });
+
+      // Create a promise to handle the output
+      let data = "";
+
+      execStream.on("data", (chunk) => {
+        data += chunk.toString();
+      });
+
+      // Handle stream close/error
+      execStream.on("close", () => {
+        console.log("Stream closed");
+        ws.close();
+      });
+      execStream.on("error", (err) => {
+        console.error("Stream error:", err);
+        ws.terminate();
+      });
+
+      ws.on("close", () => {
+        console.log("WebSocket closed");
+        execStream.end();
+      });
+
+      // Optionally handle stdout and stderr separately if needed
+      // docker.modem.demuxStream(stream, process.stdout, process.stderr);
+    } catch (error) {
+      console.error("Error executing interactive command:", error);
+      ws.send("Error: " + error.message);
+      ws.close();
     }
-  });
+  } catch (err) {
+    console.error(":( error in startContainer", err);
+  }
 
   ws.on("close", () => {
     console.log("Client disconnected from the WebSocket Server");
