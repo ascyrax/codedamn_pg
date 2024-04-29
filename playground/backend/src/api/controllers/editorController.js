@@ -1,7 +1,7 @@
 import { FileDataModel } from "../../models/fileDataModel.js";
 
 const getEditorData = async (req, res) => {
-  console.debug(req.url);
+  // console.debug(req.url);
   try {
     const filesData = await FileDataModel.find();
     // console.log(filesData);
@@ -13,7 +13,7 @@ const getEditorData = async (req, res) => {
 };
 
 const setEditorData = async (req, res) => {
-  console.debug(req.url);
+  // console.debug(req.url);
 
   // create OR update the model :)
   // todo check for req.body first :)

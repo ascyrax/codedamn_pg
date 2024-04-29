@@ -2,7 +2,25 @@ import { useRef, useEffect } from "react";
 import { Terminal } from "@xterm/xterm";
 import { FitAddon } from "xterm-addon-fit";
 import "@xterm/xterm/css/xterm.css";
-import { postCommandToNodepty } from "../../services/services";
+// import { postCommandToNodepty } from "../../services/services";
+
+const ws = new WebSocket("ws://localhost:3000");
+
+ws.onerror = function (event) {
+  console.error("WebSocket error observed by the client :)", event);
+};
+
+ws.onopen = function (event) {
+  ws.send("hello from the client :)");
+};
+
+ws.onmessage = function (event) {
+  console.log("message from the server: ", event.data);
+};
+
+ws.onclose = function (event) {
+  console.log("WebSocket connection closed.", event);
+};
 
 function TerminalXTerm() {
   const terminalRef = useRef(null);
@@ -63,9 +81,9 @@ function TerminalXTerm() {
 
   async function processCommand(bufferCommand: string) {
     console.log(bufferCommand);
-    const data = await postCommandToNodepty(bufferCommand);
-    console.log(data);
-    terminal.write(data.output);
+    if (ws.readyState == WebSocket.OPEN) ws.send(bufferCommand);
+    // const data = await postCommandToNodepty(bufferCommand);
+    // terminal.write(data.output);
   }
 
   return (
