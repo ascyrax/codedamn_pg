@@ -1,25 +1,10 @@
-import * as os from "os";
-import * as pty from "node-pty";
 import * as Docker from "dockerode";
+// import {wss} from "../../server.js";
 
 // dockerode
 const docker = new Docker.default({ socketPath: "/var/run/docker.sock" });
 
-// docker.listContainers({ all: true }, function (err, containers) {
-//   if (err) {
-//     console.log("Error listing containers:", err);
-//   } else {
-//     console.log("List of containers:", containers);
-//   }
-// });
 
-// docker.listImages({}, function (err, images) {
-//   if (err) {
-//     console.error("Error fetching images:", err);
-//   } else {
-//     console.log("All Docker Images:", images);
-//   }
-// });
 
 function createAndStartContainer(containerOptions) {
   // Create and start the container
