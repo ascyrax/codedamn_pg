@@ -1,40 +1,38 @@
-import { useRef, useEffect } from "react";
+import React, { useRef, useEffect } from "react";
 import { Terminal } from "@xterm/xterm";
 import { FitAddon } from "xterm-addon-fit";
 import "@xterm/xterm/css/xterm.css";
 // import { postCommandToNodepty } from "../../services/services";
 
 const ws = new WebSocket("ws://localhost:3000");
+const terminal = new Terminal({
+  letterSpacing: 2,
+  cursorBlink: true,
+  cursorStyle: "bar",
+  cursorWidth: 1,
+  cursorInactiveStyle: "bar",
+  fontFamily: '"Courier New", "Fira Code", "Roboto Mono", monospace',
+  fontSize: 14,
+});
 
 ws.onerror = function (event) {
   console.error("WebSocket error observed by the client :)", event);
 };
 
-ws.onopen = function (event) {
-  ws.send("hello from the client :)");
-};
+ws.onopen = function (event) {};
 
 ws.onmessage = function (event) {
-  console.log("message from the server: ", event.data);
+  console.log("ws receive -> : ", event.data);
+  terminal.write(event.data);
 };
 
 ws.onclose = function (event) {
   console.log("WebSocket connection closed.", event);
 };
 
-function TerminalXTerm() {
+const TerminalXTerm = React.memo(function TerminalXTerm() {
   const terminalRef = useRef(null);
-
-  const terminal = new Terminal({
-    letterSpacing: 2,
-    cursorBlink: true,
-    cursorStyle: "bar",
-    cursorWidth: 1,
-    cursorInactiveStyle: "bar",
-    fontFamily: '"Courier New", "Fira Code", "Roboto Mono", monospace',
-    fontSize: 14,
-  });
-
+  console.log("TerminalXTerm");
   let bufferCommand = "";
 
   useEffect(() => {
@@ -49,7 +47,6 @@ function TerminalXTerm() {
   function renderTerminal() {
     if (terminalRef.current) {
       terminal.open(terminalRef.current);
-      terminal.write("Hello from xtermjs % ");
     }
   }
 
@@ -79,11 +76,9 @@ function TerminalXTerm() {
     }
   });
 
-  async function processCommand(bufferCommand: string) {
-    console.log(bufferCommand);
+  function processCommand(bufferCommand: string) {
+    console.log("processCommand");
     if (ws.readyState == WebSocket.OPEN) ws.send(bufferCommand);
-    // const data = await postCommandToNodepty(bufferCommand);
-    // terminal.write(data.output);
   }
 
   return (
@@ -95,6 +90,6 @@ function TerminalXTerm() {
       ></div>
     </>
   );
-}
+});
 
 export default TerminalXTerm;

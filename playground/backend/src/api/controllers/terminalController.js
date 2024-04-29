@@ -2,7 +2,9 @@ import * as Docker from "dockerode";
 // import {wss} from "../../server.js";
 
 // dockerode
-export const docker = new Docker.default({ socketPath: "/var/run/docker.sock" });
+export const docker = new Docker.default({
+  socketPath: "/var/run/docker.sock",
+});
 
 function createAndStartContainer(containerOptions) {
   // Create and start the container
@@ -33,10 +35,6 @@ function createAndStartContainer(containerOptions) {
   });
 }
 
-export async function executeCommand(ws, container, command) {
-
-}
-
 async function isContainerRunning(container, userContainerId) {
   // check if the container is running or not
   try {
@@ -57,44 +55,6 @@ async function isContainerRunning(container, userContainerId) {
     );
     return false;
   }
-}
-
-async function createInteractiveShell(container, containerName) {
-  // const container = await docker.createContainer({
-  //   Image: "ubuntu",
-  //   Cmd: ["/bin/bash"],
-  //   Tty: true,
-  //   name: containerName,
-  //   AttachStdout: true,
-  //   AttachStderr: true,
-  //   OpenStdin: true,
-  // });
-
-  // await container.start();
-
-  const exec = await container.exec({
-    AttachStdin: true,
-    AttachStdout: true,
-    AttachStderr: true,
-    Tty: true,
-    Cmd: ["/bin/bash"],
-  });
-
-  const execStream = await exec.start({ hijack: true, stdin: true });
-  process.stdin.pipe(execStream);
-  execStream.pipe(process.stdout);
-
-  execStream.on("end", () => {
-    console.log("Stream ended");
-    process.exit();
-  });
-
-  process.stdin.on("end", () => {
-    console.log("STDIN ended");
-    execStream.end();
-  });
-
-  process.stdin.setRawMode(true);
 }
 
 export async function startContainer() {

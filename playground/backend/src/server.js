@@ -7,7 +7,6 @@ import http from "http";
 import { WebSocketServer } from "ws";
 import {
   startContainer,
-  executeCommand,
   docker,
 } from "./api/controllers/terminalController.js";
 
@@ -59,11 +58,26 @@ wss.on("connection", async (ws) => {
       });
 
       // Relay output from the Docker exec to the WebSocket client
-      docker.modem.demuxStream(execStream, process.stdout, process.stderr);
+      // docker.modem.demuxStream(execStream, process.stdout, process.stderr);
+      docker.modem.demuxStream(
+        execStream,
+        {
+          write: (chunk) => {
+            ws.send(chunk.toString());
+            process.stdout.write(chunk.toString());
+          }, // Handle stdout
+        },
+        {
+          write: (chunk) => {
+            ws.send(chunk.toString()); // Handle stderr
+            process.stderr.write(chunk.toString());
+          },
+        }
+      );
 
       ws.on("message", async (xtermCommand) => {
         console.log(`ws received: ${xtermCommand}`);
-        ws.send(`Server received: ${xtermCommand}`);
+        // ws.send(`Server received: ${xtermCommand}`);
         if (execStream.writable) {
           execStream.write(xtermCommand + "\r");
         }
