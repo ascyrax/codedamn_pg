@@ -162,3 +162,46 @@ div[data-react-beautiful-dnd-droppable="1"] {
   background-color: #252526;
   padding: 1rem 1rem 5rem 2rem;
 }
+
+/* register & login pages */
+
+.register-container,
+.login-container {
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+form label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+form label input {
+  width: 100%;
+  padding: 8px;
+  margin-top: 5px;
+}
+
+button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.goto {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}

@@ -32,7 +32,6 @@ ws.onclose = function (event) {
 
 const TerminalXTerm = React.memo(function TerminalXTerm() {
   const terminalRef = useRef(null);
-  console.log("TerminalXTerm");
   let bufferCommand = "";
 
   useEffect(() => {

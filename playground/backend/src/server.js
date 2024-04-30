@@ -1,5 +1,6 @@
 import express from "express";
 import { editorRoutes } from "./api/routes/editorRoutes.js";
+import { authRoutes } from "./api/routes/authRoutes.js";
 import { connectDB } from "./config/database.js";
 import dotenv from "dotenv";
 import cors from "cors";
@@ -9,12 +10,28 @@ import {
   startContainer,
   docker,
 } from "./api/controllers/terminalController.js";
+import cookieParser from "cookie-parser";
+import { isUserRegistered } from "./api/controllers/authController.js";
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (true) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    // origin: "http://localhost:5173", // Specify the origin of the frontend
+    credentials: true, // Allow cookies and authentication headers
+    // methods: ["GET", "POST", "PUT", "DELETE"], // Allowed methods
+  })
+);
+app.use(cookieParser());
 
 const port = process.env.PORT || 3000;
 
@@ -23,7 +40,41 @@ connectDB();
 // app.listen(port, () => {
 //   console.log(`Example app listening at http://localhost:${port}`);
 // });
+function authenticateUsingCookies(req, res, next) {
+  const username = req.cookies.username;
+  const password = req.cookies.password;
+  if (!username || !password) {
+    res
+      .status(400)
+      .send({ success: false, msg: "invalid user. register / login please !" });
+  }
+  // const token = req.cookies.authToken; // Assumes cookie-parser is used and authToken cookie is set
 
+  // if (!token) {
+  //   return res.status(401).send("Access Denied: No token provided.");
+  // }
+
+  try {
+    // const verified = jwt.verify(token, process.env.JWT_SECRET);
+    // req.user = verified; // Adding the verified user's data to the request object
+    if (isUserRegistered({ username, password })) {
+      next(); // Continue to the next middleware/route handler
+    } else {
+      res.status(400).send({
+        success: false,
+        msg: "invalid user. register / login please !",
+      });
+    }
+  } catch (err) {
+    res
+      .status(400)
+      .send({ success: false, msg: "invalid user. register / login please !" });
+    // res.status(400).send("Invalid Token");
+  }
+}
+
+app.use("/auth", authRoutes);
+app.use(authenticateUsingCookies);
 app.use("/editordata", editorRoutes);
 // app.use("/terminal", terminalRoutes);
 

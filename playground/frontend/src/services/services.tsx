@@ -1,10 +1,12 @@
 import axios from "axios";
-import * as interfaces from "../models/interfaces";
-import * as utils from "../utils/utils";
+import { FileDescription } from "../models/interfaces";
+import { convertFilesData } from "../utils/utils";
+import { user, credentials } from "../models/interfaces";
 
-export function postCodeChange(
-  filesData: Record<string, interfaces.FileDescription>
-) {
+// axios.defaults.baseURL = 'http://localhost:3000';
+axios.defaults.withCredentials = true;
+
+export function postCodeChange(filesData: Record<string, FileDescription>) {
   // post request
   async function makePostRequest() {
     try {
@@ -26,9 +28,9 @@ export async function getEditorData() {
   // get request
   let modifiedResponseData = {};
   try {
-    const response = await axios.get("http://localhost:3000/editordata");
+    const response = await axios.get("http://localhost:3000/editorData");
     if (response.data) {
-      modifiedResponseData = utils.convertFilesData(response.data);
+      modifiedResponseData = convertFilesData(response.data);
     }
     return modifiedResponseData;
   } catch (error) {
@@ -37,18 +39,36 @@ export async function getEditorData() {
   }
 }
 
-// export async function postCommandToNodepty(bufferCommand: string) {
-//   // post request
-//   try {
-//     const response = await axios.post("http://localhost:3000/terminal/", {
-//       title: "run the command in a shell",
-//       body: bufferCommand,
-//       userId: 1,
-//     });
-//     if (response && response.data) {
-//       return response.data;
-//     }
-//   } catch (err) {
-//     console.error(err);
-//   }
-// }
+export async function postRegisterData(user: user) {
+  try {
+    const response = await axios.post("http://localhost:3000/auth/register", {
+      title: "register new user",
+      body: user,
+      userId: 1,
+      withCredentials: true,
+    });
+    if (response && response.data) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error(error);
+    return undefined;
+  }
+}
+
+export async function postLoginData(credentials: credentials) {
+  try {
+    const response = await axios.post("http://localhost:3000/auth/login", {
+      title: "login user",
+      body: credentials,
+      userId: 1,
+      withCredentials: true,
+    });
+    if (response && response.data) {
+      return response.data;
+    }
+  } catch (error) {
+    console.error(error);
+    return undefined;
+  }
+}

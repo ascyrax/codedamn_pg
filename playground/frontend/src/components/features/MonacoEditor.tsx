@@ -37,8 +37,6 @@ const MonacoEditor: React.FC = () => {
     utils.initialPreviewWidth
   );
 
-  console.log("monacoEditor");
-  
   useEffect(() => {
     // make a get request to the backend for filesData
     const fetchEditorData = async () => {

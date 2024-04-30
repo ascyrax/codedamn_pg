@@ -3,6 +3,17 @@ import * as monaco from "monaco-editor";
 import * as interfaces from "../models/interfaces";
 import { TreeData } from "@atlaskit/tree";
 
+export interface user {
+  username: string;
+  email: string;
+  password: string;
+}
+
+export interface credentials {
+  username: string;
+  password: string;
+}
+
 export interface FileDescription {
   name: string;
   language: string;
@@ -60,4 +71,13 @@ export interface TabsProps {
 
 export interface PreviewProps {
   filesData: Record<string, FileDescription> | undefined;
+}
+
+export interface LoginProps {
+  setNeedToRegister: (value: boolean) => void;
+  setHasUserLoggedIn: (value: boolean) => void;
+}
+
+export interface RegisterProps {
+  setNeedToRegister: (value: boolean) => void;
 }
