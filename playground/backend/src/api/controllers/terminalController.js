@@ -29,17 +29,35 @@ async function isContainerRunning(container, containerId) {
 }
 
 async function createAndStartContainer(containerId) {
+  const volumeName = "vid_" + containerId; // Name of the Docker volume
+
   // Container options
   const containerOptions = {
-    Image: "ubuntu", // Specify the image name
+    Image: "user-ubuntu", // Specify the image name
     // Cmd: ["bash", "-c", 'while true; do echo "Hello, Dockerode!"; sleep 1; done'],
     Cmd: ["bash", "-c", "tail -f /dev/null"],
     name: containerId,
     AttachStdout: true, // Attach container's stdout to the Node.js process
     AttachStderr: true, // Attach container's stderr to the Node.js process
     Tty: true,
+    Volumes: {
+      "/home/codedamn": {}, // Path where the volume will be mounted in the container
+    },
+    HostConfig: {
+      Binds: [`${volumeName}:/data`], // Bind the volume
+    },
   };
   try {
+    // Ensure the volume exists, or create it if it doesn't
+    let volume = docker.getVolume(volumeName);
+    let volumeInfo = await volume.inspect().catch(async () => {
+      console.log(`Creating new volume: ${volumeName}`);
+      return await docker.createVolume({
+        Name: volumeName,
+      });
+    });
+
+    console.log(`Using volume: ${volumeInfo.name}`);
     // Create the container
     const container = await docker.createContainer(containerOptions);
     console.log("New container created with ID:", container.id);

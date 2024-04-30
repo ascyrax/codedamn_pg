@@ -43,8 +43,8 @@ export function handleLogin(req, res) {
       secure: false, // The cookie will only be sent over HTTPS
       sameSite: "Lax",
     });
-    res.send({ success: true, msg: ":) login successful + cookie set." });
     setCurrentUsername(credentials.username);
+    res.send({ success: true, msg: ":) login successful + cookie set." });
     return;
   }
   res.send({

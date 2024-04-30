@@ -76,10 +76,8 @@ app.use("/editordata", editorRoutes);
 // app.use("/terminal", terminalRoutes);
 
 // web socket
-
 const httpServer = http.createServer(app);
 const wss = new WebSocketServer({ server: httpServer });
-// const clients = {};
 const clients = new Map();
 wss.on("connection", handleNewClient);
 
