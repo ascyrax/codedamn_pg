@@ -57,6 +57,7 @@ async function copyDirectory(src, dest) {
 }
 
 export async function createAndStartContainer(containerId) {
+  console.log("createAndStartContainer")
   const volumeName = "vid_" + containerId; // Name of the Docker volume
 
   // Container options

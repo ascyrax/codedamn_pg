@@ -7,6 +7,7 @@ import { user, credentials } from "../models/interfaces";
 axios.defaults.withCredentials = true;
 
 export function postCodeChange(filesData: Record<string, FileDescription>) {
+  console.log("postCodeChange");
   // post request
   async function makePostRequest() {
     try {
@@ -15,7 +16,8 @@ export function postCodeChange(filesData: Record<string, FileDescription>) {
         body: filesData,
         userId: 1,
       });
-      // console.log("serverResponse:",response.data);
+      if (response && response.data)
+        console.log("serverResponse:", response.data);
     } catch (error) {
       console.error(error);
     }

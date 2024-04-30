@@ -18,7 +18,6 @@ function Login({
   };
 
   const fetchEditorData = async () => {
-    console.log("login > fetchEditorData");
     try {
       const responseData = await getEditorData();
       if (responseData) {

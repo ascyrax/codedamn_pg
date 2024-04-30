@@ -7,13 +7,13 @@ import Tabs from "../layout/Tabs";
 import { Rnd, RndResizeCallback } from "react-rnd";
 import { debounce } from "lodash-es";
 import * as utils from "../../utils/utils";
-import * as services from "../../services/services";
+import {postCodeChange} from "../../services/services";
 import { MonacoEditorProps } from "../../models/interfaces";
 import { Preview } from "../layout/Preview";
 import TerminalXTerm from "../layout/TerminalXTerm";
 
 // batch update to the api endpoint
-const batchUploadFilesData = debounce(services.postCodeChange, 200);
+const batchUploadFilesData = debounce(postCodeChange, 200);
 
 // frontend
 const MonacoEditor = ({ filesData, setFilesData }: MonacoEditorProps) => {

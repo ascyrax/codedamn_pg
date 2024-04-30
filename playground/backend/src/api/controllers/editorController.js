@@ -11,7 +11,7 @@ const getEditorData = async (req, res) => {
   }
 
   const volumeName = "vid_cid_" + username;
-  console.log(volumeName);
+  // console.log(volumeName);
   // check if the volume exist or not
   try {
     // Ensure the volume exists, or create it if it doesn't
@@ -49,7 +49,7 @@ const getEditorData = async (req, res) => {
           language,
         });
       });
-      console.log(results);
+      // console.log(results);
       res.json(results);
     });
   } catch (error) {
@@ -80,30 +80,39 @@ function detectLanguage(filename) {
   // Get the language from the map or return 'Unknown'
   return extensionToLanguage[extension] || "Unknown";
 }
-const setEditorData = async (req, res) => {
-  // console.debug(req.url);
 
-  // create OR update the model :)
-  // todo check for req.body first :)
-  const reqBody = req.body.body;
+// Function to update files based on the provided object
+async function updateFiles({ fileName, fileContent }, volumeName) {
+  try {
+    const filePath = path.join(
+      "/var/tmp/codedamn/volumes",
+      volumeName,
+      fileName
+    );
+
+    fs.writeFileSync(filePath, fileContent);
+    console.log(`Updated file: ${filePath}`);
+  } catch (error) {
+    console.error("Failed to update files:", error);
+  }
+}
+
+const setEditorData = async (req, res) => {
+  let reqBody = "";
+  if (req.body && req.body.body) reqBody = req.body.body;
+  let volumeName = "";
+  if (req.cookies && req.cookies.username) {
+    volumeName = "vid_cid_" + req.cookies.username;
+  }
+  // console.log("reqBody:", reqBody);
   for (const [key, val] of Object.entries(reqBody)) {
+    // console.log("setEditorData -> ", key, val);
+    let { name, value, isAnOpenedTab, language } = val;
     try {
-      const foundFiles = await FileDataModel.find({ name: key });
-      if (foundFiles.length === 0) {
-        try {
-          const createdFile = await FileDataModel.create(val);
-        } catch (err) {
-          console.error(err);
-        }
-      } else {
-        try {
-          const updatedFile = await FileDataModel.updateOne({ name: key }, val);
-        } catch (err) {
-          console.error(err);
-        }
-      }
+      // modify/update fileName = name with fileContent = value
+      await updateFiles({ fileName: key, fileContent: value }, volumeName);
     } catch (err) {
-      console.error(err);
+      console.error(":( error updatingFiles at the mounted volumes", err);
     }
   }
 
