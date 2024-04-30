@@ -2,6 +2,7 @@ import { FileDataModel } from "../../models/fileDataModel.js";
 import * as path from "path";
 import * as fs from "fs";
 import { currentUsername } from "../../server.js";
+import { createAndStartContainer, docker } from "./terminalController.js";
 
 const getEditorData = async (req, res) => {
   let username = currentUsername || "";
@@ -10,6 +11,21 @@ const getEditorData = async (req, res) => {
   }
 
   const volumeName = "vid_cid_" + username;
+  console.log(volumeName);
+  // check if the volume exist or not
+  try {
+    // Ensure the volume exists, or create it if it doesn't
+    let volume = docker.getVolume(volumeName);
+    let volumeInfo = await volume.inspect().catch(async () => {
+      console.error("error fetching volume info");
+    });
+    console.log(`Using volume: ${volumeInfo.name}`);
+  } catch (error) {
+    console.error("error inspecting the corresponding volume:", error.message);
+    let containerId = "cid_" + username;
+    await createAndStartContainer(containerId);
+  }
+
   try {
     // Assuming the volume is mounted on the host in a known directory
     const volumePath = path.join("/var/tmp/codedamn/volumes", volumeName);
@@ -26,7 +42,12 @@ const getEditorData = async (req, res) => {
         const language = detectLanguage(file);
         const filePath = path.join(volumePath, file);
         const content = fs.readFileSync(filePath, "utf8");
-        results.push({ name: file, value: content, isAnOpenedTab:true,  language});
+        results.push({
+          name: file,
+          value: content,
+          isAnOpenedTab: true,
+          language,
+        });
       });
       console.log(results);
       res.json(results);
@@ -35,38 +56,29 @@ const getEditorData = async (req, res) => {
     console.error("Error:", error);
     res.status(500).send("Error accessing volume data");
   }
-
-  // try {
-  //   const filesData = await FileDataModel.find();
-  //   // console.log(filesData);
-  //   res.send(filesData);
-  // } catch (err) {
-  //   res.send("error retreiving filesData");
-  //   console.error(err);
-  // }
 };
 
 // Function to determine the programming language from the file extension
 function detectLanguage(filename) {
   // A mapping of file extensions to languages
   const extensionToLanguage = {
-      '.js': 'JavaScript',
-      '.py': 'Python',
-      '.java': 'Java',
-      '.cpp': 'C++',
-      '.cs': 'C#',
-      '.rb': 'Ruby',
-      '.php': 'PHP',
-      '.ts': 'TypeScript',
-      '.html': 'HTML',
-      '.css': 'CSS'
+    ".js": "JavaScript",
+    ".py": "Python",
+    ".java": "Java",
+    ".cpp": "C++",
+    ".cs": "C#",
+    ".rb": "Ruby",
+    ".php": "PHP",
+    ".ts": "TypeScript",
+    ".html": "HTML",
+    ".css": "CSS",
   };
 
   // Extract the file extension
   const extension = path.extname(filename);
 
   // Get the language from the map or return 'Unknown'
-  return extensionToLanguage[extension] || 'Unknown';
+  return extensionToLanguage[extension] || "Unknown";
 }
 const setEditorData = async (req, res) => {
   // console.debug(req.url);

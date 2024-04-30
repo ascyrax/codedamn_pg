@@ -1,9 +1,13 @@
 import { useState } from "react";
-import { postLoginData } from "../../services/services";
+import { postLoginData, getEditorData } from "../../services/services";
 import { LoginProps } from "../../models/interfaces";
 import { createWebSocket } from "./TerminalXTerm";
 
-function Login({ setNeedToRegister, setHasUserLoggedIn }: LoginProps) {
+function Login({
+  setNeedToRegister,
+  setHasUserLoggedIn,
+  setFilesData,
+}: LoginProps) {
   const [credentials, setCredentials] = useState({
     username: "",
     password: "",
@@ -13,15 +17,32 @@ function Login({ setNeedToRegister, setHasUserLoggedIn }: LoginProps) {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
   };
 
+  const fetchEditorData = async () => {
+    console.log("login > fetchEditorData");
+    try {
+      const responseData = await getEditorData();
+      if (responseData) {
+        console.log(responseData);
+        setFilesData(responseData);
+      }
+    } catch (error) {
+      console.error("Error fetching editor data:", error);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Here you would typically authenticate against your backend API
-    let regResponseFromServer = await postLoginData(credentials);
-    if (regResponseFromServer.success) {
+    let serverResponseLogin = await postLoginData(credentials);
+    console.log(serverResponseLogin);
+    if (serverResponseLogin.success) {
       setHasUserLoggedIn(true);
-      createWebSocket();
-      console.log("login successful", regResponseFromServer);
-    } else console.log("could not login");
+      await createWebSocket();
+      console.log("login successful", serverResponseLogin);
+      await fetchEditorData();
+    } else {
+      console.log("could not login");
+    }
   };
 
   const handleClick = (_: React.MouseEvent<HTMLButtonElement>) => {

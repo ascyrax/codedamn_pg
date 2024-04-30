@@ -25,6 +25,7 @@ export function postCodeChange(filesData: Record<string, FileDescription>) {
 }
 
 export async function getEditorData() {
+  console.log("getEditorData");
   // get request
   let modifiedResponseData = {};
   try {

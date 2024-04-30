@@ -76,8 +76,16 @@ export interface PreviewProps {
 export interface LoginProps {
   setNeedToRegister: (value: boolean) => void;
   setHasUserLoggedIn: (value: boolean) => void;
+  setFilesData: (value: Record<string, FileDescription> | undefined) => void;
 }
 
 export interface RegisterProps {
   setNeedToRegister: (value: boolean) => void;
+}
+
+export interface MonacoEditorProps {
+  filesData: Record<string, FileDescription> | undefined;
+  setFilesData: React.Dispatch<
+    React.SetStateAction<Record<string, FileDescription> | undefined>
+  >;
 }

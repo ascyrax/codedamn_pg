@@ -8,7 +8,7 @@ import { Rnd, RndResizeCallback } from "react-rnd";
 import { debounce } from "lodash-es";
 import * as utils from "../../utils/utils";
 import * as services from "../../services/services";
-import * as interfaces from "../../models/interfaces";
+import { MonacoEditorProps } from "../../models/interfaces";
 import { Preview } from "../layout/Preview";
 import TerminalXTerm from "../layout/TerminalXTerm";
 
@@ -16,9 +16,7 @@ import TerminalXTerm from "../layout/TerminalXTerm";
 const batchUploadFilesData = debounce(services.postCodeChange, 200);
 
 // frontend
-const MonacoEditor: React.FC = () => {
-  const [filesData, setFilesData] =
-    useState<Record<string, interfaces.FileDescription>>();
+const MonacoEditor = ({ filesData, setFilesData }: MonacoEditorProps) => {
   const [tabNames, setTabNames] = useState<string[]>([]);
   const [_, setFileNames] = useState<string[]>([]);
   const [focusedTabName, setFocusedTabName] = useState<string>();
@@ -38,24 +36,7 @@ const MonacoEditor: React.FC = () => {
   );
 
   useEffect(() => {
-    // make a get request to the backend for filesData
-    const fetchEditorData = async () => {
-      try {
-        const responseData = await services.getEditorData();
-        // console.log(responseData);
-        if (responseData) {
-          // console.log(responseData);
-          setFilesData(responseData);
-        }
-      } catch (error) {
-        console.error("Error fetching editor data:", error);
-      }
-    };
-
-    fetchEditorData();
-  }, []);
-
-  useEffect(() => {
+    console.log(filesData);
     if (filesData) {
       let listFileNames: string[] = [],
         listTabNames: string[] = [];
