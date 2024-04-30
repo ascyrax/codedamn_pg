@@ -17,9 +17,10 @@ function Register({ setNeedToRegister }: RegisterProps) {
     e.preventDefault();
     // Here you would usually integrate your backend API
     let regResponseFromServer = await postRegisterData(user);
-    if (regResponseFromServer.success)
+    if (regResponseFromServer.success) {
+      setNeedToRegister(false);
       console.log("registration successful", regResponseFromServer);
-    else console.log("registration could not complete.");
+    } else console.log("registration could not complete.");
   };
 
   const handleClick = () => {

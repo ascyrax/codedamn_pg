@@ -37,9 +37,6 @@ const port = process.env.PORT || 3000;
 
 connectDB();
 
-// app.listen(port, () => {
-//   console.log(`Example app listening at http://localhost:${port}`);
-// });
 function authenticateUsingCookies(req, res, next) {
   const username = req.cookies.username;
   const password = req.cookies.password;
@@ -81,16 +78,23 @@ app.use("/editordata", editorRoutes);
 // web socket
 
 const httpServer = http.createServer(app);
-
 const wss = new WebSocketServer({ server: httpServer });
+// const clients = {};
+const clients = new Map();
+wss.on("connection", handleNewClient);
 
-// Set up the WebSocket connection
-wss.on("connection", async (ws) => {
+export let currentUsername = "";
+export function setCurrentUsername(username) {
+  currentUsername = username;
+}
+
+async function handleNewClient(ws, req) {
   console.log("Client connected to the WebSocket Server");
+  console.log(req.headers["Sec-Websocket-Key"]);
+  clients[currentUsername] = ws;
   let container;
-
   try {
-    container = await startContainer();
+    container = await startContainer(currentUsername);
     const execOptions = {
       Cmd: ["bash"], // Command to start bash
       AttachStdin: true,
@@ -146,6 +150,7 @@ wss.on("connection", async (ws) => {
         console.log("Stream closed");
         ws.close();
       });
+
       execStream.on("error", (err) => {
         console.error("Stream error:", err);
         ws.terminate();
@@ -164,13 +169,14 @@ wss.on("connection", async (ws) => {
       ws.close();
     }
   } catch (err) {
+    ws.close();
     console.error(":( error in startContainer", err);
   }
 
   ws.on("close", () => {
     console.log("Client disconnected from the WebSocket Server");
   });
-});
+}
 
 // Listen on HTTP and WebSocket on the same port
 httpServer.listen(port, () => {

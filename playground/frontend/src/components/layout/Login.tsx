@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { postLoginData } from "../../services/services";
 import { LoginProps } from "../../models/interfaces";
+import { createWebSocket } from "./TerminalXTerm";
 
 function Login({ setNeedToRegister, setHasUserLoggedIn }: LoginProps) {
   const [credentials, setCredentials] = useState({
@@ -18,6 +19,7 @@ function Login({ setNeedToRegister, setHasUserLoggedIn }: LoginProps) {
     let regResponseFromServer = await postLoginData(credentials);
     if (regResponseFromServer.success) {
       setHasUserLoggedIn(true);
+      createWebSocket();
       console.log("login successful", regResponseFromServer);
     } else console.log("could not login");
   };

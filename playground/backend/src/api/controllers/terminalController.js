@@ -6,98 +6,83 @@ export const docker = new Docker.default({
   socketPath: "/var/run/docker.sock",
 });
 
-function createAndStartContainer(containerOptions) {
-  // Create and start the container
-  docker.createContainer(containerOptions, function (err, container) {
-    if (err) {
-      console.error("Error creating container:", err);
-      return;
-    }
-
-    container.start(function (err) {
-      if (err) {
-        console.error("Error starting container:", err);
-        return;
-      }
-
-      console.log("Container started successfully!");
-
-      // Listen for container events
-      container.wait(function (err, data) {
-        if (err) {
-          console.error("Error waiting for container:", err);
-          return;
-        }
-
-        console.log("Container stopped:", data);
-      });
-    });
-  });
-}
-
-async function isContainerRunning(container, userContainerId) {
+async function isContainerRunning(container, containerId) {
   // check if the container is running or not
   try {
     const data = await container.inspect();
 
     // Check the state of the container
     if (data.State.Running) {
-      // console.log(`The container '${userContainerId}' is running.`);
+      console.log(`The container '${containerId}' is running.`);
       return true;
     } else {
-      // console.log(`The container '${userContainerId}' is not running.`);
+      console.log(`The container '${containerId}' is not running.`);
       return false;
     }
   } catch (error) {
     console.error(
-      `:( terminalController.js / isContainerRunning(): error trying to inspect the container ${userContainerId}`,
+      `:( terminalController.js / isContainerRunning(): error trying to inspect the container ${containerId}`,
       error.message
     );
     return false;
   }
 }
 
-export async function startContainer() {
-  let userContainerId = "user01"; // container corresponding to the user
-
-  let container;
-  try {
-    container = await docker.getContainer(userContainerId);
-  } catch (err) {
-    console.log(
-      ":( could not get the coontainer using docker.getContainer: ",
-      err
-    );
-    return null;
-  }
-
-  // create the container if it doesn't exits
+async function createAndStartContainer(containerId) {
   // Container options
   const containerOptions = {
     Image: "ubuntu", // Specify the image name
     // Cmd: ["bash", "-c", 'while true; do echo "Hello, Dockerode!"; sleep 1; done'],
     Cmd: ["bash", "-c", "tail -f /dev/null"],
-    name: userContainerId,
+    name: containerId,
     AttachStdout: true, // Attach container's stdout to the Node.js process
     AttachStderr: true, // Attach container's stderr to the Node.js process
     Tty: true,
   };
-  // createAndStartContainer(containerOptions);
+  try {
+    // Create the container
+    const container = await docker.createContainer(containerOptions);
+    console.log("New container created with ID:", container.id);
 
-  let isRunning = await isContainerRunning(container, userContainerId);
+    // Start the container
+    await container.start();
+    console.log("New container started successfully.");
+  } catch (error) {
+    console.error("Failed to create or start the container:", error.message);
+  }
+}
 
-  // start the container if paused/stopped
-  if (!isRunning) {
-    try {
+export async function startContainer(username) {
+  let containerId = "cid_" + username; // container corresponding to the user
+
+  let container;
+  try {
+    // Attempt to get the container with the given ID
+    container = await docker.getContainer(containerId);
+
+    // Check the container's status
+    const data = await container.inspect();
+    let status;
+    if (data && data.State) status = data.State.Status;
+
+    // If the container is stopped, start it
+    if (status === "exited") {
+      console.log("Container is stopped. Starting container...");
       await container.start();
-      console.log(`The container '${userContainerId}' has been started.`);
-    } catch (err) {
-      console.log(
-        `:( could not start the paused/stopped container ${userContainerId}`
-      );
-      return null;
+      console.log("Container started successfully.");
+    } else if (status === "running") {
+      console.log("Container is already running.");
+    }
+  } catch (error) {
+    // Error handling to check if the container does not exist
+    if (error.statusCode === 404) {
+      console.log("Container not found. Creating and starting a new one...");
+      await createAndStartContainer(containerId);
+    } else {
+      console.error("An error occurred:", error.message);
     }
   }
+  // console.log("container: ", container);
 
   return container;
 }

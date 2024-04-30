@@ -4,7 +4,30 @@ import { FitAddon } from "xterm-addon-fit";
 import "@xterm/xterm/css/xterm.css";
 // import { postCommandToNodepty } from "../../services/services";
 
-const ws = new WebSocket("ws://localhost:3000");
+let ws: WebSocket;
+
+export async function createWebSocket() {
+  console.log("createWebSocket");
+  ws = new WebSocket("ws://localhost:3000");
+  
+  ws.onopen = function () {
+    console.log("ws connection open");
+  };
+  
+  ws.onerror = function (event) {
+    console.error("WebSocket error observed by the client :)", event);
+  };
+
+  ws.onmessage = function (event) {
+    console.log("ws receive -> : ", event.data);
+    terminal.write(event.data);
+  };
+
+  ws.onclose = function (event) {
+    console.log("WebSocket connection closed.", event);
+  };
+}
+
 const terminal = new Terminal({
   letterSpacing: 2,
   cursorBlink: true,
@@ -14,21 +37,6 @@ const terminal = new Terminal({
   fontFamily: '"Courier New", "Fira Code", "Roboto Mono", monospace',
   fontSize: 14,
 });
-
-ws.onerror = function (event) {
-  console.error("WebSocket error observed by the client :)", event);
-};
-
-ws.onopen = function (event) {};
-
-ws.onmessage = function (event) {
-  console.log("ws receive -> : ", event.data);
-  terminal.write(event.data);
-};
-
-ws.onclose = function (event) {
-  console.log("WebSocket connection closed.", event);
-};
 
 const TerminalXTerm = React.memo(function TerminalXTerm() {
   const terminalRef = useRef(null);
