@@ -12,6 +12,7 @@ import {
 } from "./api/controllers/terminalController.js";
 import cookieParser from "cookie-parser";
 import { isUserRegistered } from "./api/controllers/authController.js";
+// import { updateEditorData } from "./api/controllers/editorController.js";
 
 dotenv.config();
 
@@ -88,6 +89,7 @@ export function setCurrentUsername(username) {
 
 async function handleNewClient(ws, req) {
   console.log("Client connected to the WebSocket Server");
+  console.log({req})
   // console.log(req.cookies.username);
   clients[currentUsername] = ws;
   let container;
@@ -139,8 +141,9 @@ async function handleNewClient(ws, req) {
       // Create a promise to handle the output
       let data = "";
 
-      execStream.on("data", (chunk) => {
+      execStream.on("data", async (chunk) => {
         data += chunk.toString();
+        // await updateEditorData();
       });
 
       // Handle stream close/error

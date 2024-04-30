@@ -119,4 +119,25 @@ const setEditorData = async (req, res) => {
   res.send("filesData updated");
 };
 
+// export const updateEditorData = async (req) => {
+//   console.log("updateEditorData", req.body, req.cookies)
+//   // let reqBody = "";
+//   // if (req.body && req.body.body) reqBody = req.body.body;
+//   // let volumeName = "";
+//   // if (req.cookies && req.cookies.username) {
+//   //   volumeName = "vid_cid_" + req.cookies.username;
+//   // }
+//   // // console.log("reqBody:", reqBody);
+//   // for (const [key, val] of Object.entries(reqBody)) {
+//   //   // console.log("setEditorData -> ", key, val);
+//   //   let { name, value, isAnOpenedTab, language } = val;
+//   //   try {
+//   //     // modify/update fileName = name with fileContent = value
+//   //     await updateFiles({ fileName: key, fileContent: value }, volumeName);
+//   //   } catch (err) {
+//   //     console.error(":( error updatingFiles at the mounted volumes", err);
+//   //   }
+//   // }
+// };
+
 export { getEditorData, setEditorData };

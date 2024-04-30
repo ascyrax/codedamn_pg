@@ -36,9 +36,9 @@ function Login({
     console.log(serverResponseLogin);
     if (serverResponseLogin.success) {
       setHasUserLoggedIn(true);
-      await createWebSocket();
       console.log("login successful", serverResponseLogin);
       await fetchEditorData();
+      await createWebSocket();
     } else {
       console.log("could not login");
     }
