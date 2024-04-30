@@ -1,4 +1,6 @@
 import * as Docker from "dockerode";
+import fs from "fs/promises";
+import path from "path";
 // import {wss} from "../../server.js";
 
 // dockerode
@@ -28,6 +30,32 @@ async function isContainerRunning(container, containerId) {
   }
 }
 
+async function copyDirectory(src, dest) {
+  try {
+    // Create the destination directory if it doesn't exist
+    await fs.mkdir(dest, { recursive: true });
+
+    // Read all files/directories from the source directory
+    const entries = await fs.readdir(src, { withFileTypes: true });
+
+    for (let entry of entries) {
+      const srcPath = path.join(src, entry.name);
+      const destPath = path.join(dest, entry.name);
+
+      if (entry.isDirectory()) {
+        // Recursively copy directories
+        await copyDirectory(srcPath, destPath);
+      } else {
+        // Copy files
+        await fs.copyFile(srcPath, destPath);
+      }
+    }
+  } catch (error) {
+    console.error("Error copying directory:", error);
+    throw error; // rethrow the error for caller to handle if necessary
+  }
+}
+
 async function createAndStartContainer(containerId) {
   const volumeName = "vid_" + containerId; // Name of the Docker volume
 
@@ -40,11 +68,11 @@ async function createAndStartContainer(containerId) {
     AttachStdout: true, // Attach container's stdout to the Node.js process
     AttachStderr: true, // Attach container's stderr to the Node.js process
     Tty: true,
-    Volumes: {
-      "/home/codedamn": {}, // Path where the volume will be mounted in the container
-    },
+    // Volumes: {
+    //   "/home/codedamn": {}, // Path where the volume will be mounted in the container
+    // },
     HostConfig: {
-      Binds: [`${volumeName}:/data`], // Bind the volume
+      Binds: [`/var/tmp/codedamn/volumes/${volumeName}:/home/codedamn/`], // Bind the volume
     },
   };
   try {
@@ -52,6 +80,13 @@ async function createAndStartContainer(containerId) {
     let volume = docker.getVolume(volumeName);
     let volumeInfo = await volume.inspect().catch(async () => {
       console.log(`Creating new volume: ${volumeName}`);
+      // first populate the bind mount endpoint on the host with the necessary files
+      const sourceDir = "/var/tmp/codedamn/volumes/vid_cid_"; // Set the source directory path
+      const destinationDir = `/var/tmp/codedamn/volumes/${volumeName}`; // Set the destination directory path
+
+      console.log(`Copying contents from ${sourceDir} to ${destinationDir}...`);
+      await copyDirectory(sourceDir, destinationDir);
+      console.log("Copy operation complete.");
       return await docker.createVolume({
         Name: volumeName,
       });

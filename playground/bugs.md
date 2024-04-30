@@ -14,3 +14,6 @@ hence, when i wanted to type 'ls' in the xterm, it showd 'lllsss' xd.
 
 tried using a single websocketserver for handling connections to multiple client. didnt work initially.
 i was adding a new connections event callback function to the websocketserver each time a new client connected.
+
+
+bind mounts was replacing the 3 files (index.html style.css script.js) from the container's /home/codedamn because of the mountpoint empty directory ~/codedamn/volumes/volumeId
