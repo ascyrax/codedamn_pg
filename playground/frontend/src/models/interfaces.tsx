@@ -19,8 +19,8 @@ export interface FileDescription {
   language: string;
   value: string;
   isAnOpenedTab: boolean;
-  _v: number;
-  _id: string;
+  // _v: number;
+  // _id: string;
 }
 
 export interface CodeEditorProps {

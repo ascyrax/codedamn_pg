@@ -30,8 +30,10 @@ export async function getEditorData() {
   try {
     const response = await axios.get("http://localhost:3000/editorData");
     if (response.data) {
+      console.log(response.data);
       modifiedResponseData = convertFilesData(response.data);
     }
+    console.log(modifiedResponseData);
     return modifiedResponseData;
   } catch (error) {
     console.error(error);

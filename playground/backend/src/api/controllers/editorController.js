@@ -4,49 +4,70 @@ import * as fs from "fs";
 import { currentUsername } from "../../server.js";
 
 const getEditorData = async (req, res) => {
-  // console.debug(req.url);
-
-  // const volumeName = "vid_cid_" + currentUsername;
-  // console.log(volumeName);
-  // try {
-  //   // Assuming the volume is mounted on the host in a known directory
-  //   const volumePath = path.join(
-  //     "~/codedamn/volumes",
-  //     volumeName,
-  //     "_data"
-  //   );
-
-  //   // Read files from the volume directory
-  //   fs.readdir(volumePath, (err, files) => {
-  //     if (err) {
-  //       console.error("Error reading volume directory:", err);
-  //       return res.status(500).send("Failed to read volume");
-  //     }
-
-  //     let results = [];
-  //     files.forEach((file) => {
-  //       const filePath = path.join(volumePath, file);
-  //       const content = fs.readFileSync(filePath, "utf8");
-  //       results.push({ file, content });
-  //     });
-
-  //     res.json(results);
-  //   });
-  // } catch (error) {
-  //   console.error("Error:", error);
-  //   res.status(500).send("Error accessing volume data");
-  // }
-
-  try {
-    const filesData = await FileDataModel.find();
-    // console.log(filesData);
-    res.send(filesData);
-  } catch (err) {
-    res.send("error retreiving filesData");
-    console.error(err);
+  let username = currentUsername || "";
+  if (req.cookies && req.cookies.username) {
+    username = req.cookies.username;
   }
+
+  const volumeName = "vid_cid_" + username;
+  try {
+    // Assuming the volume is mounted on the host in a known directory
+    const volumePath = path.join("/var/tmp/codedamn/volumes", volumeName);
+
+    // Read files from the volume directory
+    fs.readdir(volumePath, (err, files) => {
+      if (err) {
+        console.error("Error reading volume directory:", err);
+        return res.status(500).send("Failed to read volume");
+      }
+
+      let results = [];
+      files.forEach((file) => {
+        const language = detectLanguage(file);
+        const filePath = path.join(volumePath, file);
+        const content = fs.readFileSync(filePath, "utf8");
+        results.push({ name: file, value: content, isAnOpenedTab:true,  language});
+      });
+      console.log(results);
+      res.json(results);
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).send("Error accessing volume data");
+  }
+
+  // try {
+  //   const filesData = await FileDataModel.find();
+  //   // console.log(filesData);
+  //   res.send(filesData);
+  // } catch (err) {
+  //   res.send("error retreiving filesData");
+  //   console.error(err);
+  // }
 };
 
+// Function to determine the programming language from the file extension
+function detectLanguage(filename) {
+  // A mapping of file extensions to languages
+  const extensionToLanguage = {
+      '.js': 'JavaScript',
+      '.py': 'Python',
+      '.java': 'Java',
+      '.cpp': 'C++',
+      '.cs': 'C#',
+      '.rb': 'Ruby',
+      '.php': 'PHP',
+      '.ts': 'TypeScript',
+      '.html': 'HTML',
+      '.css': 'CSS'
+  };
+
+  // Extract the file extension
+  const extension = path.extname(filename);
+
+  // Get the language from the map or return 'Unknown'
+  return extensionToLanguage[extension] || 'Unknown';
+}
 const setEditorData = async (req, res) => {
   // console.debug(req.url);
 
