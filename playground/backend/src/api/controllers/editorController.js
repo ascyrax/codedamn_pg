@@ -3,9 +3,6 @@ import * as fs from "fs";
 import { createAndStartContainer, docker } from "./terminalController.js";
 
 const getEditorData = async (req, res) => {
-  let reqBody = "";
-  if (req.body && req.body.body) reqBody = req.body.body;
-
   let volumeName = "",
     username = "";
   if (req.username) {
@@ -84,7 +81,6 @@ function detectLanguage(filename) {
 
 // Function to update files based on the provided object
 async function updateFiles({ fileName, fileContent }, volumeName) {
-  // console.log("updateFiles -> ", { fileName, fileContent, volumeName });
   try {
     const filePath = path.join(
       "/var/tmp/codedamn/volumes",
@@ -105,7 +101,6 @@ const setEditorData = async (req, res) => {
   let volumeName = "";
   // }
   if (req.username) volumeName = "vid_cid_" + req.username;
-  console.log("setEditorData -> ", { volumeName });
   for (const [key, val] of Object.entries(reqBody)) {
     let { name, value, isAnOpenedTab, language } = val;
     try {

@@ -3,7 +3,7 @@ import { handleLogin, handleRegister } from "../controllers/authController.js";
 
 const authRoutes = express.Router();
 
-// app.use("/auth", authRoutes);
+// url = /auth
 
 authRoutes.post("/register", handleRegister);
 authRoutes.post("/login", handleLogin);

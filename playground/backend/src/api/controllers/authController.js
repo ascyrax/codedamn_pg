@@ -2,20 +2,6 @@ import { UserModel } from "../../models/userModel.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
-let users = [];
-async function populateUsers() {
-  try {
-    const foundUsers = await UserModel.find();
-    users = foundUsers;
-  } catch (err) {
-    console.error(
-      ":( could not populate users array using the database. database error",
-      err
-    );
-  }
-}
-populateUsers();
-
 export async function handleRegister(req, res) {
   if (!req.body || !req.body.body) {
     return res.json({
@@ -101,40 +87,3 @@ export async function handleLogin(req, res) {
   }
 }
 
-async function createUser({ username, hashedPassword }) {
-  try {
-    const foundUser = await UserModel.find({ username: username });
-    if (foundUser.length == 0) {
-      try {
-        const createdUser = await UserModel.create({
-          username,
-          password: hashedPassword,
-        });
-        if (createUser)
-          return {
-            success: true,
-            msg: ":) new user created & registered",
-          };
-        else {
-          return {
-            success: false,
-            msg: ":( could not create a new user. database returned empty user",
-          };
-        }
-      } catch (err) {
-        return {
-          success: false,
-          msg: ":( could not create a new user. database error",
-        };
-      }
-    } else {
-      return {
-        success: false,
-        msg: ":( could not register. user already exists",
-      };
-    }
-  } catch (err) {
-    console.error(err);
-    return { success: false, msg: ":( could not register. database error" };
-  }
-}

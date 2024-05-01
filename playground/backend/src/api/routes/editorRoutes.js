@@ -6,7 +6,7 @@ import {
 
 const editorRoutes = express.Router();
 
-// app.use("/editordata", editorRoutes);
+// url = /editorData
 
 editorRoutes.get("/", getEditorData);
 editorRoutes.post("/", setEditorData);

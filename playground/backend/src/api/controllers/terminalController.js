@@ -1,7 +1,6 @@
 import * as Docker from "dockerode";
 import fs from "fs/promises";
 import path from "path";
-// import {wss} from "../../server.js";
 
 // dockerode
 export const docker = new Docker.default({
@@ -35,10 +34,7 @@ async function copyDirectory(src, dest) {
 }
 
 export async function createAndStartContainer(containerId) {
-  // console.log("createAndStartContainer");
   const volumeName = "vid_" + containerId; // Name of the Docker volume
-  // console.log("createAndStartContainer -> ", { volumeName });
-  // Container options
   const containerOptions = {
     Image: "user-ubuntu", // Specify the image name
     // Cmd: ["bash", "-c", 'while true; do echo "Hello, Dockerode!"; sleep 1; done'],
@@ -47,9 +43,6 @@ export async function createAndStartContainer(containerId) {
     AttachStdout: true, // Attach container's stdout to the Node.js process
     AttachStderr: true, // Attach container's stderr to the Node.js process
     Tty: true,
-    // Volumes: {
-    //   "/home/codedamn": {}, // Path where the volume will be mounted in the container
-    // },
     HostConfig: {
       Binds: [`/var/tmp/codedamn/volumes/${volumeName}:/home/codedamn/`], // Bind the volume
     },
@@ -114,7 +107,6 @@ export async function startContainer(username) {
       console.error("An error occurred:", error.message);
     }
   }
-  // console.log("container: ", container);
 
   return container;
 }

@@ -1,8 +1,7 @@
 // src/Explorer.tsx
-import React, { Children, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Tree, { RenderItemParams, TreeData, mutateTree } from "@atlaskit/tree";
 import "@atlaskit/css-reset";
-import NewButton from "../common/NewButton";
 import { ExplorerProps } from "../../models/interfaces";
 import { initialData } from "../../utils/utils";
 
@@ -86,7 +85,6 @@ const Explorer: React.FC<ExplorerProps> = ({
             ? "\u{1F4C1}"
             : "\u{1F4C4}"}{" "}
           {renderItemParams.item.data.title}
-          {renderItemParams.item.id === "workspace" ? <NewButton /> : ""}
         </span>
       </div>
     );
