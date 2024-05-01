@@ -2,18 +2,20 @@ import React, { useRef, useEffect } from "react";
 import { Terminal } from "@xterm/xterm";
 import { FitAddon } from "xterm-addon-fit";
 import "@xterm/xterm/css/xterm.css";
-// import { postCommandToNodepty } from "../../services/services";
+import { getEditorData } from "../../services/services";
+import { debounce } from "lodash-es";
+import { TerminalXTermProps } from "../../models/interfaces";
 
 let ws: WebSocket;
 
 export async function createWebSocket() {
-  console.log("createWebSocket");
+  // console.log("createWebSocket");
   ws = new WebSocket("ws://localhost:3000");
-  
+
   ws.onopen = function () {
     console.log("ws connection open");
   };
-  
+
   ws.onerror = function (event) {
     console.error("WebSocket error observed by the client :)", event);
   };
@@ -38,7 +40,9 @@ const terminal = new Terminal({
   fontSize: 14,
 });
 
-const TerminalXTerm = React.memo(function TerminalXTerm() {
+const TerminalXTerm = React.memo(function TerminalXTerm({
+  setFilesData,
+}: TerminalXTermProps) {
   const terminalRef = useRef(null);
   let bufferCommand = "";
 
@@ -83,9 +87,24 @@ const TerminalXTerm = React.memo(function TerminalXTerm() {
     }
   });
 
-  function processCommand(bufferCommand: string) {
-    console.log("processCommand");
-    if (ws.readyState == WebSocket.OPEN) ws.send(bufferCommand);
+  const fetchEditorData = async () => {
+    try {
+      const responseData = await getEditorData();
+      if (responseData) {
+        console.log(responseData);
+        setFilesData(responseData);
+      }
+    } catch (error) {
+      console.error("Error fetching editor data:", error);
+    }
+  };
+  const batchGetEditorData = debounce(fetchEditorData, 500);
+
+  async function processCommand(bufferCommand: string) {
+    if (ws.readyState == WebSocket.OPEN) {
+      ws.send(bufferCommand);
+      await batchGetEditorData();
+    }
   }
 
   return (

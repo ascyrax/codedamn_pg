@@ -89,3 +89,7 @@ export interface MonacoEditorProps {
     React.SetStateAction<Record<string, FileDescription> | undefined>
   >;
 }
+
+export interface TerminalXTermProps {
+  setFilesData: (data: Record<string, FileDescription> | undefined) => void;
+}

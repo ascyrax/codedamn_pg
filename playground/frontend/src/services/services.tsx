@@ -7,7 +7,7 @@ import { user, credentials } from "../models/interfaces";
 axios.defaults.withCredentials = true;
 
 export function postCodeChange(filesData: Record<string, FileDescription>) {
-  console.log("postCodeChange");
+  // console.log("postCodeChange");
   // post request
   async function makePostRequest() {
     try {
@@ -27,16 +27,16 @@ export function postCodeChange(filesData: Record<string, FileDescription>) {
 }
 
 export async function getEditorData() {
-  console.log("getEditorData");
+  // console.log("getEditorData");
   // get request
   let modifiedResponseData = {};
   try {
     const response = await axios.get("http://localhost:3000/editorData");
     if (response.data) {
-      console.log(response.data);
+      // console.log(response.data);
       modifiedResponseData = convertFilesData(response.data);
     }
-    console.log(modifiedResponseData);
+    // console.log(modifiedResponseData);
     return modifiedResponseData;
   } catch (error) {
     console.error(error);

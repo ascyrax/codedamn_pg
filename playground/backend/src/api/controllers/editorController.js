@@ -5,6 +5,7 @@ import { currentUsername } from "../../server.js";
 import { createAndStartContainer, docker } from "./terminalController.js";
 
 const getEditorData = async (req, res) => {
+  console.log("getEditorData -> ", req.cookies)
   let username = currentUsername || "";
   if (req.cookies && req.cookies.username) {
     username = req.cookies.username;

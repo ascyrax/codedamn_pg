@@ -21,7 +21,6 @@ function Login({
     try {
       const responseData = await getEditorData();
       if (responseData) {
-        console.log(responseData);
         setFilesData(responseData);
       }
     } catch (error) {
@@ -33,7 +32,6 @@ function Login({
     e.preventDefault();
     // Here you would typically authenticate against your backend API
     let serverResponseLogin = await postLoginData(credentials);
-    console.log(serverResponseLogin);
     if (serverResponseLogin.success) {
       setHasUserLoggedIn(true);
       console.log("login successful", serverResponseLogin);

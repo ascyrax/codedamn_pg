@@ -36,7 +36,6 @@ const MonacoEditor = ({ filesData, setFilesData }: MonacoEditorProps) => {
   );
 
   useEffect(() => {
-    console.log(filesData);
     if (filesData) {
       let listFileNames: string[] = [],
         listTabNames: string[] = [];
@@ -219,7 +218,7 @@ const MonacoEditor = ({ filesData, setFilesData }: MonacoEditorProps) => {
           disableDragging={true}
           enableResizing={false}
         >
-          <TerminalXTerm />
+          <TerminalXTerm  setFilesData={setFilesData}/>
         </Rnd>
       </Rnd>
 

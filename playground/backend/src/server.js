@@ -89,7 +89,7 @@ export function setCurrentUsername(username) {
 
 async function handleNewClient(ws, req) {
   console.log("Client connected to the WebSocket Server");
-  console.log({req})
+  // console.log({req})
   // console.log(req.cookies.username);
   clients[currentUsername] = ws;
   let container;
