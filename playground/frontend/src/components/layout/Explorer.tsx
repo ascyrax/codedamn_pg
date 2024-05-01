@@ -1,17 +1,47 @@
 // src/Explorer.tsx
-import React, { useState } from "react";
+import React, { Children, useEffect, useState } from "react";
 import Tree, { RenderItemParams, TreeData, mutateTree } from "@atlaskit/tree";
 import "@atlaskit/css-reset";
 import NewButton from "../common/NewButton";
-import * as interfaces from "../../models/interfaces";
-import * as utils from "../../utils/utils";
+import { ExplorerProps } from "../../models/interfaces";
+import { initialData } from "../../utils/utils";
 
-const Explorer: React.FC<interfaces.ExplorerProps> = ({
+const Explorer: React.FC<ExplorerProps> = ({
   setFocusedTabName,
   setFocusedFileName,
   focusedFileName,
+  filesData,
 }) => {
-  const [tree, setTree] = useState<TreeData>(utils.initialData);
+  const [tree, setTree] = useState<TreeData>(initialData);
+
+  useEffect(() => {
+    let children: string[] = [];
+    let obj: any = {};
+    if (filesData) {
+      for (const [fileName, _] of Object.entries(filesData)) {
+        obj[fileName] = {
+          id: fileName,
+          Children: [],
+          data: { title: fileName, type: "file" },
+        };
+        children.push(fileName);
+      }
+
+      setTree((prevTree) => {
+        return {
+          ...prevTree,
+          items: {
+            ...prevTree.items,
+            ...obj,
+            playground: {
+              ...prevTree.items.playground,
+              children: children,
+            },
+          },
+        };
+      });
+    }
+  }, [filesData]);
 
   const handleExpand = (itemId: string | number) => {
     const newTree = mutateTree(tree, itemId, { isExpanded: true });

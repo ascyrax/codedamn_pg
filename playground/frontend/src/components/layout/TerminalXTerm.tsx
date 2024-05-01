@@ -91,7 +91,6 @@ const TerminalXTerm = React.memo(function TerminalXTerm({
     try {
       const responseData = await getEditorData();
       if (responseData) {
-        console.log(responseData);
         setFilesData(responseData);
       }
     } catch (error) {

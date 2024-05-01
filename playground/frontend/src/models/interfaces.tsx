@@ -59,6 +59,7 @@ export interface ExplorerProps {
   setFocusedTabName: React.Dispatch<React.SetStateAction<string | undefined>>;
   setFocusedFileName: React.Dispatch<React.SetStateAction<string | undefined>>;
   focusedFileName: string | undefined;
+  filesData: Record<string, FileDescription> | undefined;
 }
 
 export interface TabsProps {

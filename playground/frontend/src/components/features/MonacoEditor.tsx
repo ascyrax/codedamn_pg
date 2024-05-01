@@ -149,6 +149,7 @@ const MonacoEditor = ({ filesData, setFilesData }: MonacoEditorProps) => {
           setFocusedTabName={setFocusedTabName}
           setFocusedFileName={setFocusedFileName}
           focusedFileName={focusedFileName}
+          filesData={filesData}
         />
       </Rnd>
 
