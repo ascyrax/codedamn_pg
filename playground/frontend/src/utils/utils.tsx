@@ -1,4 +1,4 @@
-import {CustomTreeData, FileDescription} from "../models/interfaces";
+import { CustomTreeData, FileDescription } from "../models/interfaces";
 
 export const initialExplorerWidth = 250,
   initialEditorHeight = 700,
@@ -62,25 +62,26 @@ export const initialData: CustomTreeData = {
     },
     playground: {
       id: "playground",
-      children: ["index.html", "style.css", "script.js"],
+      children: [],
+      // children: ["index.html", "style.css", "script.js"],
       data: { title: "playground", type: "folder" },
       isExpanded: true,
     },
-    "index.html": {
-      id: "index.html",
-      children: [],
-      data: { title: "index.html", type: "file" },
-    },
-    "style.css": {
-      id: "style.css",
-      children: [],
-      data: { title: "style.css", type: "file" },
-    },
-    "script.js": {
-      id: "script.js",
-      children: [],
-      data: { title: "script.js", type: "file" },
-    },
+    // "index.html": {
+    //   id: "index.html",
+    //   children: [],
+    //   data: { title: "index.html", type: "file" },
+    // },
+    // "style.css": {
+    //   id: "style.css",
+    //   children: [],
+    //   data: { title: "style.css", type: "file" },
+    // },
+    // "script.js": {
+    //   id: "script.js",
+    //   children: [],
+    //   data: { title: "script.js", type: "file" },
+    // },
   },
 };
 

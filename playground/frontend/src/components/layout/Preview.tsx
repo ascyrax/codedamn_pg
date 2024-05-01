@@ -24,9 +24,9 @@ const Preview: React.FC<PreviewProps> = ({ filesData }) => {
 
   useEffect(() => {
     if (filesData) {
-      setHtmlCode(filesData["index.html"].value);
-      setCssCode(filesData["style.css"].value);
-      setJsCode(filesData["script.js"].value);
+      if (filesData["index.html"]) setHtmlCode(filesData["index.html"].value);
+      if (filesData["style.css"]) setCssCode(filesData["style.css"].value);
+      if (filesData["script.js"]) setJsCode(filesData["script.js"].value);
     }
   }, [filesData]);
 

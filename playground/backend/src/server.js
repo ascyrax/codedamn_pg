@@ -6,13 +6,12 @@ import dotenv from "dotenv";
 import cors from "cors";
 import http from "http";
 import { WebSocketServer } from "ws";
+import cookieParser from "cookie-parser";
+import { isUserRegistered } from "./api/controllers/authController.js";
 import {
   startContainer,
   docker,
 } from "./api/controllers/terminalController.js";
-import cookieParser from "cookie-parser";
-import { isUserRegistered } from "./api/controllers/authController.js";
-// import { updateEditorData } from "./api/controllers/editorController.js";
 
 dotenv.config();
 
@@ -74,7 +73,6 @@ function authenticateUsingCookies(req, res, next) {
 app.use("/auth", authRoutes);
 app.use(authenticateUsingCookies);
 app.use("/editordata", editorRoutes);
-// app.use("/terminal", terminalRoutes);
 
 // web socket
 const httpServer = http.createServer(app);
@@ -89,8 +87,6 @@ export function setCurrentUsername(username) {
 
 async function handleNewClient(ws, req) {
   console.log("Client connected to the WebSocket Server");
-  // console.log({req})
-  // console.log(req.cookies.username);
   clients[currentUsername] = ws;
   let container;
   try {
