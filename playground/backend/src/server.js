@@ -7,11 +7,13 @@ import cors from "cors";
 import http from "http";
 import { WebSocketServer } from "ws";
 import cookieParser from "cookie-parser";
-import { isUserRegistered } from "./api/controllers/authController.js";
 import {
   startContainer,
   docker,
 } from "./api/controllers/terminalController.js";
+import bodyParser from "body-parser";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
 
 dotenv.config();
 
@@ -32,61 +34,104 @@ app.use(
   })
 );
 app.use(cookieParser());
-
 const port = process.env.PORT || 3000;
-
 connectDB();
 
-function authenticateUsingCookies(req, res, next) {
-  const username = req.cookies.username;
-  const password = req.cookies.password;
-  if (!username || !password) {
-    res
-      .status(400)
-      .send({ success: false, msg: "invalid user. register / login please !" });
+// Middleware for verifying tokens
+function authenticateToken(req, res, next) {
+  let token = "";
+  if (req.cookies && req.cookies.token) {
+    token = req.cookies.token;
   }
-  // const token = req.cookies.authToken; // Assumes cookie-parser is used and authToken cookie is set
 
-  // if (!token) {
-  //   return res.status(401).send("Access Denied: No token provided.");
-  // }
+  if (token == null)
+    return res.status(401).json({
+      success: false,
+      msg: "authentication failed. send the jwt with requests OR login first if not done yet.",
+    });
 
-  try {
-    // const verified = jwt.verify(token, process.env.JWT_SECRET);
-    // req.user = verified; // Adding the verified user's data to the request object
-    if (isUserRegistered({ username, password })) {
-      next(); // Continue to the next middleware/route handler
-    } else {
-      res.status(400).send({
-        success: false,
-        msg: "invalid user. register / login please !",
-      });
-    }
-  } catch (err) {
-    res
-      .status(400)
-      .send({ success: false, msg: "invalid user. register / login please !" });
-    // res.status(400).send("Invalid Token");
-  }
+  jwt.verify(token, process.env.SECRET_KEY, (err, user) => {
+    req.username = user.userId;
+    if (err)
+      return res
+        .status(403)
+        .json({ success: false, msg: "authentication failed. invalid jwt" });
+    next();
+  });
 }
 
 app.use("/auth", authRoutes);
-app.use(authenticateUsingCookies);
+app.use(authenticateToken);
 app.use("/editordata", editorRoutes);
 
 // web socket
 const httpServer = http.createServer(app);
 const wss = new WebSocketServer({ server: httpServer });
 const clients = new Map();
-wss.on("connection", handleNewClient);
 
-export let currentUsername = "";
-export function setCurrentUsername(username) {
-  currentUsername = username;
+function parseCookies(cookieHeader) {
+  const cookies = {};
+  if (cookieHeader) {
+    cookieHeader.split(";").forEach((cookie) => {
+      const parts = cookie.match(/(.*?)=(.*)$/);
+      cookies[parts[1].trim()] = (parts[2] || "").trim();
+    });
+  }
+  console.log("parseCookies -> ", cookies);
+  return cookies;
 }
 
+function authenticate(cookies, callback) {
+  jwt.verify(cookies.token, process.env.SECRET_KEY, (err, user) => {
+    if (err) {
+      callback(new Error("Invalid token"), null);
+      return;
+    }
+    console.log("authenticate -> ", user);
+    callback(null, { username: user.userId }); // Simulated user
+  });
+}
+
+// httpServer.on("upgrade", function upgrade(req, socket, head) {
+//   console.log("upgrade -> ", head);
+//   // This function parses cookies from the req headers
+//   const cookies = parseCookies(req.headers.cookie);
+
+//   // You can use these cookies to authenticate or manage sessions
+//   // Here we simulate an authentication function
+//   authenticate(cookies, (err, client) => {
+//     if (err || !client) {
+//       socket.write("HTTP/1.1 401 Unauthorized\r\n\r\n");
+//       socket.destroy();
+//       return;
+//     }
+//     console.log("authenticate -> ", client);
+
+//     wss.handleUpgrade(req, socket, head, function done(ws, req) {
+//       console.log("wss.handleUpgrade callback -> ");
+//       // Here we actually call the `connection` event of `ws`
+//       wss.emit("connection", ws, req);
+//     });
+//   });
+// });
+
+wss.on("connection", handleNewClient);
+
 async function handleNewClient(ws, req) {
+  console.log("handleNewClient -> ", req.headers);
+  const cookies = parseCookies(req.headers.cookie);
+  let currentUsername = "";
+  authenticate(cookies, (err, client) => {
+    if (err || !client) {
+      ws.send("HTTP/1.1 401 Unauthorized\r\n\r\n");
+      return;
+    }
+    console.log("authenticate -> ", client);
+    currentUsername = client.username;
+  });
+
   console.log("Client connected to the WebSocket Server");
+  console.log("handleNewClient -> ", { currentUsername });
   clients[currentUsername] = ws;
   let container;
   try {
@@ -127,6 +172,7 @@ async function handleNewClient(ws, req) {
       );
 
       ws.on("message", async (xtermCommand) => {
+        console.log("handleNewClient -> ", { currentUsername });
         console.log(`ws received: ${xtermCommand}`);
         // ws.send(`Server received: ${xtermCommand}`);
         if (execStream.writable) {

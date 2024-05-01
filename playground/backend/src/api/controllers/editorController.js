@@ -1,17 +1,18 @@
 import * as path from "path";
 import * as fs from "fs";
-import { currentUsername } from "../../server.js";
 import { createAndStartContainer, docker } from "./terminalController.js";
 
 const getEditorData = async (req, res) => {
-  console.log("getEditorData -> ", req.cookies);
-  let username = currentUsername || "";
-  if (req.cookies && req.cookies.username) {
-    username = req.cookies.username;
+  let reqBody = "";
+  if (req.body && req.body.body) reqBody = req.body.body;
+
+  let volumeName = "",
+    username = "";
+  if (req.username) {
+    username = req.username;
+    volumeName = "vid_cid_" + req.username;
   }
 
-  const volumeName = "vid_cid_" + username;
-  // console.log(volumeName);
   // check if the volume exist or not
   try {
     // Ensure the volume exists, or create it if it doesn't
@@ -83,6 +84,7 @@ function detectLanguage(filename) {
 
 // Function to update files based on the provided object
 async function updateFiles({ fileName, fileContent }, volumeName) {
+  // console.log("updateFiles -> ", { fileName, fileContent, volumeName });
   try {
     const filePath = path.join(
       "/var/tmp/codedamn/volumes",
@@ -101,21 +103,17 @@ const setEditorData = async (req, res) => {
   let reqBody = "";
   if (req.body && req.body.body) reqBody = req.body.body;
   let volumeName = "";
-  if (req.cookies && req.cookies.username) {
-    volumeName = "vid_cid_" + req.cookies.username;
-  }
-  // console.log("reqBody:", reqBody);
+  // }
+  if (req.username) volumeName = "vid_cid_" + req.username;
+  console.log("setEditorData -> ", { volumeName });
   for (const [key, val] of Object.entries(reqBody)) {
-    // console.log("setEditorData -> ", key, val);
     let { name, value, isAnOpenedTab, language } = val;
     try {
-      // modify/update fileName = name with fileContent = value
       await updateFiles({ fileName: key, fileContent: value }, volumeName);
     } catch (err) {
       console.error(":( error updatingFiles at the mounted volumes", err);
     }
   }
-
   res.send("filesData updated");
 };
 

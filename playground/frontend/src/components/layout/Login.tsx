@@ -34,6 +34,8 @@ function Login({
     let serverResponseLogin = await postLoginData(credentials);
     if (serverResponseLogin.success) {
       setHasUserLoggedIn(true);
+      // save the jwt
+      
       console.log("login successful", serverResponseLogin);
       await fetchEditorData();
       await createWebSocket();

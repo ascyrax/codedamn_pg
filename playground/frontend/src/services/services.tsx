@@ -69,6 +69,7 @@ export async function postLoginData(credentials: credentials) {
       userId: 1,
       withCredentials: true,
     });
+    console.log(response);
     if (response && response.data) {
       return response.data;
     }

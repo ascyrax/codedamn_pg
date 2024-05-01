@@ -8,28 +8,6 @@ export const docker = new Docker.default({
   socketPath: "/var/run/docker.sock",
 });
 
-async function isContainerRunning(container, containerId) {
-  // check if the container is running or not
-  try {
-    const data = await container.inspect();
-
-    // Check the state of the container
-    if (data.State.Running) {
-      console.log(`The container '${containerId}' is running.`);
-      return true;
-    } else {
-      console.log(`The container '${containerId}' is not running.`);
-      return false;
-    }
-  } catch (error) {
-    console.error(
-      `:( terminalController.js / isContainerRunning(): error trying to inspect the container ${containerId}`,
-      error.message
-    );
-    return false;
-  }
-}
-
 async function copyDirectory(src, dest) {
   try {
     // Create the destination directory if it doesn't exist
@@ -57,9 +35,9 @@ async function copyDirectory(src, dest) {
 }
 
 export async function createAndStartContainer(containerId) {
-  console.log("createAndStartContainer")
+  // console.log("createAndStartContainer");
   const volumeName = "vid_" + containerId; // Name of the Docker volume
-
+  // console.log("createAndStartContainer -> ", { volumeName });
   // Container options
   const containerOptions = {
     Image: "user-ubuntu", // Specify the image name
@@ -108,7 +86,7 @@ export async function createAndStartContainer(containerId) {
 
 export async function startContainer(username) {
   let containerId = "cid_" + username; // container corresponding to the user
-
+  // console.log("startContainer -> ", { containerId });
   let container;
   try {
     // Attempt to get the container with the given ID
