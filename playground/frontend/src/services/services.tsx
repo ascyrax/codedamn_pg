@@ -3,12 +3,9 @@ import { FileDescription } from "../models/interfaces";
 import { convertFilesData } from "../utils/utils";
 import { user, credentials } from "../models/interfaces";
 
-// axios.defaults.baseURL = 'http://localhost:3000';
 axios.defaults.withCredentials = true;
 
 export function postCodeChange(filesData: Record<string, FileDescription>) {
-  // console.log("postCodeChange");
-  // post request
   async function makePostRequest() {
     try {
       const response = await axios.post("http://localhost:3000/editordata", {
@@ -27,16 +24,13 @@ export function postCodeChange(filesData: Record<string, FileDescription>) {
 }
 
 export async function getEditorData() {
-  // console.log("getEditorData");
   // get request
   let modifiedResponseData = {};
   try {
     const response = await axios.get("http://localhost:3000/editorData");
     if (response.data) {
-      // console.log(response.data);
       modifiedResponseData = convertFilesData(response.data);
     }
-    // console.log(modifiedResponseData);
     return modifiedResponseData;
   } catch (error) {
     console.error(error);

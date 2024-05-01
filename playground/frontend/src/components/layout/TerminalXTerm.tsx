@@ -9,7 +9,6 @@ import { TerminalXTermProps } from "../../models/interfaces";
 let ws: WebSocket;
 
 export async function createWebSocket() {
-  // console.log("createWebSocket");
   ws = new WebSocket("ws://localhost:3000");
 
   ws.onopen = function () {
@@ -77,7 +76,6 @@ const TerminalXTerm = React.memo(function TerminalXTerm({
         break;
       case "\r":
         terminal.writeln("\r");
-        // bufferCommand += "\r";
         processCommand(bufferCommand);
         bufferCommand = "";
         break;

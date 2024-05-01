@@ -21,8 +21,6 @@ const MonacoEditor = ({ filesData, setFilesData }: MonacoEditorProps) => {
   const [_, setFileNames] = useState<string[]>([]);
   const [focusedTabName, setFocusedTabName] = useState<string>();
   const [focusedFileName, setFocusedFileName] = useState<string>();
-  // const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
-  // const monacoRef = useRef<Monaco | null>(null);
 
   // for resizing the explorer & the editor & the preview
   const [widthExplorer, setWidthExplorer] = useState<number>(
@@ -76,8 +74,6 @@ const MonacoEditor = ({ filesData, setFilesData }: MonacoEditorProps) => {
   ) {
     editorInstance = editorInstance;
     monacoInstance = monacoInstance;
-    // editorRef.current = editorInstance;
-    // monacoRef.current = monacoInstance;
   }
 
   function handleTabClick(e: React.MouseEvent<HTMLButtonElement>) {

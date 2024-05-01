@@ -4,10 +4,7 @@ import {
   docker,
 } from "../api/controllers/terminalController.js";
 
-// const clients = new Map(); // not usefule anymore
-
 export async function handleNewWSConnection(ws, req) {
-  console.log("handleNewClient -> ", req.headers);
   const cookies = parseCookies(req.headers.cookie);
   let currentUsername = "";
   authenticate(cookies, (err, client) => {
@@ -15,13 +12,10 @@ export async function handleNewWSConnection(ws, req) {
       ws.send("HTTP/1.1 401 Unauthorized\r\n\r\n");
       return;
     }
-    console.log("authenticate -> ", client);
     currentUsername = client.username;
   });
 
   console.log("Client connected to the WebSocket Server");
-  console.log("handleNewClient -> ", { currentUsername });
-//   clients[currentUsername] = ws;
   let container;
   try {
     container = await startContainer(currentUsername);

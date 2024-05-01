@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { FileDescription, PreviewProps } from "../../models/interfaces";
+import { PreviewProps } from "../../models/interfaces";
 
 const Preview: React.FC<PreviewProps> = ({ filesData }) => {
   let [htmlCode, setHtmlCode] = useState(

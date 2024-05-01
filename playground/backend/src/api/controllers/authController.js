@@ -1,6 +1,7 @@
 import { UserModel } from "../../models/userModel.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import {createUser} from "../services/userServices.js"
 
 export async function handleRegister(req, res) {
   if (!req.body || !req.body.body) {
@@ -19,7 +20,6 @@ export async function handleRegister(req, res) {
 
     const userCreation = await createUser({ username, hashedPassword });
     if (userCreation.success) {
-      populateUsers();
       res.send({ success: true, msg: userCreation.msg });
     } else {
       res.send({ success: false, msg: userCreation.msg });

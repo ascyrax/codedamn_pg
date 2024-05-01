@@ -67,21 +67,6 @@ export const initialData: CustomTreeData = {
       data: { title: "playground", type: "folder" },
       isExpanded: true,
     },
-    // "index.html": {
-    //   id: "index.html",
-    //   children: [],
-    //   data: { title: "index.html", type: "file" },
-    // },
-    // "style.css": {
-    //   id: "style.css",
-    //   children: [],
-    //   data: { title: "style.css", type: "file" },
-    // },
-    // "script.js": {
-    //   id: "script.js",
-    //   children: [],
-    //   data: { title: "script.js", type: "file" },
-    // },
   },
 };
 

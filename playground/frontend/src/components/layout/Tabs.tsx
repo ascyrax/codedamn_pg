@@ -1,7 +1,7 @@
 import React from "react";
-import * as interfaces from "../../models/interfaces";
+import { TabsProps } from "../../models/interfaces";
 
-const Tabs: React.FC<interfaces.TabsProps> = ({
+const Tabs: React.FC<TabsProps> = ({
   tabNames,
   focusedTabName,
   handleTabClick,
@@ -13,7 +13,6 @@ const Tabs: React.FC<interfaces.TabsProps> = ({
           <button
             className={`tab-button ${focusedTabName == el ? "focused" : ""}`}
             key={el}
-            // disabled={focusedTabName == el}
             onClick={handleTabClick}
           >
             {el}

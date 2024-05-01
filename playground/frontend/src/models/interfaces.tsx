@@ -1,6 +1,5 @@
 import { Monaco } from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
-import * as interfaces from "../models/interfaces";
 import { TreeData } from "@atlaskit/tree";
 
 export interface user {
@@ -34,7 +33,7 @@ export interface CodeEditorProps {
     editorInstance: monaco.editor.IStandaloneCodeEditor,
     monacoInstance: Monaco
   ) => void;
-  filesData: Record<string, interfaces.FileDescription> | undefined;
+  filesData: Record<string, FileDescription> | undefined;
 }
 
 export interface FileItemData {

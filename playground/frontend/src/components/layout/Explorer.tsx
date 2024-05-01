@@ -72,7 +72,6 @@ const Explorer: React.FC<ExplorerProps> = ({
       <div
         ref={renderItemParams.provided.innerRef}
         {...renderItemParams.provided.draggableProps}
-        // {...renderItemParams.provided.dragHandleProps}
         className={`${
           focusedFileName == renderItemParams.item.data.title ? "focused" : ""
         }`}
