@@ -33,6 +33,33 @@ async function copyDirectory(src, dest) {
   }
 }
 
+export async function createVolume(containerId) {
+  let volume, volumeInfo;
+  try {
+    // Ensure the volume exists, or create it if it doesn't
+    volume = docker.getVolume(volumeName);
+    volumeInfo = await volume.inspect().catch(async () => {
+      console.log(`Creating new volume: ${volumeName}`);
+
+      // first populate the bind mount endpoint on the host with the necessary files
+      const sourceDir = "/var/tmp/codedamn/volumes/vid_cid_"; // Set the source directory path
+      const destinationDir = `/var/tmp/codedamn/volumes/${volumeName}`; // Set the destination directory path
+
+      console.log(`Copying contents from ${sourceDir} to ${destinationDir}...`);
+      await copyDirectory(sourceDir, destinationDir);
+      console.log("Copy operation complete.");
+
+      return await docker.createVolume({
+        Name: volumeName,
+      });
+    });
+    console.log(`Using volume: ${volumeInfo.name}`);
+  } catch (err) {
+    console.log("could not create a new volume.");
+  }
+  return volumeInfo;
+}
+
 export async function createAndStartContainer(containerId) {
   const volumeName = "vid_" + containerId; // Name of the Docker volume
   const containerOptions = {
@@ -47,24 +74,8 @@ export async function createAndStartContainer(containerId) {
       Binds: [`/var/tmp/codedamn/volumes/${volumeName}:/home/codedamn/`], // Bind the volume
     },
   };
+  let volumeInfo = await createVolume(containerId);
   try {
-    // Ensure the volume exists, or create it if it doesn't
-    let volume = docker.getVolume(volumeName);
-    let volumeInfo = await volume.inspect().catch(async () => {
-      console.log(`Creating new volume: ${volumeName}`);
-      // first populate the bind mount endpoint on the host with the necessary files
-      const sourceDir = "/var/tmp/codedamn/volumes/vid_cid_"; // Set the source directory path
-      const destinationDir = `/var/tmp/codedamn/volumes/${volumeName}`; // Set the destination directory path
-
-      console.log(`Copying contents from ${sourceDir} to ${destinationDir}...`);
-      await copyDirectory(sourceDir, destinationDir);
-      console.log("Copy operation complete.");
-      return await docker.createVolume({
-        Name: volumeName,
-      });
-    });
-
-    console.log(`Using volume: ${volumeInfo.name}`);
     // Create the container
     const container = await docker.createContainer(containerOptions);
     console.log("New container created with ID:", container.id);
@@ -73,7 +84,7 @@ export async function createAndStartContainer(containerId) {
     await container.start();
     console.log("New container started successfully.");
   } catch (error) {
-    console.error("Failed to create or start the container:", error.message);
+    console.error("Failed to create And start the container:", error.message);
   }
 }
 

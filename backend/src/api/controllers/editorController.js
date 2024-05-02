@@ -15,11 +15,15 @@ const getEditorData = async (req, res) => {
     // Ensure the volume exists, or create it if it doesn't
     let volume = docker.getVolume(volumeName);
     let volumeInfo = await volume.inspect().catch(async () => {
-      console.error("error fetching volume info");
+      console.error("getEditorData -> error inspecting the volume");
+      throw new Error("getEditorData -> error inspecting the volume");
     });
-    console.log(`Using volume: ${volumeInfo.name}`);
+    console.log(`getEditorData -> Using volume: ${volumeInfo.name}`);
   } catch (error) {
-    console.error("error inspecting the corresponding volume:", error.message);
+    console.error(
+      "getEditorData -> error inspecting the corresponding volume:",
+      error.message
+    );
     let containerId = "cid_" + username;
     await createAndStartContainer(containerId);
   }
