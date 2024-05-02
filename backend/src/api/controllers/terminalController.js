@@ -61,7 +61,7 @@ export async function createVolume(volumeName) {
 
 export async function createAndStartContainer(containerId) {
   const volumeName = "vid_" + containerId; // Name of the Docker volume
-  await createVolume(containerId);
+  await createVolume(volumeName);
   const containerOptions = {
     Image: "user-ubuntu", // Specify the image name
     // Cmd: ["bash", "-c", 'while true; do echo "Hello, Dockerode!"; sleep 1; done'],
