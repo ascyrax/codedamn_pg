@@ -33,7 +33,7 @@ async function copyDirectory(src, dest) {
   }
 }
 
-export async function createVolume(containerId) {
+export async function createVolume(volumeName) {
   let volume, volumeInfo;
   try {
     // Ensure the volume exists, or create it if it doesn't
@@ -57,11 +57,11 @@ export async function createVolume(containerId) {
   } catch (err) {
     console.log("could not create a new volume.");
   }
-  return volumeInfo;
 }
 
 export async function createAndStartContainer(containerId) {
   const volumeName = "vid_" + containerId; // Name of the Docker volume
+  await createVolume(containerId);
   const containerOptions = {
     Image: "user-ubuntu", // Specify the image name
     // Cmd: ["bash", "-c", 'while true; do echo "Hello, Dockerode!"; sleep 1; done'],
@@ -74,7 +74,6 @@ export async function createAndStartContainer(containerId) {
       Binds: [`/var/tmp/codedamn/volumes/${volumeName}:/home/codedamn/`], // Bind the volume
     },
   };
-  let volumeInfo = await createVolume(containerId);
   try {
     // Create the container
     const container = await docker.createContainer(containerOptions);

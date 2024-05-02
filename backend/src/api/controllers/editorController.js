@@ -16,7 +16,7 @@ const getEditorData = async (req, res) => {
     let volume = docker.getVolume(volumeName);
     let volumeInfo = await volume.inspect().catch(async () => {
       console.error("getEditorData -> error inspecting the volume");
-      throw new Error("getEditorData -> error inspecting the volume");
+      throw new Error("volume does not exist");
     });
     console.log(`getEditorData -> Using volume: ${volumeInfo.name}`);
   } catch (error) {
