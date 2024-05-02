@@ -16,10 +16,15 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
+    origin: "http://ec2-65-0-6-223.ap-south-1.compute.amazonaws.com/",
+  })
+);
+app.use(
+  cors({
     origin: (origin, callback) => {
       if (true) {
         callback(null, true);
-      // } else {
+        // } else {
         // callback(new Error("Not allowed by CORS"));
       }
     },
