@@ -16,8 +16,8 @@ export async function createWebSocket(credentials: credentials) {
     `ws://${baseWSURL}:${basePORT}?username=${credentials.username}`
   );
   ws.onopen = function () {
-    ws.send(credentials.username);
-    console.log("jwt sent as the first message");
+    // ws.send(credentials.username);
+    // console.log("jwt sent as the first message");
   };
 
   ws.onerror = function (event) {
