@@ -64,105 +64,106 @@ The frontend is built with React and TypeScript, using Monaco Editor for the cod
 
 3. **Start the MongoDB server** (ensure Docker is running if using a containerized instance):
 
-Before starting MongoDB, ensure that it is properly installed on your system. You can download and install MongoDB from the [official MongoDB website](https://www.mongodb.com/try/download/community).
+   Before starting MongoDB, ensure that it is properly installed on your system. You can download and install MongoDB from the [official MongoDB website](https://www.mongodb.com/try/download/community).
 
-### macOS
+   ### macOS
 
-For macOS users who installed MongoDB using Homebrew:
+   For macOS users who installed MongoDB using Homebrew:
 
-````bash
-brew services start mongodb-community
+   ```bash
+   brew services start mongodb-community
+   ```
 
    for macOS,
 
    ```bash
    brew services start mongodb-community
-````
+   ```
 
-### Windows
+   ### Windows
 
-For Windows users, MongoDB can be started as a service if it was set up during installation. To start MongoDB using the Command Prompt:
+   For Windows users, MongoDB can be started as a service if it was set up during installation. To start MongoDB using the Command Prompt:
 
-```bash
-net start MongoDB
-```
+   ```bash
+   net start MongoDB
+   ```
 
-If MongoDB was not installed as a service, you can start it manually with:
+   If MongoDB was not installed as a service, you can start it manually with:
 
-```bash
-mongod --dbpath "C:\\path\\to\\data\\db"
-```
+   ```bash
+   mongod --dbpath "C:\\path\\to\\data\\db"
+   ```
 
-Make sure to replace "C:\\path\\to\\data\\db" with the actual path to your data directory.
+   Make sure to replace "C:\\path\\to\\data\\db" with the actual path to your data directory.
 
-### Ubuntu Linux
+   ### Ubuntu Linux
 
-For Ubuntu users, if MongoDB was installed using the official MongoDB repository, it can be started with systemd:
+   For Ubuntu users, if MongoDB was installed using the official MongoDB repository, it can be started with systemd:
 
-```bash
-sudo systemctl start mongod
-```
+   ```bash
+   sudo systemctl start mongod
+   ```
 
-To ensure MongoDB starts automatically on boot:
+   To ensure MongoDB starts automatically on boot:
 
-```bash
-sudo systemctl enable mongod
-```
+   ```bash
+   sudo systemctl enable mongod
+   ```
 
-### Troubleshooting
+   ### Troubleshooting
 
-If MongoDB fails to start, check the MongoDB log files for any errors. The default location for log files is usually /var/log/mongodb on Linux and within your specified dbpath directory on Windows.
+   If MongoDB fails to start, check the MongoDB log files for any errors. The default location for log files is usually /var/log/mongodb on Linux and within your specified dbpath directory on Windows.
 
-### More Information
+   ### More Information
 
-For more detailed installation and management instructions, refer to the [official MongoDB documentation](https://www.mongodb.com/docs/manual/installation/).
+   For more detailed installation and management instructions, refer to the [official MongoDB documentation](https://www.mongodb.com/docs/manual/installation/).
 
 4. **Start the Docker daemon**
 
-## Prerequisites
+   ## Prerequisites
 
-Before starting Docker, ensure that it is properly installed on your system. You can download and install Docker from the [official Docker website](https://www.docker.com/products/docker-desktop).
+   Before starting Docker, ensure that it is properly installed on your system. You can download and install Docker from the [official Docker website](https://www.docker.com/products/docker-desktop).
 
-## Starting Docker
+   ## Starting Docker
 
-### macOS
+   ### macOS
 
-For macOS users who installed Docker Desktop:
+   For macOS users who installed Docker Desktop:
 
-1. Open the Docker Desktop application from your Applications folder.
-2. Docker will start automatically when the application runs. You can see the Docker icon in the menu bar, indicating that Docker is running.
+   1. Open the Docker Desktop application from your Applications folder.
+   2. Docker will start automatically when the application runs. You can see the Docker icon in the menu bar, indicating that Docker is running.
 
-### Windows
+   ### Windows
 
-For Windows users who installed Docker Desktop:
+   For Windows users who installed Docker Desktop:
 
-1. Open Docker Desktop by clicking the Docker icon on your desktop or from the Start menu.
-2. Docker starts automatically with the application. The Docker icon in the system tray will show Docker's status.
+   1. Open Docker Desktop by clicking the Docker icon on your desktop or from the Start menu.
+   2. Docker starts automatically with the application. The Docker icon in the system tray will show Docker's status.
 
-### Linux
+   ### Linux
 
-For Linux users, Docker can be managed via the command line. Here's how to start Docker using the terminal:
+   For Linux users, Docker can be managed via the command line. Here's how to start Docker using the terminal:
 
-1. Open your terminal.
-2. Start Docker by running:
+   1. Open your terminal.
+   2. Start Docker by running:
 
-```bash
-sudo systemctl start docker
-```
+   ```bash
+   sudo systemctl start docker
+   ```
 
-#### To ensure Docker starts automatically at boot:
+   #### To ensure Docker starts automatically at boot:
 
-```bash
-sudo systemctl enable docker
-```
+   ```bash
+   sudo systemctl enable docker
+   ```
 
-### Troubleshooting
+   ### Troubleshooting
 
-If Docker fails to start, check the Docker log files for any errors. You can also restart Docker Desktop or your computer to resolve many common issues.
+   If Docker fails to start, check the Docker log files for any errors. You can also restart Docker Desktop or your computer to resolve many common issues.
 
-### More Information
+   ### More Information
 
-For more detailed installation and management instructions, or to troubleshoot issues, refer to the [official Docker documentation](https://docs.docker.com/).
+   For more detailed installation and management instructions, or to troubleshoot issues, refer to the [official Docker documentation](https://docs.docker.com/).
 
 5. **Configure .env file**
 
@@ -189,27 +190,23 @@ For more detailed installation and management instructions, or to troubleshoot i
 
 ### Testing the Application
 
-1. **Open the Application**: Navigate to `http://localhost:3000` in your web browser.
+1.  **Open the Application**: Navigate to `http://localhost:3000` in your web browser.
 
-2. **Login / Register**: Register if your are a new user. Login after registering.
+2.  **Login / Register**: Register if your are a new user. Login after registering.
 
-3. **Edit Files**: Use the Monaco editor interface to edit the existing files. All changes are saved automatically to the database.
+3.  **Edit Files**: Use the Monaco editor interface to edit the existing files. All changes are saved automatically to the database.
 
-4. **Resize Windows**: Drag the borders of the code editor and terminal windows to resize them according to your preference.
+4.  **Resize Windows**: Drag the borders of the code editor and terminal windows to resize them according to your preference.
 
-5. **Use the Terminal**: Interact with the terminal to execute commands. Each command's output will be displayed within the terminal window. Files can be added or removed through the terminal.
-   Live changes will be visible all across the editor.
+5.  **Use the Terminal**: Interact with the terminal to execute commands. Each command's output will be displayed within the terminal window. Files can be added or removed through the terminal.
+    Live changes will be visible all across the editor.
 
-6. **Refresh the Page**: Refresh the browser to test the persistence feature. Your code should be restored to the last saved state.
+6.  **Refresh the Page**: Refresh the browser to test the persistence feature. Your code should be restored to the last saved state.
 
-7. **Preview Your Code**: For web technologies like HTML, CSS, and JavaScript, use the preview window to see your code rendered in real-time.
+7.  **Preview Your Code**: For web technologies like HTML, CSS, and JavaScript, use the preview window to see your code rendered in real-time.
 
 ### Troubleshooting
 
 - **Docker Containers Not Starting**: Ensure Docker is running and that you have the necessary permissions to start containers.
 - **Database Issues**: Verify that MongoDB is running and accessible. Check the connection string in the backend configuration.
 - **Editor or Terminal Not Loading**: Check the console for any errors. They may be related to dependency issues or misconfigurations in the setup.
-
-```
-
-```
