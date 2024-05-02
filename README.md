@@ -47,6 +47,7 @@ The frontend is built with React and TypeScript, using Monaco Editor for the cod
    ```
 
 2. **Install dependencies**:
+
    backend
 
    ```bash
@@ -62,6 +63,7 @@ The frontend is built with React and TypeScript, using Monaco Editor for the cod
    ```
 
 3. **Start the MongoDB server** (ensure Docker is running if using a containerized instance):
+   
    for macOS,
 
    ```bash
@@ -75,10 +77,12 @@ The frontend is built with React and TypeScript, using Monaco Editor for the cod
    ```
 
 4. **Start the Docker daemon**
+   
    for macOS,
-   check Docker.app
+   run Docker.app
 
-5. **Configure a .env file**
+5. **Configure .env file**
+
    Create a .env file of your own which contains these 3 variables:
 
    ```bash
