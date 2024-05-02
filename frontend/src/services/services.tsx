@@ -3,6 +3,8 @@ import { FileDescription } from "../models/interfaces";
 import { convertFilesData } from "../utils/utils";
 import { user, credentials } from "../models/interfaces";
 
+const baseURL = "http://ec2-65-0-6-223.ap-south-1.compute.amazonaws.com";
+const basePORT = "3000";
 
 export function postCodeChange(
   _: credentials,
@@ -10,7 +12,7 @@ export function postCodeChange(
 ) {
   async function makePostRequest() {
     try {
-      const response = await axios.post("http://localhost:3000/editordata", {
+      const response = await axios.post(`${baseURL}:${basePORT}/editordata`, {
         title: "batch update for file edits",
         body: filesData,
         userId: 1,
@@ -34,7 +36,7 @@ export async function getEditorData(credentials: credentials) {
   // get request
   let modifiedResponseData = {};
   try {
-    const response = await axios.get("http://localhost:3000/editorData");
+    const response = await axios.get(`${baseURL}:${basePORT}/editorData`);
     if (response.data) {
       modifiedResponseData = convertFilesData(response.data);
     }
@@ -47,7 +49,7 @@ export async function getEditorData(credentials: credentials) {
 
 export async function postRegisterData(user: user) {
   try {
-    const response = await axios.post("http://localhost:3000/auth/register", {
+    const response = await axios.post(`${baseURL}:${basePORT}/auth/register`, {
       title: "register new user",
       body: user,
       userId: 1,
@@ -64,7 +66,7 @@ export async function postRegisterData(user: user) {
 
 export async function postLoginData(credentials: credentials) {
   try {
-    const response = await axios.post("http://localhost:3000/auth/login", {
+    const response = await axios.post(`${baseURL}:${basePORT}/auth/login`, {
       title: "login user",
       body: credentials,
       userId: 1,
