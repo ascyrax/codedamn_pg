@@ -74,12 +74,6 @@ The frontend is built with React and TypeScript, using Monaco Editor for the cod
    brew services start mongodb-community
    ```
 
-   for macOS,
-
-   ```bash
-   brew services start mongodb-community
-   ```
-
    ### Windows
 
    For Windows users, MongoDB can be started as a service if it was set up during installation. To start MongoDB using the Command Prompt:
@@ -165,7 +159,7 @@ The frontend is built with React and TypeScript, using Monaco Editor for the cod
 
    For more detailed installation and management instructions, or to troubleshoot issues, refer to the [official Docker documentation](https://docs.docker.com/).
 
-5. **Configure .env file**
+5. **Configure .env file for the backend**
 
    Create a .env file of your own which contains these 3 variables:
 
