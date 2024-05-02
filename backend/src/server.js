@@ -14,22 +14,20 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
-app.use(
-  cors({
-    origin: [
-      "http://ec2-65-0-6-223.ap-south-1.compute.amazonaws.com/",
-      "http://localhost:80",
-      "http://localhost",
-    ],
-  })
-);
+// app.use(
+//   cors({
+//     origin: [
+//       "http://ec2-65-0-6-223.ap-south-1.compute.amazonaws.com/",
+//       "http://localhost:80",
+//       "http://localhost",
+//     ],
+//   })
+// );
 app.use(
   cors({
     origin: (origin, callback) => {
       if (true) {
         callback(null, true);
-        // } else {
-        // callback(new Error("Not allowed by CORS"));
       }
     },
     credentials: true, // Allow cookies and authentication headers
@@ -53,7 +51,7 @@ const wss = new WebSocketServer({ server: httpServer });
 wss.on("connection", handleNewWSConnection);
 
 // Listen on HTTP and WebSocket on the same port
-httpServer.listen(port, () => {
+httpServer.listen(port, "0.0.0.0", () => {
   console.log(`Server listening on http://localhost:${port}`);
 });
 
