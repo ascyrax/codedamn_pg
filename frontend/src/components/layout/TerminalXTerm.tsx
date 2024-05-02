@@ -43,7 +43,6 @@ const terminal = new Terminal({
 
 const TerminalXTerm = React.memo(function TerminalXTerm({
   credentials,
-  setCredentials,
   setFilesData,
 }: TerminalXTermProps) {
   const terminalRef = useRef(null);

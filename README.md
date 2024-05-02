@@ -204,3 +204,14 @@ The frontend is built with React and TypeScript, using Monaco Editor for the cod
 - **Docker Containers Not Starting**: Ensure Docker is running and that you have the necessary permissions to start containers.
 - **Database Issues**: Verify that MongoDB is running and accessible. Check the connection string in the backend configuration.
 - **Editor or Terminal Not Loading**: Check the console for any errors. They may be related to dependency issues or misconfigurations in the setup.
+
+
+
+<!-- add -->
+
+sudo yum install docker
+sudo systemctl start docker
+sudo systemctl enable docker
+
+
+sudo docker run --name mongodb -d -p 27017:27017 mongo:6.0

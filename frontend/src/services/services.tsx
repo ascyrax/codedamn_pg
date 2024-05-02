@@ -3,13 +3,11 @@ import { FileDescription } from "../models/interfaces";
 import { convertFilesData } from "../utils/utils";
 import { user, credentials } from "../models/interfaces";
 
-// axios.defaults.withCredentials = true;
 
 export function postCodeChange(
-  credentials: credentials,
+  _: credentials,
   filesData: Record<string, FileDescription>
 ) {
-  const token = localStorage.getItem(credentials.username);
   async function makePostRequest() {
     try {
       const response = await axios.post("http://localhost:3000/editordata", {
