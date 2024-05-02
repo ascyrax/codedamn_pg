@@ -4,15 +4,17 @@ import { FitAddon } from "xterm-addon-fit";
 import "@xterm/xterm/css/xterm.css";
 import { getEditorData } from "../../services/services";
 import { debounce } from "lodash-es";
-import { TerminalXTermProps } from "../../models/interfaces";
+import { TerminalXTermProps, credentials } from "../../models/interfaces";
 
 let ws: WebSocket;
 
-export async function createWebSocket() {
-  ws = new WebSocket("ws://localhost:3000");
-
+export async function createWebSocket(credentials: credentials) {
+  ws = new WebSocket(`ws://localhost:3000?username=${credentials.username}`);
+  // let token = localStorage.getItem(credentials.username);
   ws.onopen = function () {
-    console.log("ws connection open");
+    // if (token) ws.send(token);
+    ws.send(credentials.username);
+    console.log("jwt sent as the first message");
   };
 
   ws.onerror = function (event) {

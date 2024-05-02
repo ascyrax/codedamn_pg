@@ -7,10 +7,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   handleEditorMount,
   filesData,
 }) => {
-  console.log("CodeEditor rendered");
-  console.log("filesData -> ", filesData);
-  if (focusedFileName && filesData)
-    console.log(filesData[focusedFileName].value);
   return (
     <div id="codeEditor">
       <Editor

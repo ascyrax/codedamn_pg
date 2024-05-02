@@ -29,6 +29,10 @@ export function postCodeChange(
 
 export async function getEditorData(credentials: credentials) {
   const token = localStorage.getItem(credentials.username);
+  if (token) {
+    // Set up common headers
+    axios.defaults.headers.common["token"] = token;
+  }
   // get request
   let modifiedResponseData = {};
   try {
@@ -68,7 +72,6 @@ export async function postLoginData(credentials: credentials) {
       userId: 1,
       // withCredentials: true,
     });
-    console.log(response);
     if (response && response.data) {
       return response.data;
     }

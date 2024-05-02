@@ -37,7 +37,7 @@ function Login({
 
       console.log("login successful", serverResponseLogin);
       await fetchEditorData();
-      await createWebSocket();
+      await createWebSocket(credentials);
     } else {
       console.log("could not login");
     }

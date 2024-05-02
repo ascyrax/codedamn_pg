@@ -1,24 +1,19 @@
-import jwt from "jsonwebtoken";
+import { URL } from "url";
 import {
   startContainer,
   docker,
 } from "../api/controllers/terminalController.js";
 
 export async function handleNewWSConnection(ws, req) {
-  const cookies = parseCookies(req.headers.cookie);
-  let currentUsername = "";
-  authenticate(cookies, (err, client) => {
-    if (err || !client) {
-      ws.send("HTTP/1.1 401 Unauthorized\r\n\r\n");
-      return;
-    }
-    currentUsername = client.username;
-  });
-
   console.log("Client connected to the WebSocket Server");
-  let container;
+  let currentUsername = "";
+  const queryParams = new URL(req.url, `http://${req.headers.host}`)
+    .searchParams;
+  const username = queryParams.get("username");
+  if (username) currentUsername = username;
+
   try {
-    container = await startContainer(currentUsername);
+    let container = await startContainer(currentUsername);
     const execOptions = {
       Cmd: ["bash"], // Command to start bash
       AttachStdin: true,
@@ -53,12 +48,9 @@ export async function handleNewWSConnection(ws, req) {
           },
         }
       );
-
-      ws.on("message", async (xtermCommand) => {
-        console.log("handleNewClient -> ", { currentUsername });
-        console.log(`ws received: ${xtermCommand}`);
+      ws.on("message", async (message) => {
         if (execStream.writable) {
-          execStream.write(xtermCommand + "\r");
+          execStream.write(message + "\r");
         }
       });
 
@@ -85,6 +77,8 @@ export async function handleNewWSConnection(ws, req) {
         execStream.end();
       });
 
+      return container, execStream;
+
       // Optionally handle stdout and stderr separately if needed
       // docker.modem.demuxStream(stream, process.stdout, process.stderr);
     } catch (error) {
@@ -99,28 +93,5 @@ export async function handleNewWSConnection(ws, req) {
 
   ws.on("close", () => {
     console.log("Client disconnected from the WebSocket Server");
-  });
-}
-
-function parseCookies(cookieHeader) {
-  const cookies = {};
-  if (cookieHeader) {
-    cookieHeader.split(";").forEach((cookie) => {
-      const parts = cookie.match(/(.*?)=(.*)$/);
-      cookies[parts[1].trim()] = (parts[2] || "").trim();
-    });
-  }
-  console.log("parseCookies -> ", cookies);
-  return cookies;
-}
-
-function authenticate(cookies, callback) {
-  jwt.verify(cookies.token, process.env.SECRET_KEY, (err, user) => {
-    if (err) {
-      callback(new Error("Invalid token"), null);
-      return;
-    }
-    console.log("authenticate -> ", user);
-    callback(null, { username: user.userId }); // Simulated user
   });
 }

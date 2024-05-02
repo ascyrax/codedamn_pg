@@ -47,7 +47,6 @@ const getEditorData = async (req, res) => {
           language,
         });
       });
-      // console.log(results);
       res.json(results);
     });
   } catch (error) {

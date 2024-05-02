@@ -14,7 +14,6 @@ const Explorer: React.FC<ExplorerProps> = ({
   const [tree, setTree] = useState<TreeData>(initialData);
 
   useEffect(() => {
-    console.log("useeffect", filesData);
     let children: string[] = [];
     let obj: any = {};
     if (filesData) {
@@ -26,8 +25,6 @@ const Explorer: React.FC<ExplorerProps> = ({
         };
         children.push(fileName);
       }
-      console.log(obj);
-      console.log(children);
 
       setTree((prevTree) => {
         return {

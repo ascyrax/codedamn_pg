@@ -79,7 +79,6 @@ export async function createAndStartContainer(containerId) {
 
 export async function startContainer(username) {
   let containerId = "cid_" + username; // container corresponding to the user
-  // console.log("startContainer -> ", { containerId });
   let container;
   try {
     // Attempt to get the container with the given ID
