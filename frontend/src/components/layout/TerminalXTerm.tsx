@@ -8,11 +8,14 @@ import { TerminalXTermProps, credentials } from "../../models/interfaces";
 
 let ws: WebSocket;
 
+const baseWSURL = "ec2-65-0-6-223.ap-south-1.compute.amazonaws.com";
+const basePORT = "3000";
+
 export async function createWebSocket(credentials: credentials) {
-  ws = new WebSocket(`ws://localhost:3000?username=${credentials.username}`);
-  // let token = localStorage.getItem(credentials.username);
+  ws = new WebSocket(
+    `ws://${baseWSURL}:${basePORT}?username=${credentials.username}`
+  );
   ws.onopen = function () {
-    // if (token) ws.send(token);
     ws.send(credentials.username);
     console.log("jwt sent as the first message");
   };
