@@ -3,7 +3,8 @@ import { FileDescription } from "../models/interfaces";
 import { convertFilesData } from "../utils/utils";
 import { user, credentials } from "../models/interfaces";
 
-const baseURL = "http://ec2-65-0-6-223.ap-south-1.compute.amazonaws.com";
+// const baseURL = "http://ec2-65-0-6-223.ap-south-1.compute.amazonaws.com";
+const baseURL = "http://localhost";
 const basePORT = "3000";
 
 export function postCodeChange(

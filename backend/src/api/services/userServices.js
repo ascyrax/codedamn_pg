@@ -1,7 +1,9 @@
 import { UserModel } from "../../models/userModel.js";
 export async function createUser({ username, hashedPassword }) {
+  console.log("createUser", { username }, { hashedPassword });
   try {
     const foundUser = await UserModel.find({ username: username });
+    console.log("foundUser", { foundUser });
     if (foundUser.length == 0) {
       try {
         const createdUser = await UserModel.create({

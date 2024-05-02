@@ -1,7 +1,7 @@
 import { UserModel } from "../../models/userModel.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import {createUser} from "../services/userServices.js"
+import { createUser } from "../services/userServices.js";
 
 export async function handleRegister(req, res) {
   if (!req.body || !req.body.body) {
@@ -13,6 +13,7 @@ export async function handleRegister(req, res) {
   }
 
   let { username, password } = req.body.body;
+  console.log("handleRegister", { username }, { password });
   try {
     // Generate a salt and hash on separate function calls
     const salt = await bcrypt.genSalt(10); // 10 rounds is generally enough
@@ -40,6 +41,8 @@ export async function handleLogin(req, res) {
   }
 
   const { username, password } = req.body.body;
+  console.log("handleLogin", { username }, { password });
+
   try {
     const user = await UserModel.findOne({ username });
     if (user) {
@@ -86,4 +89,3 @@ export async function handleLogin(req, res) {
     throw new Error(":( Login Failed");
   }
 }
-

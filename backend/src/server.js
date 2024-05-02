@@ -16,7 +16,11 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: "http://ec2-65-0-6-223.ap-south-1.compute.amazonaws.com/",
+    origin: [
+      "http://ec2-65-0-6-223.ap-south-1.compute.amazonaws.com/",
+      "http://localhost:80",
+      "http://localhost",
+    ],
   })
 );
 app.use(
