@@ -7,7 +7,7 @@ import Tabs from "../layout/Tabs";
 import { Rnd, RndResizeCallback } from "react-rnd";
 import { debounce } from "lodash-es";
 import * as utils from "../../utils/utils";
-import {postCodeChange} from "../../services/services";
+import { postCodeChange } from "../../services/services";
 import { MonacoEditorProps } from "../../models/interfaces";
 import { Preview } from "../layout/Preview";
 import TerminalXTerm from "../layout/TerminalXTerm";
@@ -16,7 +16,12 @@ import TerminalXTerm from "../layout/TerminalXTerm";
 const batchUploadFilesData = debounce(postCodeChange, 200);
 
 // frontend
-const MonacoEditor = ({ filesData, setFilesData }: MonacoEditorProps) => {
+const MonacoEditor = ({
+  filesData,
+  credentials,
+  setCredentials,
+  setFilesData,
+}: MonacoEditorProps) => {
   const [tabNames, setTabNames] = useState<string[]>([]);
   const [_, setFileNames] = useState<string[]>([]);
   const [focusedTabName, setFocusedTabName] = useState<string>();
@@ -46,7 +51,7 @@ const MonacoEditor = ({ filesData, setFilesData }: MonacoEditorProps) => {
 
       // debounce ie batch the change requests,
       // also keep a maxWait after which the function is forced to be executed
-      batchUploadFilesData(filesData);
+      batchUploadFilesData(credentials, filesData);
     }
   }, [filesData]);
 
@@ -215,7 +220,11 @@ const MonacoEditor = ({ filesData, setFilesData }: MonacoEditorProps) => {
           disableDragging={true}
           enableResizing={false}
         >
-          <TerminalXTerm  setFilesData={setFilesData}/>
+          <TerminalXTerm
+            credentials={credentials}
+            setCredentials={setCredentials}
+            setFilesData={setFilesData}
+          />
         </Rnd>
       </Rnd>
 

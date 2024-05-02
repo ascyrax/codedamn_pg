@@ -77,6 +77,8 @@ export interface LoginProps {
   setNeedToRegister: (value: boolean) => void;
   setHasUserLoggedIn: (value: boolean) => void;
   setFilesData: (value: Record<string, FileDescription> | undefined) => void;
+  credentials: credentials;
+  setCredentials: (value: credentials) => void;
 }
 
 export interface RegisterProps {
@@ -88,8 +90,18 @@ export interface MonacoEditorProps {
   setFilesData: React.Dispatch<
     React.SetStateAction<Record<string, FileDescription> | undefined>
   >;
+  credentials: credentials;
+  setCredentials: (value: credentials) => void;
 }
 
 export interface TerminalXTermProps {
   setFilesData: (data: Record<string, FileDescription> | undefined) => void;
+  credentials: credentials;
+  setCredentials: (value: credentials) => void;
+}
+
+export interface LoginServerResponse {
+  msg: "string";
+  success: boolean;
+  token: "string";
 }

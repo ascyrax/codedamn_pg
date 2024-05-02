@@ -1,25 +1,21 @@
-import { useState } from "react";
 import { postLoginData, getEditorData } from "../../services/services";
-import { LoginProps } from "../../models/interfaces";
+import { LoginProps, LoginServerResponse } from "../../models/interfaces";
 import { createWebSocket } from "./TerminalXTerm";
 
 function Login({
+  credentials,
   setNeedToRegister,
   setHasUserLoggedIn,
   setFilesData,
+  setCredentials,
 }: LoginProps) {
-  const [credentials, setCredentials] = useState({
-    username: "",
-    password: "",
-  });
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
   };
 
   const fetchEditorData = async () => {
     try {
-      const responseData = await getEditorData();
+      const responseData = await getEditorData(credentials);
       if (responseData) {
         setFilesData(responseData);
       }
@@ -31,11 +27,14 @@ function Login({
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Here you would typically authenticate against your backend API
-    let serverResponseLogin = await postLoginData(credentials);
+    let serverResponseLogin: LoginServerResponse = await postLoginData(
+      credentials
+    );
     if (serverResponseLogin.success) {
       setHasUserLoggedIn(true);
-      // save the jwt
-      
+      // save the jwt in localStorage, corresponding to the credentials.username
+      localStorage.setItem(credentials.username, serverResponseLogin.token);
+
       console.log("login successful", serverResponseLogin);
       await fetchEditorData();
       await createWebSocket();

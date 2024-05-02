@@ -3,9 +3,13 @@ import { FileDescription } from "../models/interfaces";
 import { convertFilesData } from "../utils/utils";
 import { user, credentials } from "../models/interfaces";
 
-axios.defaults.withCredentials = true;
+// axios.defaults.withCredentials = true;
 
-export function postCodeChange(filesData: Record<string, FileDescription>) {
+export function postCodeChange(
+  credentials: credentials,
+  filesData: Record<string, FileDescription>
+) {
+  const token = localStorage.getItem(credentials.username);
   async function makePostRequest() {
     try {
       const response = await axios.post("http://localhost:3000/editordata", {
@@ -23,7 +27,8 @@ export function postCodeChange(filesData: Record<string, FileDescription>) {
   makePostRequest();
 }
 
-export async function getEditorData() {
+export async function getEditorData(credentials: credentials) {
+  const token = localStorage.getItem(credentials.username);
   // get request
   let modifiedResponseData = {};
   try {
@@ -44,7 +49,7 @@ export async function postRegisterData(user: user) {
       title: "register new user",
       body: user,
       userId: 1,
-      withCredentials: true,
+      // withCredentials: true,
     });
     if (response && response.data) {
       return response.data;
@@ -61,7 +66,7 @@ export async function postLoginData(credentials: credentials) {
       title: "login user",
       body: credentials,
       userId: 1,
-      withCredentials: true,
+      // withCredentials: true,
     });
     console.log(response);
     if (response && response.data) {

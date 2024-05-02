@@ -40,6 +40,8 @@ const terminal = new Terminal({
 });
 
 const TerminalXTerm = React.memo(function TerminalXTerm({
+  credentials,
+  setCredentials,
   setFilesData,
 }: TerminalXTermProps) {
   const terminalRef = useRef(null);
@@ -87,7 +89,7 @@ const TerminalXTerm = React.memo(function TerminalXTerm({
 
   const fetchEditorData = async () => {
     try {
-      const responseData = await getEditorData();
+      const responseData = await getEditorData(credentials);
       if (responseData) {
         setFilesData(responseData);
       }

@@ -17,3 +17,7 @@ i was adding a new connections event callback function to the websocketserver ea
 
 
 bind mounts was replacing the 3 files (index.html style.css script.js) from the container's /home/codedamn because of the mountpoint empty directory ~/codedamn/volumes/volumeId
+
+major design flaw.
+when a user A logs in from a browser, the jwt is stored in the cookies, when some other user B logs in from the same browser, then B's token replaces A's.
+now, if A sends a message/request to the server, it will contain B's token, and then server will update B's data when it should have been A.

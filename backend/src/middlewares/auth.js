@@ -3,8 +3,8 @@ import jwt from "jsonwebtoken";
 // Middleware for verifying tokens
 export function authenticateToken(req, res, next) {
   let token = "";
-  if (req.cookies && req.cookies.token) {
-    token = req.cookies.token;
+  if (req.token) {
+    token = req.token;
   }
 
   if (token == null)
