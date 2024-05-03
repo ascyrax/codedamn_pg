@@ -14,25 +14,28 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
+app.use();
 // app.use(
 //   cors({
 //     origin: [
-//       "http://ec2-65-0-6-223.ap-south-1.compute.amazonaws.com/",
+//       "http://13.201.4.165/",
+//       "http://ec2-13-201-4-165.ap-south-1.compute.amazonaws.com/",
 //       "http://localhost:80",
 //       "http://localhost",
 //     ],
+//     credentials: true,
 //   })
 // );
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (true) {
-        callback(null, true);
-      }
-    },
-    credentials: true, // Allow cookies and authentication headers
-  })
-);
+// app.use(
+//   cors({
+//     origin: (origin, callback) => {
+//       if (true) {
+//         callback(null, true);
+//       }
+//     },
+//     credentials: true, // Allow cookies and authentication headers
+//   })
+// );
 app.use(cookieParser());
 const port = process.env.PORT || 3000;
 connectDB();
