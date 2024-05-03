@@ -14,7 +14,20 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+
+// CORS configuration
+const corsOptions = {
+  origin: 'http://ec2-13-201-4-165.ap-south-1.compute.amazonaws.com/',  // Replace with the actual domain of your frontend
+  optionsSuccessStatus: 200,
+  credentials: true,  // if your frontend needs to send cookies to the backend
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+app.use(cors(corsOptions));
+
+
+
+// app.use(cors());
 // app.use(
 //   cors({
 //     origin: [
