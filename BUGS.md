@@ -21,3 +21,8 @@ bind mounts was replacing the 3 files (index.html style.css script.js) from the 
 major design flaw.
 when a user A logs in from a browser, the jwt is stored in the cookies, when some other user B logs in from the same browser, then B's token replaces A's.
 now, if A sends a message/request to the server, it will contain B's token, and then server will update B's data when it should have been A.
+
+closing the ssh closes the process started too. hence i had to use things like,
+& and disown %1,
+nohum command &,
+screen -> command -> ctrlA + ctrlD -> exit 
