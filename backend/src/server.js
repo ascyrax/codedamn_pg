@@ -10,46 +10,29 @@ import cookieParser from "cookie-parser";
 import { authenticateToken } from "./middlewares/auth.js";
 import { handleNewWSConnection } from "./realtime/wsHandlers.js";
 
-const app = express();
-// CORS configuration
-const corsOptions = {
-  origin: "http://ec2-13-201-4-165.ap-south-1.compute.amazonaws.com/", // Your EC2 instance's public DNS
-  optionsSuccessStatus: 200,
-  credentials: true, // If you need credentials such as cookies, authorization headers or TLS client certificates
-  allowedHeaders: ["Content-Type", "Authorization"],
-};
-
-app.use(cors(corsOptions));
-
 dotenv.config();
 
+const app = express();
 app.use(express.json());
-
-// app.use(cors());
 // app.use(
 //   cors({
 //     origin: [
-//       "http://13.201.4.165/",
-//       "http://13.201.4.165:80",
-//       "http://ec2-13-201-4-165.ap-south-1.compute.amazonaws.com/",
-//       "http://ec2-13-201-4-165.ap-south-1.compute.amazonaws.com:80",
+//       "http://ec2-65-0-6-223.ap-south-1.compute.amazonaws.com/",
 //       "http://localhost:80",
 //       "http://localhost",
-//       "*"
 //     ],
-//     credentials: true,
 //   })
 // );
-// app.use(
-//   cors({
-//     origin: (origin, callback) => {
-//       if (true) {
-//         callback(null, true);
-//       }
-//     },
-//     credentials: true, // Allow cookies and authentication headers
-//   })
-// );
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (true) {
+        callback(null, true);
+      }
+    },
+    credentials: true, // Allow cookies and authentication headers
+  })
+);
 app.use(cookieParser());
 const port = process.env.PORT || 3000;
 connectDB();
