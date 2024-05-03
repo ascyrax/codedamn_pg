@@ -12,12 +12,27 @@ import { handleNewWSConnection } from "./realtime/wsHandlers.js";
 
 const app = express();
 // CORS configuration
-const corsOptions = {
-  origin: "*", // Your EC2 instance's public DNS
-  // credentials: true, // If you need credentials such as cookies, authorization headers or TLS client certificates
-};
+// const corsOptions = {
+//   origin: "*", // Your EC2 instance's public DNS
+//   // credentials: true, // If you need credentials such as cookies, authorization headers or TLS client certificates
+// };
 
-app.use(cors(corsOptions));
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      const allowedOrigins = process.env.ALLOWED_ORIGINS.split(",");
+
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
+);
+
+// app.use(cors(corsOptions));
 
 dotenv.config();
 
