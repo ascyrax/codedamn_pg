@@ -17,20 +17,20 @@ const app = express();
 //   // credentials: true, // If you need credentials such as cookies, authorization headers or TLS client certificates
 // };
 
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      const allowedOrigins = process.env.ALLOWED_ORIGINS.split(",");
+// app.use(
+//   cors({
+//     origin: function (origin, callback) {
+//       const allowedOrigins = process.env.ALLOWED_ORIGINS.split(",");
 
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-  })
-);
+//       if (!origin || allowedOrigins.includes(origin)) {
+//         callback(null, true);
+//       } else {
+//         callback(new Error("Not allowed by CORS"));
+//       }
+//     },
+//     credentials: true,
+//   })
+// );
 
 // app.use(cors(corsOptions));
 
@@ -53,16 +53,16 @@ app.use(express.json());
 //     credentials: true,
 //   })
 // );
-// app.use(
-//   cors({
-//     origin: (origin, callback) => {
-//       if (true) {
-//         callback(null, true);
-//       }
-//     },
-//     credentials: true, // Allow cookies and authentication headers
-//   })
-// );
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (true) {
+        callback(null, true);
+      }
+    },
+    credentials: true, // Allow cookies and authentication headers
+  })
+);
 app.use(cookieParser());
 const port = process.env.PORT || 3000;
 connectDB();
