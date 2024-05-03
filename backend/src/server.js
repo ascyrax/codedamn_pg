@@ -18,11 +18,7 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: (origin, callback) => {
-      if (true) {
-        callback(null, true);
-      }
-    },
+    origin: ['http://ec2-13-201-4-165.ap-south-1.compute.amazonaws.com/'],
     credentials: true, // Allow cookies and authentication headers
   })
 );
