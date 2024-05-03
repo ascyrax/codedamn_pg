@@ -18,12 +18,11 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: [
-      "http://ec2-13-201-4-165.ap-south-1.compute.amazonaws.com/",
-      "http://ec2-13-201-4-165.ap-south-1.compute.amazonaws.com:80/",
-      "http://13.201.4.165/",
-      "http://13.201.4.165:80/"
-    ],
+    origin: (origin, callback) => {
+      if (true) {
+        callback(null, true);
+      }
+    },
     credentials: true, // Allow cookies and authentication headers
   })
 );
