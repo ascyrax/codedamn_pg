@@ -13,7 +13,7 @@ import { handleNewWSConnection } from "./realtime/wsHandlers.js";
 const app = express();
 // CORS configuration
 const corsOptions = {
-  origin: "http://ec2-13-201-4-165.ap-south-1.compute.amazonaws.com", // Your EC2 instance's public DNS
+  origin: "http://ec2-13-201-4-165.ap-south-1.compute.amazonaws.com/", // Your EC2 instance's public DNS
   optionsSuccessStatus: 200,
   credentials: true, // If you need credentials such as cookies, authorization headers or TLS client certificates
   allowedHeaders: ["Content-Type", "Authorization"],
