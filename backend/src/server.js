@@ -14,7 +14,7 @@ const app = express();
 // CORS configuration
 const corsOptions = {
   origin: "*", // Your EC2 instance's public DNS
-  credentials: true, // If you need credentials such as cookies, authorization headers or TLS client certificates
+  // credentials: true, // If you need credentials such as cookies, authorization headers or TLS client certificates
 };
 
 app.use(cors(corsOptions));
