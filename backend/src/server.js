@@ -25,16 +25,16 @@ app.use(
     credentials: true,
   })
 );
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (true) {
-        callback(null, true);
-      }
-    },
-    credentials: true, // Allow cookies and authentication headers
-  })
-);
+// app.use(
+//   cors({
+//     origin: (origin, callback) => {
+//       if (true) {
+//         callback(null, true);
+//       }
+//     },
+//     credentials: true, // Allow cookies and authentication headers
+//   })
+// );
 app.use(cookieParser());
 const port = process.env.PORT || 3000;
 connectDB();
