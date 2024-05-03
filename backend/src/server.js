@@ -10,11 +10,7 @@ import cookieParser from "cookie-parser";
 import { authenticateToken } from "./middlewares/auth.js";
 import { handleNewWSConnection } from "./realtime/wsHandlers.js";
 
-dotenv.config();
-
 const app = express();
-app.use(express.json());
-
 // CORS configuration
 const corsOptions = {
   origin: "http://ec2-13-201-4-165.ap-south-1.compute.amazonaws.com", // Your EC2 instance's public DNS
@@ -24,6 +20,10 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+
+dotenv.config();
+
+app.use(express.json());
 
 // app.use(cors());
 // app.use(
