@@ -6,6 +6,7 @@ import { user, credentials } from "../models/interfaces";
 // const baseURL = "ip-172-31-0-200.ap-south-1.compute.internal"; // Private IP DNS name (IPv4 only)
 const baseURL = "ec2-13-201-4-165.ap-south-1.compute.amazonaws.com"; //Public IPv4 DNS
 // const baseURL = "ip-172-31-0-200.ap-south-1.compute.internal";
+// const baseURL = "localhost";
 
 // const baseURL = "http://localhost";
 const basePORT = "3000";
