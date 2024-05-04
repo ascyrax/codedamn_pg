@@ -23,17 +23,15 @@ export interface FileDescription {
 }
 
 export interface CodeEditorProps {
+  filesData: Record<string, FileDescription> | undefined;
   focusedFileName: string | undefined;
   focusedTabName: string | undefined;
+  setFocusedFileName: (fileName: string | undefined) => void;
+  setFocusedTabName: (fileName: string | undefined) => void;
   handleCodeChange: (
     value: string | undefined,
     ev: monaco.editor.IModelContentChangedEvent
   ) => void;
-  handleEditorMount: (
-    editorInstance: monaco.editor.IStandaloneCodeEditor,
-    monacoInstance: Monaco
-  ) => void;
-  filesData: Record<string, FileDescription> | undefined;
 }
 
 export interface FileItemData {
@@ -64,8 +62,13 @@ export interface ExplorerProps {
 export interface TabsProps {
   tabNames: string[];
   focusedTabName: string | undefined;
+  setTabNames: (tabNames: string[]) => void;
+  setFocusedTabName: (tabName: string) => void;
+  setFocusedFileName: (tabName: string) => void;
   handleTabClick: (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    tabName: string,
+    index: number
   ) => void;
 }
 

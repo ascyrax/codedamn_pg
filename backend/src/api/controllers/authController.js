@@ -2,6 +2,10 @@ import { UserModel } from "../../models/userModel.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { createUser } from "../services/userServices.js";
+// import { fileURLToPath } from "url";
+// import { dirname, basename } from "path";
+
+// const __filename = fileURLToPath(import.meta.url);
 
 export async function handleRegister(req, res) {
   if (!req.body || !req.body.body) {
@@ -32,6 +36,7 @@ export async function handleRegister(req, res) {
 
 // Authentication endpoint
 export async function handleLogin(req, res) {
+  // console.log(handleLogin.name, req.url);
   if (!req.body || !req.body.body) {
     return res.json({
       success: true,

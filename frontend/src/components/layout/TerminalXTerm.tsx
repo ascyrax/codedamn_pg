@@ -5,24 +5,15 @@ import "@xterm/xterm/css/xterm.css";
 import { getEditorData } from "../../services/services";
 import { debounce } from "lodash-es";
 import { TerminalXTermProps, credentials } from "../../models/interfaces";
+import { SERVER_WSDOMAIN, SERVER_PORT } from "../../utils/utils";
 
 let ws: WebSocket;
 
-// const baseWSURL = "ip-172-31-0-200.ap-south-1.compute.internal"; // Private IP DNS name (IPv4 only)
-const baseWSURL = "ec2-13-201-4-165.ap-south-1.compute.amazonaws.com"; //Public IPv4 DNS
-// const baseWSURL = "ip-172-31-0-200.ap-south-1.compute.internal";
-// const baseWSURL = "localhost";
-
-const basePORT = "3000";
-
 export async function createWebSocket(credentials: credentials) {
   ws = new WebSocket(
-    `ws://${baseWSURL}:${basePORT}?username=${credentials.username}`
+    `${SERVER_WSDOMAIN}:${SERVER_PORT}?username=${credentials.username}`
   );
-  ws.onopen = function () {
-    // ws.send(credentials.username);
-    // console.log("jwt sent as the first message");
-  };
+  ws.onopen = function () {};
 
   ws.onerror = function (event) {
     console.error("WebSocket error observed by the client :)", event);

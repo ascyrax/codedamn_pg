@@ -73,18 +73,15 @@ const MonacoEditor = ({
     }
   }
 
-  function handleEditorMount(
-    editorInstance: monaco.editor.IStandaloneCodeEditor,
-    monacoInstance: Monaco
+  function handleTabClick(
+    e: React.MouseEvent<HTMLButtonElement>,
+    tabName: string,
+    index: number
   ) {
-    editorInstance = editorInstance;
-    monacoInstance = monacoInstance;
-  }
-
-  function handleTabClick(e: React.MouseEvent<HTMLButtonElement>) {
-    const target = e.target as HTMLButtonElement;
-    setFocusedTabName(target.innerText);
-    setFocusedFileName(target.innerText);
+    if (tabNames && tabNames[index]) {
+      setFocusedTabName(tabNames[index]);
+      setFocusedFileName(tabNames[index]);
+    }
   }
 
   const handleExplorerResize: RndResizeCallback = (
@@ -191,14 +188,18 @@ const MonacoEditor = ({
           <Tabs
             tabNames={tabNames}
             focusedTabName={focusedTabName}
+            setTabNames={setTabNames}
+            setFocusedTabName={setFocusedTabName}
+            setFocusedFileName={setFocusedFileName}
             handleTabClick={handleTabClick}
           />
           <CodeEditor
+            filesData={filesData}
             focusedFileName={focusedFileName}
             focusedTabName={focusedTabName}
+            setFocusedFileName={setFocusedFileName}
+            setFocusedTabName={setFocusedTabName}
             handleCodeChange={handleCodeChange}
-            handleEditorMount={handleEditorMount}
-            filesData={filesData}
           />
         </Rnd>
 

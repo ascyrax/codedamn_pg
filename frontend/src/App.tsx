@@ -41,3 +41,28 @@ function App() {
 }
 
 export default App;
+
+// import React, { useState } from "react";
+// import CodeEditor from "./CodeEditor.tsx"; // Adjust the path as necessary
+
+// function App() {
+//   const [code, setCode] = useState("// type your code here");
+
+//   const handleEditorChange = (newValue: any) => {
+//     setCode(newValue);
+//   };
+
+//   return (
+//     <div>
+//       <CodeEditor
+//         // language="html"
+//         defaultLanguage="html"
+//         theme="vs-dark"
+//         code={code}
+//         onChange={handleEditorChange}
+//       />
+//     </div>
+//   );
+// }
+
+// export default App;

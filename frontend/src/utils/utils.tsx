@@ -1,5 +1,12 @@
 import { CustomTreeData, FileDescription } from "../models/interfaces";
 
+export const SERVER_DOMAIN = "http://localhost";
+export const SERVER_WSDOMAIN = "ws://localhost";
+export const SERVER_PORT = "3000";
+// export const SERVER_WSDOMAIN = "ec2-13-201-4-165.ap-south-1.compute.amazonaws.com"; //Public IPv4 DNS
+// export const SERVER_DOMAIN =
+//   "http://ec2-13-201-4-165.ap-south-1.compute.amazonaws.com"; //Public IPv4 DNS
+
 export const initialExplorerWidth = 250,
   initialEditorHeight = 700,
   initialPreviewWidth = 350;

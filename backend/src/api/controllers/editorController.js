@@ -63,16 +63,16 @@ const getEditorData = async (req, res) => {
 function detectLanguage(filename) {
   // A mapping of file extensions to languages
   const extensionToLanguage = {
-    ".js": "JavaScript",
-    ".py": "Python",
-    ".java": "Java",
-    ".cpp": "C++",
-    ".cs": "C#",
-    ".rb": "Ruby",
-    ".php": "PHP",
-    ".ts": "TypeScript",
-    ".html": "HTML",
-    ".css": "CSS",
+    ".js": "javascript",
+    ".py": "python",
+    ".java": "java",
+    ".cpp": "c++",
+    ".cs": "c#",
+    ".rb": "ruby",
+    ".php": "php",
+    ".ts": "typescript",
+    ".html": "html",
+    ".css": "css",
   };
 
   // Extract the file extension
