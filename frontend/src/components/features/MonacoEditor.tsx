@@ -17,15 +17,18 @@ const batchUploadFilesData = debounce(postCodeChange, 200);
 
 // frontend
 const MonacoEditor = ({
+  tabNames,
   filesData,
   credentials,
+  focusedTabName,
+  focusedFileName,
   setCredentials,
   setFilesData,
+  setTabNames,
+  setFocusedFileName,
+  setFocusedTabName,
 }: MonacoEditorProps) => {
-  const [tabNames, setTabNames] = useState<string[]>([]);
   const [_, setFileNames] = useState<string[]>([]);
-  const [focusedTabName, setFocusedTabName] = useState<string>();
-  const [focusedFileName, setFocusedFileName] = useState<string>();
 
   // for resizing the explorer & the editor & the preview
   const [widthExplorer, setWidthExplorer] = useState<number>(
@@ -40,14 +43,13 @@ const MonacoEditor = ({
 
   useEffect(() => {
     if (filesData) {
-      let listFileNames: string[] = [],
-        listTabNames: string[] = [];
+      let listFileNames: string[] = [];
       for (const [fileName, fileData] of Object.entries(filesData)) {
         listFileNames.push(fileName);
-        if (fileData.isAnOpenedTab) listTabNames.push(fileName);
+        // if (fileData.isAnOpenedTab) listTabNames.push(fileName);
       }
       setFileNames(listFileNames);
-      setTabNames(listTabNames);
+      // setTabNames(listTabNames);
 
       // debounce ie batch the change requests,
       // also keep a maxWait after which the function is forced to be executed

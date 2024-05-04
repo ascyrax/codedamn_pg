@@ -27,7 +27,7 @@ export interface CodeEditorProps {
   focusedFileName: string | undefined;
   focusedTabName: string | undefined;
   setFocusedFileName: (fileName: string | undefined) => void;
-  setFocusedTabName: (fileName: string | undefined) => void;
+  setFocusedTabName: (tabName: string | undefined) => void;
   handleCodeChange: (
     value: string | undefined,
     ev: monaco.editor.IModelContentChangedEvent
@@ -53,8 +53,8 @@ export interface CustomTreeData extends TreeData {
 }
 
 export interface ExplorerProps {
-  setFocusedTabName: React.Dispatch<React.SetStateAction<string | undefined>>;
-  setFocusedFileName: React.Dispatch<React.SetStateAction<string | undefined>>;
+  setFocusedTabName: (tabName: string | undefined) => void;
+  setFocusedFileName: (fileName: string | undefined) => void;
   focusedFileName: string | undefined;
   filesData: Record<string, FileDescription> | undefined;
 }
@@ -63,8 +63,8 @@ export interface TabsProps {
   tabNames: string[];
   focusedTabName: string | undefined;
   setTabNames: (tabNames: string[]) => void;
-  setFocusedTabName: (tabName: string) => void;
-  setFocusedFileName: (tabName: string) => void;
+  setFocusedTabName: (tabName: string | undefined) => void;
+  setFocusedFileName: (fileName: string | undefined) => void;
   handleTabClick: (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     tabName: string,
@@ -77,11 +77,14 @@ export interface PreviewProps {
 }
 
 export interface LoginProps {
+  setTabNames: (tabNames: string[]) => void;
   setNeedToRegister: (value: boolean) => void;
   setHasUserLoggedIn: (value: boolean) => void;
   setFilesData: (value: Record<string, FileDescription> | undefined) => void;
   credentials: credentials;
   setCredentials: (value: credentials) => void;
+  setFocusedTabName: (tabName: string | undefined) => void;
+  setFocusedFileName: (fileName: string | undefined) => void;
 }
 
 export interface RegisterProps {
@@ -89,12 +92,19 @@ export interface RegisterProps {
 }
 
 export interface MonacoEditorProps {
+  tabNames: string[];
+  focusedTabName: string | undefined;
+  focusedFileName: string | undefined;
+
   filesData: Record<string, FileDescription> | undefined;
+  setTabNames: (tabNames: string[]) => void;
   setFilesData: React.Dispatch<
     React.SetStateAction<Record<string, FileDescription> | undefined>
   >;
   credentials: credentials;
   setCredentials: (value: credentials) => void;
+  setFocusedTabName: (tabName: string | undefined) => void;
+  setFocusedFileName: (fileName: string | undefined) => void;
 }
 
 export interface TerminalXTermProps {

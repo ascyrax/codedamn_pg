@@ -6,6 +6,7 @@ import { FileDescription, credentials } from "./models/interfaces.tsx";
 import "./styles/app.css";
 
 function App() {
+  const [tabNames, setTabNames] = useState<string[]>([]);
   const [hasUserLoggedIn, setHasUserLoggedIn] = useState(false);
   const [needToRegister, setNeedToRegister] = useState(false);
   const [filesData, setFilesData] = useState<Record<string, FileDescription>>();
@@ -13,14 +14,22 @@ function App() {
     username: "",
     password: "",
   });
+  const [focusedTabName, setFocusedTabName] = useState<string>();
+  const [focusedFileName, setFocusedFileName] = useState<string>();
 
   return (
     <>
       {hasUserLoggedIn ? (
         <div className="MonacoEditor">
           <MonacoEditor
+            tabNames={tabNames}
+            focusedFileName={focusedFileName}
+            focusedTabName={focusedTabName}
             filesData={filesData}
             credentials={credentials}
+            setFocusedFileName={setFocusedFileName}
+            setFocusedTabName={setFocusedTabName}
+            setTabNames={setTabNames}
             setFilesData={setFilesData}
             setCredentials={setCredentials}
           ></MonacoEditor>
@@ -34,6 +43,9 @@ function App() {
           setHasUserLoggedIn={setHasUserLoggedIn}
           setFilesData={setFilesData}
           setCredentials={setCredentials}
+          setTabNames={setTabNames}
+          setFocusedTabName={setFocusedTabName}
+          setFocusedFileName={setFocusedFileName}
         />
       )}
     </>

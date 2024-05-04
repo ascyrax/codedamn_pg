@@ -20,10 +20,16 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
     if (filesData) {
       if (!focusedFileName) setFocusedFileName(Object.keys(filesData)[0]);
       if (!focusedTabName) setFocusedTabName(Object.keys(filesData)[0]);
+
+      if (focusedFileName) {
+        setLanguage(filesData[focusedFileName].language);
+        setValue(filesData[focusedFileName].value);
+      }
     }
   }, [filesData]);
 
   useEffect(() => {
+    console.log("useEffect -> focusedFileName: ", focusedFileName);
     if (focusedFileName && filesData) {
       if (filesData[focusedFileName]) {
         setLanguage(filesData[focusedFileName].language);

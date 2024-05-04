@@ -9,6 +9,7 @@ const Tabs: React.FC<TabsProps> = ({
   setFocusedFileName,
   handleTabClick,
 }) => {
+  // console.log("Tabs RENDER -> tabNames: ", tabNames);
   function handleTabClose(
     e: React.MouseEvent<HTMLSpanElement, MouseEvent>,
     tabName: string,
@@ -29,26 +30,27 @@ const Tabs: React.FC<TabsProps> = ({
   }
   return (
     <div id="tabs">
-      {tabNames.map((tabName, index) => {
-        return (
-          <button
-            className={`tab-button ${
-              focusedTabName == tabName ? "focused" : ""
-            }`}
-            key={tabName}
-            onClick={(e) => handleTabClick(e, tabName, index)}
-          >
-            <span>{tabName}</span>
-            <span
-              className="closeTab"
-              onClick={(e) => handleTabClose(e, tabName, index)}
+      {tabNames.length &&
+        tabNames.map((tabName, index) => {
+          return (
+            <button
+              className={`tab-button ${
+                focusedTabName == tabName ? "focused" : ""
+              }`}
+              key={tabName}
+              onClick={(e) => handleTabClick(e, tabName, index)}
             >
-              {" "}
-              x{" "}
-            </span>
-          </button>
-        );
-      })}
+              <span>{tabName}</span>
+              <span
+                className="closeTab"
+                onClick={(e) => handleTabClose(e, tabName, index)}
+              >
+                {" "}
+                x{" "}
+              </span>
+            </button>
+          );
+        })}
     </div>
   );
 };

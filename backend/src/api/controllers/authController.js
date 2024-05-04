@@ -1,4 +1,5 @@
 import { UserModel } from "../../models/userModel.js";
+import { UserTabsModel } from "../../models/UserTabsModel.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { createUser } from "../services/userServices.js";
@@ -9,15 +10,15 @@ import { createUser } from "../services/userServices.js";
 
 export async function handleRegister(req, res) {
   if (!req.body || !req.body.body) {
-    return res.json({
-      success: true,
+    return res.status(400).json({
+      success: false,
       token,
       msg: "Could not register. insufficient data from the client side",
     });
   }
 
   let { username, password } = req.body.body;
-  console.log("handleRegister", { username }, { password });
+  // console.log("handleRegister", { username }, { password });
   try {
     // Generate a salt and hash on separate function calls
     const salt = await bcrypt.genSalt(10); // 10 rounds is generally enough
@@ -25,12 +26,50 @@ export async function handleRegister(req, res) {
 
     const userCreation = await createUser({ username, hashedPassword });
     if (userCreation.success) {
-      res.send({ success: true, msg: userCreation.msg });
+      const tabsCreated = await createUserTabs(username);
+      if (tabsCreated.success)
+        res.send({ success: true, msg: userCreation.msg });
+      else {
+        // TODO -> delete the user
+        await deleteUser(username);
+        res.send({
+          success: false,
+          msg: "server error. could not create userTabs. hence => deleted the newly created user too. retry",
+        });
+      }
     } else {
       res.send({ success: false, msg: userCreation.msg });
     }
   } catch (err) {
     console.error("could not create user. internal server error", err);
+  }
+}
+async function deleteUser(userId) {
+  try {
+    await UserTabsModel.findByIdAndDelete(userId);
+    console.log("User deleted successfully");
+  } catch (error) {
+    console.error("Failed to delete user:", error);
+  }
+}
+
+async function createUserTabs(username) {
+  let defaultTabs = ["index.html", "style.css", "script.js"];
+  try {
+    let tabs = await UserTabsModel.create({
+      username,
+      tabs: defaultTabs,
+      focusedTabName: defaultTabs[0],
+    });
+    if (tabs) {
+      return { success: true };
+    } else {
+      console.error("could not create tabs. internal server error", err);
+      return { success: false };
+    }
+  } catch (err) {
+    console.error("could not create tabs. internal server error", err);
+    return { success: false };
   }
 }
 

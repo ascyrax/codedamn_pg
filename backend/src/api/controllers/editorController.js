@@ -1,6 +1,37 @@
 import * as path from "path";
 import * as fs from "fs";
 import { createAndStartContainer, docker } from "./terminalController.js";
+import { UserTabsModel } from "../../models/UserTabsModel.js";
+
+export const getEditorTabs = async (req, res) => {
+  let username = "";
+  if (req.username) {
+    username = req.username;
+  }
+
+  const userTabObj = await getUserTabFromDB(username);
+  if (userTabObj) {
+    console.log("getEditorTabs -> userTabObj: ", userTabObj);
+    res.status(200).json({ success: true, userTabObj });
+  } else {
+    res.status(404).json({ success: true, userTabObj });
+  }
+};
+
+async function getUserTabFromDB(username) {
+  try {
+    const userTabObj = await UserTabsModel.findOne({ username });
+    if (userTabObj) {
+      console.log("getUserTabFromDB() -> userTabObj: ", userTabObj);
+      return userTabObj;
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.error("Error getting userTabObj from the db:", error);
+    return [];
+  }
+}
 
 const getEditorData = async (req, res) => {
   let volumeName = "",

@@ -1,4 +1,8 @@
-import { postLoginData, getEditorData } from "../../services/services";
+import {
+  postLoginData,
+  getEditorData,
+  getEditorTabs,
+} from "../../services/services";
 import { LoginProps, LoginServerResponse } from "../../models/interfaces";
 import { createWebSocket } from "./TerminalXTerm";
 
@@ -8,6 +12,9 @@ function Login({
   setHasUserLoggedIn,
   setFilesData,
   setCredentials,
+  setTabNames,
+  setFocusedTabName,
+  setFocusedFileName,
 }: LoginProps) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
@@ -15,9 +22,25 @@ function Login({
 
   const fetchEditorData = async () => {
     try {
-      const responseData = await getEditorData(credentials);
-      if (responseData) {
-        setFilesData(responseData);
+      const editorData = await getEditorData(credentials);
+      if (editorData) {
+        setFilesData(editorData);
+      }
+    } catch (error) {
+      console.error("Error fetching editor data:", error);
+    }
+  };
+
+  const fetchEditorTabs = async () => {
+    try {
+      const userTabObj = await getEditorTabs(credentials);
+      console.log("userTabObj: ", userTabObj);
+      if (userTabObj) {
+        setTabNames(userTabObj.tabs);
+      }
+      if (userTabObj.focusedTabName) {
+        setFocusedTabName(userTabObj.focusedTabName);
+        setFocusedFileName(userTabObj.focusedTabName);
       }
     } catch (error) {
       console.error("Error fetching editor data:", error);
@@ -36,6 +59,7 @@ function Login({
       localStorage.setItem(credentials.username, serverResponseLogin.token);
 
       console.log("login successful", serverResponseLogin);
+      await fetchEditorTabs();
       await fetchEditorData();
       await createWebSocket(credentials);
     } else {

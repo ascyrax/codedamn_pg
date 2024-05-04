@@ -27,12 +27,36 @@ export function postCodeChange(
   makePostRequest();
 }
 
-export async function getEditorData(credentials: credentials) {
+export async function getEditorTabs(credentials: credentials) {
   const token = localStorage.getItem(credentials.username);
   if (token) {
     // Set up common headers
     axios.defaults.headers.common["token"] = token;
   }
+  // get request
+  try {
+    const response = await axios.get(
+      `${SERVER_DOMAIN}:${SERVER_PORT}/editorData/tabs`
+    );
+    if (response.data) {
+      if (response.data.success) {
+        console.log("getEditorTabs -> response.data = ", response.data);
+        return response.data.userTabObj;
+      }
+    }
+    return undefined;
+  } catch (error) {
+    console.error(error);
+    return undefined;
+  }
+}
+
+export async function getEditorData(credentials: credentials) {
+  // const token = localStorage.getItem(credentials.username);
+  // if (token) {
+  //   // Set up common headers
+  //   axios.defaults.headers.common["token"] = token;
+  // }
   // get request
   let modifiedResponseData = {};
   try {
