@@ -62,16 +62,16 @@ const MonacoEditor = ({
     _: monaco.editor.IModelContentChangedEvent
   ) {
     if (filesData && focusedFileName && changedValue) {
-      // setFilesData((prevFilesData) => {
-      //   // if (prevFilesData)
-      //   return {
-      //     ...prevFilesData,
-      //     [focusedFileName]: {
-      //       ...prevFilesData[focusedFileName],
-      //       value: changedValue,
-      //     },
-      //   } as Record<string, FileDescription>;
-      // });
+      setFilesData((prevFilesData) => {
+        // if (prevFilesData)
+        return {
+          ...prevFilesData,
+          [focusedFileName]: {
+            ...prevFilesData[focusedFileName],
+            value: changedValue,
+          },
+        } as Record<string, FileDescription>;
+      });
     }
   }
 
