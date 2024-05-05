@@ -2,19 +2,37 @@ import axios from "axios";
 import { FileDescription } from "../models/interfaces";
 import { convertFilesData, SERVER_DOMAIN, SERVER_PORT } from "../utils/utils";
 import { user, credentials } from "../models/interfaces";
+import { diff_match_patch } from "diff-match-patch";
 
-export function postCodeChange(
+const dmp = new diff_match_patch();
+
+export async function postCodeChange(
+  filesData: Record<string, FileDescription>,
   _: credentials,
-  filesData: Record<string, FileDescription>
+  fileName: string,
+  originalText: string,
+  newText: string,
+  setPrevFilesData: (
+    value: React.SetStateAction<Record<string, FileDescription>>
+  ) => void
 ) {
+  const diffs = dmp.diff_main(originalText, newText);
+  dmp.diff_cleanupSemantic(diffs);
+  // console.log("Diffs:", diffs);
+
+  // Create a patch
+  // const patch = dmp.patch_make(originalText, diffs);
+  const patch = dmp.patch_toText(dmp.patch_make(originalText, diffs));
+
+  // console.log("Patch:", patch);
+
   async function makePostRequest() {
     try {
       const response = await axios.post(
         `${SERVER_DOMAIN}:${SERVER_PORT}/editordata`,
         {
-          title: "batch update for file edits",
-          body: filesData,
-          userId: 1,
+          title: "differential batch update for file edits",
+          filePatch: { fileName, patch },
         }
       );
       if (response && response.data)
@@ -24,7 +42,9 @@ export function postCodeChange(
     }
   }
 
-  makePostRequest();
+  await makePostRequest();
+
+  setPrevFilesData(filesData);
 }
 
 export async function getEditorTabs(credentials: credentials) {
@@ -40,7 +60,7 @@ export async function getEditorTabs(credentials: credentials) {
     );
     if (response.data) {
       if (response.data.success) {
-        console.log("getEditorTabs -> response.data = ", response.data);
+        console.log("getEditorTabs ", response.data);
         return response.data.userTabObj;
       }
     }

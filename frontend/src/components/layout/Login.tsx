@@ -43,7 +43,7 @@ function Login({
   const fetchEditorTabs = async () => {
     try {
       const userTabObj = await getEditorTabs(credentials);
-      console.log("userTabObj: ", userTabObj);
+      // console.log("userTabObj: ", userTabObj);
       if (userTabObj) {
         setTabNames(userTabObj.tabs);
       }

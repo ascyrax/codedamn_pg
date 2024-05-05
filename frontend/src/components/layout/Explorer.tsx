@@ -4,12 +4,15 @@ import Tree, { RenderItemParams, TreeData, mutateTree } from "@atlaskit/tree";
 import "@atlaskit/css-reset";
 import { ExplorerProps } from "../../models/interfaces";
 import { initialData } from "../../utils/utils";
+import { getFileData } from "../../services/services";
 
 const Explorer: React.FC<ExplorerProps> = ({
-  setFocusedTabName,
-  setFocusedFileName,
   focusedFileName,
   filesData,
+  setTabNames,
+  setFocusedTabName,
+  setFocusedFileName,
+  getAndSetFileData,
 }) => {
   const [tree, setTree] = useState<TreeData>(initialData);
 
@@ -61,6 +64,18 @@ const Explorer: React.FC<ExplorerProps> = ({
     else if (item.data.type == "file") {
       setFocusedTabName(item.data.title);
       setFocusedFileName(item.data.title);
+
+      setTabNames((prevTabNames) => {
+        // Check if the new Tab already exists in the array
+        if (!prevTabNames.includes(item.data.title)) {
+          // load file data
+          getAndSetFileData(item.data.title);
+          // If not, add the new tab to the array
+          return [...prevTabNames, item.data.title];
+        }
+        // Otherwise, return the array unchanged
+        return prevTabNames;
+      });
     }
   };
 

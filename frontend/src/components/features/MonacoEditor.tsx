@@ -5,7 +5,7 @@ import CodeEditor from "../layout/CodeEditor";
 import Explorer from "../layout/Explorer";
 import Tabs from "../layout/Tabs";
 import { Rnd, RndResizeCallback } from "react-rnd";
-import { debounce } from "lodash-es";
+import { debounce, get } from "lodash-es";
 import * as utils from "../../utils/utils";
 import { postCodeChange } from "../../services/services";
 import { MonacoEditorProps, FileDescription } from "../../models/interfaces";
@@ -19,14 +19,17 @@ const batchUploadFilesData = debounce(postCodeChange, 200);
 const MonacoEditor = ({
   tabNames,
   filesData,
+  prevFilesData,
   credentials,
   focusedTabName,
   focusedFileName,
   setCredentials,
   setFilesData,
+  setPrevFilesData,
   setTabNames,
   setFocusedFileName,
   setFocusedTabName,
+  getAndSetFileData
 }: MonacoEditorProps) => {
   const [_, setFileNames] = useState<string[]>([]);
 
@@ -42,26 +45,34 @@ const MonacoEditor = ({
   );
 
   useEffect(() => {
-    if (filesData) {
-      let listFileNames: string[] = [];
-      for (const [fileName, fileData] of Object.entries(filesData)) {
-        listFileNames.push(fileName);
-        // if (fileData.isAnOpenedTab) listTabNames.push(fileName);
-      }
-      setFileNames(listFileNames);
-      // setTabNames(listTabNames);
-
-      // debounce ie batch the change requests,
-      // also keep a maxWait after which the function is forced to be executed
-      // batchUploadFilesData(credentials, filesData);
+    let listFileNames: string[] = [];
+    for (const [fileName, fileData] of Object.entries(filesData)) {
+      listFileNames.push(fileName);
+      // if (fileData.isAnOpenedTab) listTabNames.push(fileName);
     }
+    setFileNames(listFileNames);
+    // setTabNames(listTabNames);
+
+    // debounce ie batch the change requests,
+    // also keep a maxWait after which the function is forced to be executed
+    focusedFileName &&
+      batchUploadFilesData(
+        filesData,
+        credentials,
+        focusedFileName,
+        prevFilesData[focusedFileName]
+          ? prevFilesData[focusedFileName].value
+          : "",
+        filesData[focusedFileName] ? filesData[focusedFileName].value : "",
+        setPrevFilesData
+      );
   }, [filesData]);
 
   function handleCodeChange(
     changedValue: string | undefined,
     _: monaco.editor.IModelContentChangedEvent
   ) {
-    if (filesData && focusedFileName && changedValue) {
+    if (focusedFileName && changedValue) {
       setFilesData((prevFilesData) => {
         // if (prevFilesData)
         return {
@@ -146,10 +157,12 @@ const MonacoEditor = ({
         maxWidth={utils.maxExplorerWidth}
       >
         <Explorer
+          filesData={filesData}
+          focusedFileName={focusedFileName}
+          setTabNames={setTabNames}
           setFocusedTabName={setFocusedTabName}
           setFocusedFileName={setFocusedFileName}
-          focusedFileName={focusedFileName}
-          filesData={filesData}
+          getAndSetFileData={getAndSetFileData}
         />
       </Rnd>
 

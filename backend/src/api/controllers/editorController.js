@@ -2,6 +2,9 @@ import * as path from "path";
 import * as fs from "fs/promises";
 import { createVolumeAndContainer, docker } from "./terminalController.js";
 import { UserTabsModel } from "../../models/UserTabsModel.js";
+import { diff_match_patch } from "diff-match-patch";
+
+const dmp = new diff_match_patch();
 
 export const getEditorTabs = async (req, res) => {
   let username = "";
@@ -88,7 +91,7 @@ async function getFileDataFromFS(res, volumeName, fileName) {
 
     let fileData = {};
     const content = await fs.readFile(filePath, "utf8");
-    
+
     fileData = {
       name: fileName,
       value: content,
@@ -191,7 +194,7 @@ function detectLanguage(filename) {
 }
 
 // Function to update files based on the provided object
-async function updateFiles({ fileName, fileContent }, volumeName) {
+async function updateFile({ fileName, fileContent }, volumeName) {
   try {
     const filePath = path.join(
       "/var/tmp/codedamn/volumes",
@@ -199,7 +202,7 @@ async function updateFiles({ fileName, fileContent }, volumeName) {
       fileName
     );
 
-    fs.writeFileSync(filePath, fileContent);
+    await fs.writeFile(filePath, fileContent);
     console.log(`Updated file: ${filePath}`);
   } catch (error) {
     console.error("Failed to update files:", error);
@@ -207,20 +210,61 @@ async function updateFiles({ fileName, fileContent }, volumeName) {
 }
 
 const setEditorData = async (req, res) => {
-  let reqBody = "";
-  if (req.body && req.body.body) reqBody = req.body.body;
-  let volumeName = "";
-  // }
-  if (req.username) volumeName = "vid_cid_" + req.username;
-  for (const [key, val] of Object.entries(reqBody)) {
-    let { name, value, isAnOpenedTab, language } = val;
-    try {
-      await updateFiles({ fileName: key, fileContent: value }, volumeName);
-    } catch (err) {
-      console.error(":( error updatingFiles at the mounted volumes", err);
-    }
+  let username = "",
+    fileName = "",
+    volumeName = "",
+    filePatch = "";
+
+  if (req.username) {
+    username = req.username;
+    volumeName = "vid_cid_" + req.username;
   }
-  res.send("filesData updated");
+
+  if (req.body && req.body.filePatch) {
+    fileName = req.body.filePatch.fileName;
+    filePatch = req.body.filePatch.patch;
+  }
+
+  let originalText = await getFileContentFromFS(volumeName, fileName);
+  // console.log("setEditorData: ", { originalText });
+  let newText = await applyPatch(originalText ? originalText : "", filePatch);
+  // console.log("setEditorData: ", { newText });
+
+  await updateFile({ fileName, fileContent: newText }, volumeName);
+
+  res.status(200).json({ success: true, msg: "filesData updated" });
 };
+
+async function getFileContentFromFS(volumeName, fileName) {
+  try {
+    // Assuming the volume is mounted on the host in a known directory
+    const volumePath = path.join("/var/tmp/codedamn/volumes", volumeName);
+    const filePath = path.join(volumePath, fileName);
+
+    const content = await fs.readFile(filePath, "utf8");
+    return content;
+  } catch (error) {
+    console.error(`Error accessing ${fileName} in the volume`, error);
+    return undefined;
+  }
+}
+
+async function applyPatch(originalText, filePatch) {
+  try {
+    // Assuming `patches` is the patch object received or defined elsewhere
+    const patches = dmp.patch_fromText(filePatch);
+    const [newText, results] = dmp.patch_apply(patches, originalText);
+    console.log("Patch results:", results); // This will show which patches were applied successfully
+
+    if (results.some((result) => !result)) {
+      console.log("Some patches did not apply successfully");
+      return originalText;
+    }
+    return newText;
+  } catch (err) {
+    console.error("applyPatch -> could not apply the patch to the file:", err);
+    return originalText;
+  }
+}
 
 export { setEditorData };

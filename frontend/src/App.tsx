@@ -13,6 +13,9 @@ function App() {
   const [filesData, setFilesData] = useState<Record<string, FileDescription>>(
     {}
   );
+  const [prevFilesData, setPrevFilesData] = useState<
+    Record<string, FileDescription>
+  >({});
   const [credentials, setCredentials] = useState<credentials>({
     username: "",
     password: "",
@@ -23,14 +26,14 @@ function App() {
     useState<boolean>(true);
   const [isInitialTabsLoad, setIsInitialTabsLoad] = useState<boolean>(true);
 
-  console.log("RENDER App: ", focusedTabName);
+  // console.log("RENDER App: ", focusedTabName);
 
   // these two useEffects will only work once.
   // viz, next time the focusedTabName or the tabNames change, data fetch won't be triggered.
   useEffect(() => {
-    console.log("useEffect -> focusedTabName: ", focusedTabName);
+    // console.log("useEffect -> focusedTabName: ", focusedTabName);
     async function wrapperAsyncFunc() {
-      await fetchFileData(focusedTabName); // do this only after focusedTabName has been set
+      await fetchInitialFileData(focusedTabName); // do this only after focusedTabName has been set
     }
     if (isInitialFocusedFileLoad && focusedTabName) {
       setInitialFocusedFileLoad(false); // we don't load the file=focusedTabName every time the focusedTabName state changes
@@ -40,7 +43,7 @@ function App() {
 
   useEffect(() => {
     async function wrapperAsyncFunc(fileName: string) {
-      await fetchFileData(fileName);
+      await fetchInitialFileData(fileName);
     }
     if (isInitialTabsLoad) {
       for (let i = 0; i < tabNames.length; i++) {
@@ -52,30 +55,44 @@ function App() {
     }
   }, [tabNames]);
 
-  const fetchFileData = async (fileName: string | undefined) => {
+  const fetchInitialFileData = async (fileName: string | undefined) => {
     if (fileName) {
       // console.log({ fileName });
-      try {
-        const response = await getFileData(fileName);
-        console.log("response Loaded: ", response);
-        if (response.success && response.fileData) {
-          console.log("FETCH FILE DATA -> ", filesData);
-          setFilesData((prevFilesData) => {
-            return {
-              ...prevFilesData,
-              [fileName]: {
-                ...prevFilesData[fileName],
-                name: fileName,
-                value: response.fileData.value,
-              },
-            } as Record<string, FileDescription>;
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching editor data:", error);
-      }
+      getAndSetFileData(fileName);
     }
   };
+
+  async function getAndSetFileData(fileName: string) {
+    try {
+      const response = await getFileData(fileName);
+      // console.log("response Loaded: ", response);
+      if (response.success && response.fileData) {
+        // console.log("FETCH FILE DATA -> ", filesData);
+        setFilesData((prevFilesData) => {
+          return {
+            ...prevFilesData,
+            [fileName]: {
+              ...prevFilesData[fileName],
+              name: fileName,
+              value: response.fileData.value,
+            },
+          } as Record<string, FileDescription>;
+        });
+        setPrevFilesData((prevFilesData) => {
+          return {
+            ...prevFilesData,
+            [fileName]: {
+              ...prevFilesData[fileName],
+              name: fileName,
+              value: response.fileData.value,
+            },
+          } as Record<string, FileDescription>;
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching editor data:", error);
+    }
+  }
 
   return (
     <>
@@ -86,12 +103,15 @@ function App() {
             focusedFileName={focusedFileName}
             focusedTabName={focusedTabName}
             filesData={filesData}
+            prevFilesData={prevFilesData}
             credentials={credentials}
             setFocusedFileName={setFocusedFileName}
             setFocusedTabName={setFocusedTabName}
             setTabNames={setTabNames}
             setFilesData={setFilesData}
+            setPrevFilesData={setPrevFilesData}
             setCredentials={setCredentials}
+            getAndSetFileData={getAndSetFileData}
           ></MonacoEditor>
         </div>
       ) : needToRegister ? (

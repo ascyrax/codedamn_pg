@@ -23,7 +23,7 @@ export interface FileDescription {
 }
 
 export interface CodeEditorProps {
-  filesData: Record<string, FileDescription> | undefined;
+  filesData: Record<string, FileDescription>;
   focusedFileName: string | undefined;
   focusedTabName: string | undefined;
   setFocusedFileName: (fileName: string | undefined) => void;
@@ -53,16 +53,23 @@ export interface CustomTreeData extends TreeData {
 }
 
 export interface ExplorerProps {
+  focusedFileName: string | undefined;
+  filesData: Record<string, FileDescription>;
+  // setFilesData: (
+  //   value: React.SetStateAction<Record<string, FileDescription>>
+  // ) => void;
+  setTabNames: (value: React.SetStateAction<string[]>) => void;
+  // setTabNames: (tabNames: string[]) => void;
   setFocusedTabName: (tabName: string | undefined) => void;
   setFocusedFileName: (fileName: string | undefined) => void;
-  focusedFileName: string | undefined;
-  filesData: Record<string, FileDescription> | undefined;
+  getAndSetFileData: (fileName: string) => void;
 }
 
 export interface TabsProps {
   tabNames: string[];
   focusedTabName: string | undefined;
-  setTabNames: (tabNames: string[]) => void;
+  // setTabNames: (tabNames: string[]) => void;
+  setTabNames: (value: React.SetStateAction<string[]>) => void;
   setFocusedTabName: (tabName: string | undefined) => void;
   setFocusedFileName: (fileName: string | undefined) => void;
   handleTabClick: (
@@ -73,13 +80,14 @@ export interface TabsProps {
 }
 
 export interface PreviewProps {
-  filesData: Record<string, FileDescription> | undefined;
+  filesData: Record<string, FileDescription>;
 }
 
 export interface LoginProps {
   credentials: credentials;
   focusedTabName: string | undefined;
-  setTabNames: (tabNames: string[]) => void;
+  setTabNames: (value: React.SetStateAction<string[]>) => void;
+  // setTabNames: (tabNames: string[]) => void;
   setNeedToRegister: (value: boolean) => void;
   setHasUserLoggedIn: (value: boolean) => void;
   // setFilesData: (data: Record<string, FileDescription> | undefined) => void;
@@ -100,18 +108,23 @@ export interface MonacoEditorProps {
   tabNames: string[];
   focusedTabName: string | undefined;
   focusedFileName: string | undefined;
+  filesData: Record<string, FileDescription>;
+  prevFilesData: Record<string, FileDescription>;
+  // setTabNames: (tabNames: string[]) => void;
+  setTabNames: (value: React.SetStateAction<string[]>) => void;
 
-  filesData: Record<string, FileDescription> | undefined;
-  setTabNames: (tabNames: string[]) => void;
   // setFilesData: (data: Record<string, FileDescription> | undefined) => void;
   setFilesData: (
     value: React.SetStateAction<Record<string, FileDescription>>
   ) => void;
-
+  setPrevFilesData: (
+    value: React.SetStateAction<Record<string, FileDescription>>
+  ) => void;
   credentials: credentials;
   setCredentials: (value: credentials) => void;
   setFocusedTabName: (tabName: string | undefined) => void;
   setFocusedFileName: (fileName: string | undefined) => void;
+  getAndSetFileData: (fileName: string) => void;
 }
 
 export interface TerminalXTermProps {
