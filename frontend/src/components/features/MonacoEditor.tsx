@@ -8,7 +8,7 @@ import { Rnd, RndResizeCallback } from "react-rnd";
 import { debounce } from "lodash-es";
 import * as utils from "../../utils/utils";
 import { postCodeChange } from "../../services/services";
-import { MonacoEditorProps } from "../../models/interfaces";
+import { MonacoEditorProps, FileDescription } from "../../models/interfaces";
 import { Preview } from "../layout/Preview";
 import TerminalXTerm from "../layout/TerminalXTerm";
 
@@ -53,7 +53,7 @@ const MonacoEditor = ({
 
       // debounce ie batch the change requests,
       // also keep a maxWait after which the function is forced to be executed
-      batchUploadFilesData(credentials, filesData);
+      // batchUploadFilesData(credentials, filesData);
     }
   }, [filesData]);
 
@@ -62,16 +62,16 @@ const MonacoEditor = ({
     _: monaco.editor.IModelContentChangedEvent
   ) {
     if (filesData && focusedFileName && changedValue) {
-      setFilesData((prevFilesData) => {
-        if (prevFilesData)
-          return {
-            ...prevFilesData,
-            [focusedFileName]: {
-              ...prevFilesData[focusedFileName],
-              value: changedValue,
-            },
-          };
-      });
+      // setFilesData((prevFilesData) => {
+      //   // if (prevFilesData)
+      //   return {
+      //     ...prevFilesData,
+      //     [focusedFileName]: {
+      //       ...prevFilesData[focusedFileName],
+      //       value: changedValue,
+      //     },
+      //   } as Record<string, FileDescription>;
+      // });
     }
   }
 

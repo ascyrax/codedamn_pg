@@ -1,4 +1,4 @@
-import { Monaco } from "@monaco-editor/react";
+// import { Monaco } from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
 import { TreeData } from "@atlaskit/tree";
 
@@ -77,11 +77,16 @@ export interface PreviewProps {
 }
 
 export interface LoginProps {
+  credentials: credentials;
+  focusedTabName: string | undefined;
   setTabNames: (tabNames: string[]) => void;
   setNeedToRegister: (value: boolean) => void;
   setHasUserLoggedIn: (value: boolean) => void;
-  setFilesData: (value: Record<string, FileDescription> | undefined) => void;
-  credentials: credentials;
+  // setFilesData: (data: Record<string, FileDescription> | undefined) => void;
+  setFilesData: (
+    value: React.SetStateAction<Record<string, FileDescription>>
+  ) => void;
+
   setCredentials: (value: credentials) => void;
   setFocusedTabName: (tabName: string | undefined) => void;
   setFocusedFileName: (fileName: string | undefined) => void;
@@ -98,9 +103,11 @@ export interface MonacoEditorProps {
 
   filesData: Record<string, FileDescription> | undefined;
   setTabNames: (tabNames: string[]) => void;
-  setFilesData: React.Dispatch<
-    React.SetStateAction<Record<string, FileDescription> | undefined>
-  >;
+  // setFilesData: (data: Record<string, FileDescription> | undefined) => void;
+  setFilesData: (
+    value: React.SetStateAction<Record<string, FileDescription>>
+  ) => void;
+
   credentials: credentials;
   setCredentials: (value: credentials) => void;
   setFocusedTabName: (tabName: string | undefined) => void;
@@ -108,7 +115,11 @@ export interface MonacoEditorProps {
 }
 
 export interface TerminalXTermProps {
-  setFilesData: (data: Record<string, FileDescription> | undefined) => void;
+  // setFilesData: (data: Record<string, FileDescription> | undefined) => void;
+  setFilesData: (
+    value: React.SetStateAction<Record<string, FileDescription>>
+  ) => void;
+
   credentials: credentials;
   setCredentials: (value: credentials) => void;
 }

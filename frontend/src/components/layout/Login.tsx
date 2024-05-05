@@ -1,13 +1,19 @@
 import {
   postLoginData,
-  getEditorData,
   getEditorTabs,
+  // getEditorData,
 } from "../../services/services";
-import { LoginProps, LoginServerResponse } from "../../models/interfaces";
+import {
+  FileDescription,
+  LoginProps,
+  LoginServerResponse,
+} from "../../models/interfaces";
 import { createWebSocket } from "./TerminalXTerm";
+import { useEffect } from "react";
 
 function Login({
   credentials,
+  focusedTabName,
   setNeedToRegister,
   setHasUserLoggedIn,
   setFilesData,
@@ -16,20 +22,23 @@ function Login({
   setFocusedTabName,
   setFocusedFileName,
 }: LoginProps) {
+  // console.log("RENDER Login");
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
   };
 
-  const fetchEditorData = async () => {
-    try {
-      const editorData = await getEditorData(credentials);
-      if (editorData) {
-        setFilesData(editorData);
-      }
-    } catch (error) {
-      console.error("Error fetching editor data:", error);
-    }
-  };
+  // const fetchEditorData = async () => {
+  //   try {
+  //     const editorData = await getEditorData(credentials);
+  //     // console.log("fetchEditorData -> editorData: ", editorData)
+  //     if (editorData) {
+  //       setFilesData(editorData);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching editor data:", error);
+  //   }
+  // };
 
   const fetchEditorTabs = async () => {
     try {
@@ -47,6 +56,19 @@ function Login({
     }
   };
 
+  async function fetchDataEfficiently() {
+    await fetchEditorTabs();
+
+    // fetch the focused tab data
+    // this is done using the useEffect in the App.tsx, after the focusedTabName has been modified
+
+    // fetch the data for the rest of the opened tabs (using fetch stream)
+    // this is done using the useEffect in the App.tsx, after the tabNames has been modified
+
+    // await fetchEditorData();
+    await createWebSocket(credentials);
+  }
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Here you would typically authenticate against your backend API
@@ -59,9 +81,7 @@ function Login({
       localStorage.setItem(credentials.username, serverResponseLogin.token);
 
       console.log("login successful", serverResponseLogin);
-      await fetchEditorTabs();
-      await fetchEditorData();
-      await createWebSocket(credentials);
+      await fetchDataEfficiently();
     } else {
       console.log("could not login");
     }

@@ -16,12 +16,12 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   const [value, setValue] = useState("Loading...");
 
   useEffect(() => {
-    console.log("useEffect -> codeEditor: ");
+    // console.log("useEffect -> codeEditor: ");
     if (filesData) {
       if (!focusedFileName) setFocusedFileName(Object.keys(filesData)[0]);
       if (!focusedTabName) setFocusedTabName(Object.keys(filesData)[0]);
 
-      if (focusedFileName) {
+      if (focusedFileName && filesData[focusedFileName]) {
         setLanguage(filesData[focusedFileName].language);
         setValue(filesData[focusedFileName].value);
       }
@@ -29,7 +29,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   }, [filesData]);
 
   useEffect(() => {
-    console.log("useEffect -> focusedFileName: ", focusedFileName);
+    // console.log("useEffect -> focusedFileName: ", focusedFileName);
     if (focusedFileName && filesData) {
       if (filesData[focusedFileName]) {
         setLanguage(filesData[focusedFileName].language);
@@ -37,6 +37,8 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
       }
     }
   }, [focusedFileName]);
+
+  
 
   const options: editor.IStandaloneEditorConstructionOptions | undefined = {
     selectOnLineNumbers: true,

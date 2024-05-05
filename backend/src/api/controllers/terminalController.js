@@ -59,7 +59,7 @@ export async function createVolume(volumeName) {
   }
 }
 
-export async function createAndStartContainer(containerId) {
+export async function createVolumeAndContainer(containerId) {
   const volumeName = "vid_" + containerId; // Name of the Docker volume
   await createVolume(volumeName);
   const containerOptions = {
@@ -111,7 +111,7 @@ export async function startContainer(username) {
     // Error handling to check if the container does not exist
     if (error.statusCode === 404) {
       console.log("Container not found. Creating and starting a new one...");
-      await createAndStartContainer(containerId);
+      await createVolumeAndContainer(containerId);
     } else {
       console.error("An error occurred:", error.message);
     }

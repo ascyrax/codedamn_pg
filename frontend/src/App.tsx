@@ -1,21 +1,81 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import MonacoEditor from "./components/features/MonacoEditor.tsx";
 import Register from "./components/layout/Register.tsx";
 import Login from "./components/layout/Login.tsx";
 import { FileDescription, credentials } from "./models/interfaces.tsx";
 import "./styles/app.css";
+import { getFileData } from "./services/services.tsx";
 
 function App() {
   const [tabNames, setTabNames] = useState<string[]>([]);
   const [hasUserLoggedIn, setHasUserLoggedIn] = useState(false);
   const [needToRegister, setNeedToRegister] = useState(false);
-  const [filesData, setFilesData] = useState<Record<string, FileDescription>>();
+  const [filesData, setFilesData] = useState<Record<string, FileDescription>>(
+    {}
+  );
   const [credentials, setCredentials] = useState<credentials>({
     username: "",
     password: "",
   });
   const [focusedTabName, setFocusedTabName] = useState<string>();
   const [focusedFileName, setFocusedFileName] = useState<string>();
+  const [isInitialFocusedFileLoad, setInitialFocusedFileLoad] =
+    useState<boolean>(true);
+  const [isInitialTabsLoad, setIsInitialTabsLoad] = useState<boolean>(true);
+
+  console.log("RENDER App: ", focusedTabName);
+
+  // these two useEffects will only work once.
+  // viz, next time the focusedTabName or the tabNames change, data fetch won't be triggered.
+  useEffect(() => {
+    console.log("useEffect -> focusedTabName: ", focusedTabName);
+    async function wrapperAsyncFunc() {
+      await fetchFileData(focusedTabName); // do this only after focusedTabName has been set
+    }
+    if (isInitialFocusedFileLoad && focusedTabName) {
+      setInitialFocusedFileLoad(false); // we don't load the file=focusedTabName every time the focusedTabName state changes
+      wrapperAsyncFunc();
+    }
+  }, [focusedTabName]);
+
+  useEffect(() => {
+    async function wrapperAsyncFunc(fileName: string) {
+      await fetchFileData(fileName);
+    }
+    if (isInitialTabsLoad) {
+      for (let i = 0; i < tabNames.length; i++) {
+        setIsInitialTabsLoad(false);
+        let fileName = tabNames[i];
+        if (fileName == focusedTabName) continue;
+        wrapperAsyncFunc(fileName);
+      }
+    }
+  }, [tabNames]);
+
+  const fetchFileData = async (fileName: string | undefined) => {
+    if (fileName) {
+      // console.log({ fileName });
+      try {
+        const response = await getFileData(fileName);
+        console.log("response Loaded: ", response);
+        if (response.success && response.fileData) {
+          console.log("FETCH FILE DATA -> ", filesData);
+          setFilesData((prevFilesData) => {
+            return {
+              ...prevFilesData,
+              [fileName]: {
+                ...prevFilesData[fileName],
+                name: fileName,
+                value: response.fileData.value,
+              },
+            } as Record<string, FileDescription>;
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching editor data:", error);
+      }
+    }
+  };
 
   return (
     <>
@@ -39,6 +99,7 @@ function App() {
       ) : (
         <Login
           credentials={credentials}
+          focusedTabName={focusedTabName}
           setNeedToRegister={setNeedToRegister}
           setHasUserLoggedIn={setHasUserLoggedIn}
           setFilesData={setFilesData}
@@ -53,28 +114,3 @@ function App() {
 }
 
 export default App;
-
-// import React, { useState } from "react";
-// import CodeEditor from "./CodeEditor.tsx"; // Adjust the path as necessary
-
-// function App() {
-//   const [code, setCode] = useState("// type your code here");
-
-//   const handleEditorChange = (newValue: any) => {
-//     setCode(newValue);
-//   };
-
-//   return (
-//     <div>
-//       <CodeEditor
-//         // language="html"
-//         defaultLanguage="html"
-//         theme="vs-dark"
-//         code={code}
-//         onChange={handleEditorChange}
-//       />
-//     </div>
-//   );
-// }
-
-// export default App;

@@ -1,6 +1,6 @@
 import * as path from "path";
-import * as fs from "fs";
-import { createAndStartContainer, docker } from "./terminalController.js";
+import * as fs from "fs/promises";
+import { createVolumeAndContainer, docker } from "./terminalController.js";
 import { UserTabsModel } from "../../models/UserTabsModel.js";
 
 export const getEditorTabs = async (req, res) => {
@@ -18,6 +18,31 @@ export const getEditorTabs = async (req, res) => {
   }
 };
 
+// TODO IMPLEMENT FETCH STREAMING FOR THIS
+export const getFileData = async (req, res) => {
+  let username = "",
+    fileName = "",
+    volumeName = "";
+  if (req.username) {
+    username = req.username;
+    volumeName = "vid_cid_" + req.username;
+  }
+  if (req.query && req.query.fileName) {
+    fileName = req.query.fileName;
+  }
+
+  console.log("getFileData -> ", username, fileName);
+
+  // check if the volume exist or not
+  let volCheck = await checkForVolume(volumeName);
+  if (!volCheck) {
+    let containerId = "cid_" + username;
+    await createVolumeAndContainer(containerId);
+  }
+
+  await getFileDataFromFS(res, volumeName, fileName);
+};
+
 async function getUserTabFromDB(username) {
   try {
     const userTabObj = await UserTabsModel.findOne({ username });
@@ -33,62 +58,114 @@ async function getUserTabFromDB(username) {
   }
 }
 
-const getEditorData = async (req, res) => {
-  let volumeName = "",
-    username = "";
-  if (req.username) {
-    username = req.username;
-    volumeName = "vid_cid_" + req.username;
-  }
-
-  // check if the volume exist or not
+async function checkForVolume(volumeName) {
+  console.log("checkForVolume: ", volumeName);
   try {
     // Ensure the volume exists, or create it if it doesn't
     let volume = docker.getVolume(volumeName);
     let volumeInfo = await volume.inspect().catch(async () => {
-      console.error("getEditorData -> error inspecting the volume");
+      console.error("checkForVolume -> error inspecting the volume");
       throw new Error("volume does not exist");
     });
-    console.log(`getEditorData -> Using volume: ${volumeInfo.name}`);
+    console.log(`checkForVolume -> Using volume: ${volumeInfo.Name}`);
+    return true;
   } catch (error) {
     console.error(
-      "getEditorData -> error inspecting the corresponding volume:",
+      "checkForVolume -> error inspecting the corresponding volume:",
       error.message
     );
-    let containerId = "cid_" + username;
-    await createAndStartContainer(containerId);
+    return false;
   }
+}
 
+// get one files
+async function getFileDataFromFS(res, volumeName, fileName) {
   try {
     // Assuming the volume is mounted on the host in a known directory
     const volumePath = path.join("/var/tmp/codedamn/volumes", volumeName);
+    const filePath = path.join(volumePath, fileName);
+    const language = detectLanguage(fileName);
 
-    // Read files from the volume directory
-    fs.readdir(volumePath, (err, files) => {
-      if (err) {
-        console.error("Error reading volume directory:", err);
-        return res.status(500).send("Failed to read volume");
-      }
+    let fileData = {};
+    const content = await fs.readFile(filePath, "utf8");
+    
+    fileData = {
+      name: fileName,
+      value: content,
+      isAnOpenedTab: true,
+      language,
+    };
 
-      let results = [];
-      files.forEach((file) => {
-        const language = detectLanguage(file);
-        const filePath = path.join(volumePath, file);
-        const content = fs.readFileSync(filePath, "utf8");
-        results.push({
-          name: file,
-          value: content,
-          isAnOpenedTab: true,
-          language,
-        });
+    if (fileData)
+      return res.status(200).json({ success: true, fileData: fileData });
+    else
+      return res.status(500).json({
+        success: false,
+        msg: `Error accessing ${fileName} in the volume ${volumePath}`,
       });
-      res.json(results);
-    });
   } catch (error) {
-    console.error("Error:", error);
-    res.status(500).send("Error accessing volume data");
+    console.error(`Error accessing ${fileName} in the volume`, error);
+    return res.status(500).json({
+      success: false,
+      msg: `Error accessing ${fileName} in the volume`,
+    });
   }
-};
+}
+
+// // get all files
+// async function getFilesDataFromFS(res, volumeName) {
+//   try {
+//     // Assuming the volume is mounted on the host in a known directory
+//     const volumePath = path.join("/var/tmp/codedamn/volumes", volumeName);
+
+//     // Read files from the volume directory
+//     fs.readdir(volumePath, (err, files) => {
+//       if (err) {
+//         console.error("Error reading volume directory:", err);
+//         return res
+//           .status(500)
+//           .json({ success: false, msg: "Failed to read volume" });
+//       }
+
+//       let fileData = [];
+//       files.forEach((file) => {
+//         const language = detectLanguage(file);
+//         const filePath = path.join(volumePath, file);
+//         const content = fs.readFileSync(filePath, "utf8");
+//         results.push({
+//           name: file,
+//           value: content,
+//           isAnOpenedTab: true,
+//           language,
+//         });
+//       });
+//       return res.status(200).json({ success: true, filesData: results });
+//     });
+//   } catch (error) {
+//     console.error("Error:", error);
+//     return res
+//       .status(500)
+//       .json({ success: false, msg: "Error accessing volume data" });
+//   }
+// }
+
+// const getEditorData = async (req, res) => {
+//   let volumeName = "",
+//     username = "";
+//   if (req.username) {
+//     username = req.username;
+//     volumeName = "vid_cid_" + req.username;
+//   }
+
+//   // check if the volume exist or not
+//   let volCheck = await checkForVolume(volumeName);
+//   if (!volCheck) {
+//     let containerId = "cid_" + username;
+//     await createVolumeAndContainer(containerId);
+//   }
+
+//   return await getFilesDataFromFS(res, volumeName);
+// };
 
 // Function to determine the programming language from the file extension
 function detectLanguage(filename) {
@@ -146,4 +223,4 @@ const setEditorData = async (req, res) => {
   res.send("filesData updated");
 };
 
-export { getEditorData, setEditorData };
+export { setEditorData };

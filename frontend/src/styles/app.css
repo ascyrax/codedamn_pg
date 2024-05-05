@@ -9,6 +9,16 @@ body {
   color: #d4d4d4; /* Light grey text color typical in VSCode */
 }
 
+.login-container,
+.register-container {
+  background-color: #333;
+}
+
+.login-container input,
+.register-container input{
+  color: #333;
+}
+
 #monacoEditor {
   display: flex;
   flex-direction: row;

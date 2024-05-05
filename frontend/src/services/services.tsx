@@ -51,29 +51,47 @@ export async function getEditorTabs(credentials: credentials) {
   }
 }
 
-export async function getEditorData(credentials: credentials) {
-  // const token = localStorage.getItem(credentials.username);
-  // if (token) {
-  //   // Set up common headers
-  //   axios.defaults.headers.common["token"] = token;
-  // }
-  // get request
-  let modifiedResponseData = {};
+export async function getFileData(fileName: string | undefined) {
+  let response;
   try {
-    const response = await axios.get(
-      `${SERVER_DOMAIN}:${SERVER_PORT}/editorData`
+    response = await axios.get(
+      `${SERVER_DOMAIN}:${SERVER_PORT}/editorData/file?fileName=${fileName}`
     );
     if (response.data) {
-      console.log("getEditorData", response.data);
-      modifiedResponseData = convertFilesData(response.data);
-      console.log("getEditorData", modifiedResponseData);
+      console.log("getFileData -> ", response.data);
     }
-    return modifiedResponseData;
   } catch (error) {
-    console.error(error);
-    return undefined;
+    console.error(
+      "could not get file data for the first focused file: ",
+      error
+    );
   }
+  return response ? response.data : response;
 }
+
+// export async function getEditorData(credentials: credentials) {
+//   // const token = localStorage.getItem(credentials.username);
+//   // if (token) {
+//   //   // Set up common headers
+//   //   axios.defaults.headers.common["token"] = token;
+//   // }
+//   // get request
+//   let modifiedResponseData = {};
+//   try {
+//     const response = await axios.get(
+//       `${SERVER_DOMAIN}:${SERVER_PORT}/editorData`
+//     );
+//     if (response.data && response.data.filesData) {
+//       console.log("getEditorData", response.data);
+//       modifiedResponseData = convertFilesData(response.data.filesData);
+//       console.log("getEditorData", modifiedResponseData);
+//     }
+//     return modifiedResponseData;
+//   } catch (error) {
+//     console.error(error);
+//     return undefined;
+//   }
+// }
 
 export async function postRegisterData(user: user) {
   try {
