@@ -30,9 +30,29 @@ const TerminalXTerm = React.memo(function TerminalXTerm({
   const terminalRef = useRef(null);
   let bufferCommand = "";
 
+
   useEffect(() => {
     renderTerminal();
     fitTerminalToParentDiv();
+
+    terminal.onKey(({ key, domEvent }) => {
+      domEvent = domEvent;
+      switch (key) {
+        case "\x7F":
+          terminal.write("\b \b");
+          if (bufferCommand && bufferCommand.length > 0)
+            bufferCommand = bufferCommand.slice(0, -1);
+          break;
+        case "\r":
+          terminal.writeln("\r");
+          processCommand(bufferCommand);
+          bufferCommand = "";
+          break;
+        default:
+          terminal.write(key);
+          bufferCommand += key;
+      }
+    });
 
     return () => {
       terminal.dispose();
@@ -57,25 +77,6 @@ const TerminalXTerm = React.memo(function TerminalXTerm({
     fitAddon.fit();
   }
 
-  terminal.onKey(({ key, domEvent }) => {
-    domEvent = domEvent;
-    switch (key) {
-      case "\x7F":
-        terminal.write("\b \b");
-        if (bufferCommand && bufferCommand.length > 0)
-          bufferCommand = bufferCommand.slice(0, -1);
-        break;
-      case "\r":
-        terminal.writeln("\r");
-        processCommand(bufferCommand);
-        bufferCommand = "";
-        break;
-      default:
-        terminal.write(key);
-        bufferCommand += key;
-    }
-  });
-
   // const fetchEditorData = async () => {
   //   try {
   //     const responseData = await getEditorData(credentials);
@@ -89,6 +90,7 @@ const TerminalXTerm = React.memo(function TerminalXTerm({
   // const batchGetEditorData = debounce(fetchEditorData, 500);
 
   async function processCommand(bufferCommand: string) {
+    console.log("bufferCommand: ", bufferCommand);
     if (ws && ws.readyState == WebSocket.OPEN) {
       let msg = JSON.stringify({
         type: "xterm",
