@@ -7,43 +7,20 @@ import { initialData } from "../../utils/utils";
 import { getFileData } from "../../services/services";
 
 const Explorer: React.FC<ExplorerProps> = ({
+  ws,
   focusedFileName,
   filesData,
+  tree,
+  setTree,
   setTabNames,
   setFocusedTabName,
   setFocusedFileName,
   getAndSetFileData,
 }) => {
-  const [tree, setTree] = useState<TreeData>(initialData);
+  // const [tree, setTree] = useState<TreeData>(initialData);
 
-  useEffect(() => {
-    let children: string[] = [];
-    let obj: any = {};
-    if (filesData) {
-      for (const [fileName, _] of Object.entries(filesData)) {
-        obj[fileName] = {
-          id: fileName,
-          Children: [],
-          data: { title: fileName, type: "file" },
-        };
-        children.push(fileName);
-      }
-
-      setTree((prevTree) => {
-        return {
-          ...prevTree,
-          items: {
-            ...prevTree.items,
-            ...obj,
-            playground: {
-              ...prevTree.items.playground,
-              children: children,
-            },
-          },
-        };
-      });
-    }
-  }, [filesData]);
+  // useEffect(() => {}, [tree]);
+  console.log("RENDER EXPLORER -> ", tree);
 
   const handleExpand = (itemId: string | number) => {
     const newTree = mutateTree(tree, itemId, { isExpanded: true });

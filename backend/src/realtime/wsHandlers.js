@@ -3,6 +3,7 @@ import {
   startContainer,
   docker,
 } from "../api/controllers/terminalController.js";
+import { initWatcher } from "./chokidar.js";
 
 export async function handleNewWSConnection(ws, req) {
   console.log("Client connected to the WebSocket Server");
@@ -11,6 +12,10 @@ export async function handleNewWSConnection(ws, req) {
     .searchParams;
   const username = queryParams.get("username");
   if (username) currentUsername = username;
+
+  let volumeName = "vid_cid_" + currentUsername;
+
+  let watcher = initWatcher(ws, volumeName);
 
   try {
     let container = await startContainer(currentUsername);
@@ -37,29 +42,42 @@ export async function handleNewWSConnection(ws, req) {
         execStream,
         {
           write: (chunk) => {
-            ws.send(chunk.toString());
+            let msg = JSON.stringify({
+              type: "stdout",
+              description: "docker container's shell's stdout",
+              sender: "docker",
+              data: chunk.toString(),
+            });
+            ws.send(msg);
             process.stdout.write(chunk.toString());
           }, // Handle stdout
         },
         {
           write: (chunk) => {
-            ws.send(chunk.toString()); // Handle stderr
+            let msg = JSON.stringify({
+              type: "stedrr",
+              description: "docker container's shell's stderr",
+              sender: "docker",
+              data: chunk.toString(),
+            });
+            ws.send(msg);
             process.stderr.write(chunk.toString());
           },
         }
       );
-      ws.on("message", async (message) => {
-        if (execStream.writable) {
-          execStream.write(message + "\r");
-        }
+      ws.on("message", async (msg) => {
+        let parsedMsg = JSON.parse(msg);
+        if (parsedMsg.type == "xterm")
+          if (execStream.writable) {
+            execStream.write(parsedMsg.command + "\r");
+          }
       });
 
-      // Create a promise to handle the output
-      let data = "";
+      // let data = "";
 
-      execStream.on("data", async (chunk) => {
-        data += chunk.toString();
-      });
+      // execStream.on("data", async (chunk) => {
+      //   data += chunk.toString();
+      // });
 
       // Handle stream close/error
       execStream.on("close", () => {
@@ -69,6 +87,9 @@ export async function handleNewWSConnection(ws, req) {
 
       execStream.on("error", (err) => {
         console.error("Stream error:", err);
+        ws.send(
+          "some error occured while executing the command in the container's terminal"
+        );
         ws.terminate();
       });
 
@@ -84,9 +105,11 @@ export async function handleNewWSConnection(ws, req) {
     } catch (error) {
       console.error("Error executing interactive command:", error);
       ws.send("Error: " + error.message);
+      watcher.close();
       ws.close();
     }
   } catch (err) {
+    watcher.close();
     ws.close();
     console.error(":( error in startContainer", err);
   }

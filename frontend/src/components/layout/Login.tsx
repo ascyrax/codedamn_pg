@@ -8,12 +8,16 @@ import {
   LoginProps,
   LoginServerResponse,
 } from "../../models/interfaces";
-import { createWebSocket } from "./TerminalXTerm";
+import { createWebSocket } from "../../services/ws";
 import { useEffect } from "react";
 
 function Login({
+  ws,
   credentials,
   focusedTabName,
+  setTree,
+  setWs,
+  setTerminalData,
   setNeedToRegister,
   setHasUserLoggedIn,
   setFilesData,
@@ -57,6 +61,9 @@ function Login({
   };
 
   async function fetchDataEfficiently() {
+    ws = await createWebSocket(ws, credentials, setTerminalData, setTree);
+    setWs(ws);
+
     await fetchEditorTabs();
 
     // fetch the focused tab data
@@ -64,9 +71,6 @@ function Login({
 
     // fetch the data for the rest of the opened tabs (using fetch stream)
     // this is done using the useEffect in the App.tsx, after the tabNames has been modified
-
-    // await fetchEditorData();
-    await createWebSocket(credentials);
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {

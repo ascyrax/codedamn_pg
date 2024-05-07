@@ -4,7 +4,7 @@ codedamn full-stack developer assignment
 Problem statement: Develop a basic codedamn playground-like interface
 
 Technologies to use:
-React/Next.js for a basic frontend (mandatory)
+React for a basic frontend (mandatory)
 TypeScript on the frontend (mandatory)
 Monaco editor as code editor (mandatory)
 Xterm.js for terminal preview (recommended)

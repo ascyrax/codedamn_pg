@@ -53,11 +53,14 @@ export interface CustomTreeData extends TreeData {
 }
 
 export interface ExplorerProps {
+  ws: WebSocket | null;
   focusedFileName: string | undefined;
   filesData: Record<string, FileDescription>;
   // setFilesData: (
   //   value: React.SetStateAction<Record<string, FileDescription>>
   // ) => void;
+  tree: TreeData;
+  setTree: (value: TreeData) => void;
   setTabNames: (value: React.SetStateAction<string[]>) => void;
   // setTabNames: (tabNames: string[]) => void;
   setFocusedTabName: (tabName: string | undefined) => void;
@@ -84,8 +87,12 @@ export interface PreviewProps {
 }
 
 export interface LoginProps {
+  ws: WebSocket | null;
   credentials: credentials;
   focusedTabName: string | undefined;
+  setTree: (value: TreeData) => void;
+  setTerminalData: (value: string) => void;
+  setWs: (ws: React.SetStateAction<WebSocket | null>) => void;
   setTabNames: (value: React.SetStateAction<string[]>) => void;
   // setTabNames: (tabNames: string[]) => void;
   setNeedToRegister: (value: boolean) => void;
@@ -105,12 +112,16 @@ export interface RegisterProps {
 }
 
 export interface MonacoEditorProps {
+  ws: WebSocket | null;
+  terminalData: string;
   tabNames: string[];
   focusedTabName: string | undefined;
   focusedFileName: string | undefined;
   filesData: Record<string, FileDescription>;
   prevFilesData: Record<string, FileDescription>;
   // setTabNames: (tabNames: string[]) => void;
+  tree: TreeData;
+  setTree: (value: TreeData) => void;
   setTabNames: (value: React.SetStateAction<string[]>) => void;
 
   // setFilesData: (data: Record<string, FileDescription> | undefined) => void;
@@ -128,6 +139,8 @@ export interface MonacoEditorProps {
 }
 
 export interface TerminalXTermProps {
+  terminalData: string;
+  ws: WebSocket | null;
   // setFilesData: (data: Record<string, FileDescription> | undefined) => void;
   setFilesData: (
     value: React.SetStateAction<Record<string, FileDescription>>
@@ -141,4 +154,13 @@ export interface LoginServerResponse {
   msg: "string";
   success: boolean;
   token: "string";
+}
+
+export interface chokidarMsg {
+  type: string;
+  description: string;
+  sender: string;
+  filePath: string;
+  dirPath: string;
+  volumePath: string; // basePath
 }

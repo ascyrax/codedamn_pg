@@ -5,6 +5,8 @@ import Login from "./components/layout/Login.tsx";
 import { FileDescription, credentials } from "./models/interfaces.tsx";
 import "./styles/app.css";
 import { getFileData } from "./services/services.tsx";
+import { TreeData } from "@atlaskit/tree";
+import { initialData } from "./utils/utils.tsx";
 
 function App() {
   const [tabNames, setTabNames] = useState<string[]>([]);
@@ -26,7 +28,11 @@ function App() {
     useState<boolean>(true);
   const [isInitialTabsLoad, setIsInitialTabsLoad] = useState<boolean>(true);
 
-  // console.log("RENDER App: ", focusedTabName);
+  const [ws, setWs] = useState<WebSocket | null>(null);
+  const [terminalData, setTeminalData] = useState("");
+  const [tree, setTree] = useState<TreeData>(initialData);
+
+  console.log("RENDER App: ", { tree });
 
   // these two useEffects will only work once.
   // viz, next time the focusedTabName or the tabNames change, data fetch won't be triggered.
@@ -99,12 +105,16 @@ function App() {
       {hasUserLoggedIn ? (
         <div className="MonacoEditor">
           <MonacoEditor
+            ws={ws}
+            terminalData={terminalData}
             tabNames={tabNames}
             focusedFileName={focusedFileName}
             focusedTabName={focusedTabName}
             filesData={filesData}
             prevFilesData={prevFilesData}
             credentials={credentials}
+            tree={tree}
+            setTree={setTree}
             setFocusedFileName={setFocusedFileName}
             setFocusedTabName={setFocusedTabName}
             setTabNames={setTabNames}
@@ -118,8 +128,12 @@ function App() {
         <Register setNeedToRegister={setNeedToRegister} />
       ) : (
         <Login
+          ws={ws}
           credentials={credentials}
           focusedTabName={focusedTabName}
+          setTree={setTree}
+          setWs={setWs}
+          setTerminalData={setTeminalData}
           setNeedToRegister={setNeedToRegister}
           setHasUserLoggedIn={setHasUserLoggedIn}
           setFilesData={setFilesData}

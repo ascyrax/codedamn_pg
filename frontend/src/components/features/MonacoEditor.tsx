@@ -17,19 +17,23 @@ const batchUploadFilesData = debounce(postCodeChange, 200);
 
 // frontend
 const MonacoEditor = ({
+  ws,
+  terminalData,
   tabNames,
   filesData,
   prevFilesData,
   credentials,
   focusedTabName,
   focusedFileName,
+  tree,
+  setTree,
   setCredentials,
   setFilesData,
   setPrevFilesData,
   setTabNames,
   setFocusedFileName,
   setFocusedTabName,
-  getAndSetFileData
+  getAndSetFileData,
 }: MonacoEditorProps) => {
   const [_, setFileNames] = useState<string[]>([]);
 
@@ -157,8 +161,11 @@ const MonacoEditor = ({
         maxWidth={utils.maxExplorerWidth}
       >
         <Explorer
+          ws={ws}
           filesData={filesData}
           focusedFileName={focusedFileName}
+          tree={tree}
+          setTree={setTree}
           setTabNames={setTabNames}
           setFocusedTabName={setFocusedTabName}
           setFocusedFileName={setFocusedFileName}
@@ -237,6 +244,8 @@ const MonacoEditor = ({
           enableResizing={false}
         >
           <TerminalXTerm
+            ws={ws}
+            terminalData={terminalData}
             credentials={credentials}
             setCredentials={setCredentials}
             setFilesData={setFilesData}
