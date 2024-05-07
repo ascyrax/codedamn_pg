@@ -91,7 +91,7 @@ export async function handleLogin(req, res) {
     const user = await UserModel.findOne({ username });
     if (user) {
       try {
-        if (bcrypt.compare(password, user.password)) {
+        if (await bcrypt.compare(password, user.password)) {
           const token = jwt.sign(
             { userId: user.username },
             process.env.SECRET_KEY,

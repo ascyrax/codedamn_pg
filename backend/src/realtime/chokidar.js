@@ -88,7 +88,7 @@ function updateExplorer(ws, volumePath) {
   const treeData = formatForAtlaskitTree(directoryStructure);
 
   // console.log(treeData);
-  console.dir(treeData, { depth: null, colors: true });
+  // console.dir(treeData, { depth: null, colors: true });
 
   let msg = JSON.stringify({
     type: "explorer",
@@ -109,7 +109,7 @@ const formatForAtlaskitTree = (directoryStructure) => {
 };
 
 export function initWatcher(ws, volumeName) {
-  console.log("initWatcher -> ", { volumeName });
+  // console.log("initWatcher -> ", { volumeName });
   let volumePath = `/var/tmp/codedamn/volumes/${volumeName}`;
   let watcher = chokidar.watch(`${volumePath}`, {
     ignored: /^\./,
@@ -119,7 +119,7 @@ export function initWatcher(ws, volumeName) {
   updateExplorer(ws, volumePath);
 
   watcher.on("add", (filePath) => {
-    console.log(`File ${filePath} has been added`);
+    // console.log(`File ${filePath} has been added`);
     // if (fileOrigins.get(filePath) === "frontend") {
     //   // Change was made by frontend, reset the flag and do not notify frontend
     //   fileOrigins.set(filePath, null);
@@ -149,7 +149,7 @@ export function initWatcher(ws, volumeName) {
   });
 
   watcher.on("addDir", (dirPath) => {
-    console.log(`Directory ${dirPath} has been added`);
+    // console.log(`Directory ${dirPath} has been added`);
     let msg = JSON.stringify({
       type: "addDir",
       description: "directory added",
@@ -163,7 +163,7 @@ export function initWatcher(ws, volumeName) {
   });
 
   watcher.on("change", (filePath) => {
-    console.log(`File ${filePath} has been changed`);
+    // console.log(`File ${filePath} has been changed`);
     let msg = JSON.stringify({
       type: "change",
       description: "file change",
@@ -177,7 +177,7 @@ export function initWatcher(ws, volumeName) {
   });
 
   watcher.on("unlink", (filePath) => {
-    console.log(`File ${filePath} has been removed`);
+    // console.log(`File ${filePath} has been removed`);
     let msg = JSON.stringify({
       type: "unlink",
       description: "file removed",
@@ -191,7 +191,7 @@ export function initWatcher(ws, volumeName) {
   });
 
   watcher.on("unlinkDir", (dirPath) => {
-    console.log(`Directory ${dirPath} has been removed`);
+    // console.log(`Directory ${dirPath} has been removed`);
     let msg = JSON.stringify({
       type: "unlinkDir",
       description: "directory removed",
@@ -205,19 +205,19 @@ export function initWatcher(ws, volumeName) {
   });
 
   watcher.on("ready", () => {
-    console.log("Initial scan complete. Ready for changes");
+    // console.log("Initial scan complete. Ready for changes");
   });
 
   watcher.on("error", (error) => {
-    console.log(`Watcher error: ${error}`);
+    // console.log(`Watcher error: ${error}`);
   });
 
   watcher.on("all", (event, path) => {
-    console.log(`Event type: ${event}, Path: ${path}`);
+    // console.log(`Event type: ${event}, Path: ${path}`);
   });
 
   watcher.on("close", function () {
-    console.log(`chokidar for ${volumeName} is tired now. closing. bye.`);
+    // console.log(`chokidar for ${volumeName} is tired now. closing. bye.`);
   });
 
   return watcher;
