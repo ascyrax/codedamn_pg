@@ -3,8 +3,8 @@ import React, { useEffect, useState } from "react";
 import Tree, { RenderItemParams, TreeData, mutateTree } from "@atlaskit/tree";
 import "@atlaskit/css-reset";
 import { ExplorerProps } from "../../models/interfaces";
-import { initialData } from "../../utils/utils";
-import { getFileData } from "../../services/services";
+// import { initialData } from "../../utils/utils";
+// import { getFileData } from "../../services/services";
 
 const Explorer: React.FC<ExplorerProps> = ({
   ws,
@@ -20,7 +20,7 @@ const Explorer: React.FC<ExplorerProps> = ({
   // const [tree, setTree] = useState<TreeData>(initialData);
 
   // useEffect(() => {}, [tree]);
-  console.log("RENDER EXPLORER -> ", tree);
+  // console.log("RENDER EXPLORER -> ", tree);
 
   const handleExpand = (itemId: string | number) => {
     const newTree = mutateTree(tree, itemId, { isExpanded: true });

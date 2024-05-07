@@ -4,10 +4,6 @@ import fs from "fs";
 
 const getDirectoryStructure = (dirPath, parentId = "playground") => {
   let structure = {};
-  // if (parentId == "playground") {
-  //   structure = {
-
-  // }
   const items = fs.readdirSync(dirPath, { withFileTypes: true });
 
   for (let item of items) {
@@ -17,23 +13,31 @@ const getDirectoryStructure = (dirPath, parentId = "playground") => {
         id: itemId,
         children: [],
         hasChildren: true,
+        parent: parentId,
         isExpanded: false,
         isChildrenLoading: false,
         data: {
           title: item.name,
+          type: "folder",
         },
       };
       const childStructure = getDirectoryStructure(
         path.join(dirPath, item.name),
         itemId
       );
-      structure[itemId].children = Object.keys(childStructure);
+      let arrChildren = [];
+      for (let [key, val] of Object.entries(childStructure)) {
+        if (val.parent == itemId) arrChildren.push(key);
+      }
+      // console.log("ARRCHILDREN:", arrChildren);
+      structure[itemId].children = [...arrChildren];
       structure = { ...structure, ...childStructure };
     } else {
       structure[itemId] = {
         id: itemId,
         children: [],
         hasChildren: false,
+        parent: parentId,
         data: {
           title: item.name,
           type: "file",
@@ -50,8 +54,7 @@ function updateExplorer(ws, volumePath) {
 
   let pg_children = [];
   for (let [key, val] of Object.entries(directoryStructure)) {
-    console.log(key, val);
-    pg_children.push(key);
+    if (val.parent == "playground") pg_children.push(key);
   }
 
   directoryStructure = {
@@ -83,6 +86,9 @@ function updateExplorer(ws, volumePath) {
   };
 
   const treeData = formatForAtlaskitTree(directoryStructure);
+
+  // console.log(treeData);
+  console.dir(treeData, { depth: null, colors: true });
 
   let msg = JSON.stringify({
     type: "explorer",

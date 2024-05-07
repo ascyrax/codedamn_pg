@@ -14,7 +14,7 @@ export const getEditorTabs = async (req, res) => {
 
   const userTabObj = await getUserTabFromDB(username);
   if (userTabObj) {
-    console.log("getEditorTabs -> userTabObj: ", userTabObj);
+    // console.log("getEditorTabs -> userTabObj: ", userTabObj);
     res.status(200).json({ success: true, userTabObj });
   } else {
     res.status(404).json({ success: true, userTabObj });
@@ -34,7 +34,7 @@ export const getFileData = async (req, res) => {
     fileName = req.query.fileName;
   }
 
-  console.log("getFileData -> ", username, fileName);
+  // console.log("getFileData -> ", username, fileName);
 
   // check if the volume exist or not
   let volCheck = await checkForVolume(volumeName);
@@ -50,7 +50,7 @@ async function getUserTabFromDB(username) {
   try {
     const userTabObj = await UserTabsModel.findOne({ username });
     if (userTabObj) {
-      console.log("getUserTabFromDB() -> userTabObj: ", userTabObj);
+      // console.log("getUserTabFromDB() -> userTabObj: ", userTabObj);
       return userTabObj;
     } else {
       return [];
@@ -62,7 +62,7 @@ async function getUserTabFromDB(username) {
 }
 
 async function checkForVolume(volumeName) {
-  console.log("checkForVolume: ", volumeName);
+  // console.log("checkForVolume: ", volumeName);
   try {
     // Ensure the volume exists, or create it if it doesn't
     let volume = docker.getVolume(volumeName);
@@ -70,7 +70,7 @@ async function checkForVolume(volumeName) {
       console.error("checkForVolume -> error inspecting the volume");
       throw new Error("volume does not exist");
     });
-    console.log(`checkForVolume -> Using volume: ${volumeInfo.Name}`);
+    // console.log(`checkForVolume -> Using volume: ${volumeInfo.Name}`);
     return true;
   } catch (error) {
     console.error(
@@ -203,7 +203,7 @@ async function updateFile({ fileName, fileContent }, volumeName) {
     );
 
     await fs.writeFile(filePath, fileContent);
-    console.log(`Updated file: ${filePath}`);
+    // console.log(`Updated file: ${filePath}`);
   } catch (error) {
     console.error("Failed to update files:", error);
   }
@@ -254,7 +254,7 @@ async function applyPatch(originalText, filePatch) {
     // Assuming `patches` is the patch object received or defined elsewhere
     const patches = dmp.patch_fromText(filePatch);
     const [newText, results] = dmp.patch_apply(patches, originalText);
-    console.log("Patch results:", results); // This will show which patches were applied successfully
+    // console.log("Patch results:", results); // This will show which patches were applied successfully
 
     if (results.some((result) => !result)) {
       console.log("Some patches did not apply successfully");

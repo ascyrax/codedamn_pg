@@ -32,7 +32,7 @@ function App() {
   const [terminalData, setTeminalData] = useState("");
   const [tree, setTree] = useState<TreeData>(initialData);
 
-  console.log("RENDER App: ", { tree });
+  // console.log("RENDER App: ", { tree });
 
   // these two useEffects will only work once.
   // viz, next time the focusedTabName or the tabNames change, data fetch won't be triggered.

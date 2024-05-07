@@ -85,7 +85,7 @@ export async function handleLogin(req, res) {
   }
 
   const { username, password } = req.body.body;
-  console.log("handleLogin", { username }, { password });
+  // console.log("handleLogin", { username }, { password });
 
   try {
     const user = await UserModel.findOne({ username });

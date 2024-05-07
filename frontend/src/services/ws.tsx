@@ -6,7 +6,7 @@ export async function createWebSocket(
   ws: WebSocket | null,
   credentials: credentials,
   setTerminalData: (value: string) => void,
-  setTree:(tree:TreeData)=>void
+  setTree: (tree: TreeData) => void
 ) {
   ws = new WebSocket(
     `${SERVER_WSDOMAIN}:${SERVER_PORT}?username=${credentials.username}`
@@ -18,9 +18,9 @@ export async function createWebSocket(
   };
 
   ws.onmessage = function (event) {
-    console.log("ws receive -> : ", event.data);
+    // console.log("ws receive -> : ", event);
     const msg = JSON.parse(event.data);
-    console.log("msg -> ", msg);
+    // console.log("ws receive -> ", msg);
     if (msg.type == "stdout" || msg.type == "stderr") setTerminalData(msg.data);
     else if (msg.type == "explorer") {
       setTree(msg.explorerData);
