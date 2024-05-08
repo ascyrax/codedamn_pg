@@ -109,7 +109,7 @@ function removePlaygroundPrefix(filename: string | undefined) {
   const prefix = "playground";
   // Check if the filename starts with the prefix and remove it
   if (filename && filename.startsWith(prefix)) {
-    console.log(filename);
+    // console.log(filename);
     return filename.slice(prefix.length);
   }
   return filename;

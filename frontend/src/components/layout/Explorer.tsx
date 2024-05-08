@@ -64,7 +64,7 @@ const Explorer: React.FC<ExplorerProps> = ({
         ref={renderItemParams.provided.innerRef}
         {...renderItemParams.provided.draggableProps}
         className={`${
-          focusedFileName == renderItemParams.item.data.title ? "focused" : ""
+          focusedFileName == renderItemParams.item.id ? "focused" : ""
         }`}
       >
         <span

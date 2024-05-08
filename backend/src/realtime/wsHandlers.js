@@ -14,11 +14,12 @@ export async function handleNewWSConnection(ws, req) {
   if (username) currentUsername = username;
 
   let volumeName = "vid_cid_" + currentUsername;
-
-  let watcher = initWatcher(ws, volumeName);
-
+  let watcher;
   try {
     let container = await startContainer(currentUsername);
+
+    watcher = initWatcher(ws, volumeName);
+
     const execOptions = {
       Cmd: ["bash"], // Command to start bash
       AttachStdin: true,
