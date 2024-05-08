@@ -16,6 +16,7 @@ export async function postCodeChange(
     value: React.SetStateAction<Record<string, FileDescription>>
   ) => void
 ) {
+  console.log("postCodeChange: ", fileName, originalText, newText);
   fileName = removePlaygroundPrefix(fileName);
 
   const diffs = dmp.diff_main(originalText, newText);
@@ -31,7 +32,7 @@ export async function postCodeChange(
   async function makePostRequest() {
     try {
       const response = await axios.post(
-        `${SERVER_DOMAIN}:${SERVER_PORT}/editordata`,
+        `${SERVER_DOMAIN}:${SERVER_PORT}/editordata/file`,
         {
           title: "differential batch update for file edits",
           filePatch: { fileName, patch },

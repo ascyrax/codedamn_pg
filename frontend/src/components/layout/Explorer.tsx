@@ -3,9 +3,6 @@ import React, { useEffect, useState } from "react";
 import Tree, { RenderItemParams, TreeData, mutateTree } from "@atlaskit/tree";
 import "@atlaskit/css-reset";
 import { ExplorerProps } from "../../models/interfaces";
-import { updateEditorTabs } from "../../services/services";
-// import { initialData } from "../../utils/utils";
-// import { getFileData } from "../../services/services";
 
 const Explorer: React.FC<ExplorerProps> = ({
   ws,

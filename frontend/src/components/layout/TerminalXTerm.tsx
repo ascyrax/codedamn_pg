@@ -2,66 +2,67 @@ import React, { useRef, useEffect, useState } from "react";
 import { Terminal } from "@xterm/xterm";
 import { FitAddon } from "xterm-addon-fit";
 import "@xterm/xterm/css/xterm.css";
-// import { getEditorData } from "../../services/services";
-// import { debounce } from "lodash-es";
-import {
-  TerminalXTermProps,
-  credentials,
-  chokidarMsg,
-} from "../../models/interfaces";
-import { SERVER_WSDOMAIN, SERVER_PORT } from "../../utils/utils";
-
-// function updateExplorer(msg: chokidarMsg) {}
-
-const terminal = new Terminal({
-  letterSpacing: 2,
-  cursorBlink: true,
-  cursorStyle: "bar",
-  cursorWidth: 1,
-  cursorInactiveStyle: "bar",
-  fontFamily: '"Courier New", "Fira Code", "Roboto Mono", monospace',
-  fontSize: 14,
-});
+import { TerminalXTermProps } from "../../models/interfaces";
 
 const TerminalXTerm = React.memo(function TerminalXTerm({
   ws,
   terminalData,
 }: TerminalXTermProps) {
+  let [terminal, setTerminal] = useState<Terminal>(initTerminal());
   const terminalRef = useRef(null);
   let bufferCommand = "";
 
+  // console.log("RENDER TERMINALXTERM", { terminalData });
 
-  useEffect(() => {
-    renderTerminal();
-    fitTerminalToParentDiv();
-
-    terminal.onKey(({ key, domEvent }) => {
-      domEvent = domEvent;
-      switch (key) {
-        case "\x7F":
-          terminal.write("\b \b");
-          if (bufferCommand && bufferCommand.length > 0)
-            bufferCommand = bufferCommand.slice(0, -1);
-          break;
-        case "\r":
-          terminal.writeln("\r");
-          processCommand(bufferCommand);
-          bufferCommand = "";
-          break;
-        default:
-          terminal.write(key);
-          bufferCommand += key;
-      }
+  function initTerminal() {
+    const terminal = new Terminal({
+      letterSpacing: 2,
+      cursorBlink: true,
+      cursorStyle: "bar",
+      cursorWidth: 1,
+      cursorInactiveStyle: "bar",
+      fontFamily: '"Courier New", "Fira Code", "Roboto Mono", monospace',
+      fontSize: 14,
     });
 
-    return () => {
-      terminal.dispose();
-    };
-  }, []);
+    return terminal;
+  }
 
   useEffect(() => {
-    // console.log("useEffect TERMINALXTERM-> ", terminalData);
-    // console.log("useEffect TERMINALXTERM-> ", terminal)
+    // console.log("USEEFFECT WS", terminal);
+    if (ws) {
+      // terminal && terminal.dispose();
+      terminal = initTerminal();
+      terminal && renderTerminal();
+      terminal && fitTerminalToParentDiv();
+      terminal &&
+        terminal.onKey(({ key, domEvent }) => {
+          domEvent = domEvent;
+          switch (key) {
+            case "\x7F":
+              terminal.write("\b \b");
+              if (bufferCommand && bufferCommand.length > 0)
+                bufferCommand = bufferCommand.slice(0, -1);
+              break;
+            case "\r":
+              terminal.writeln("\r");
+              processCommand(bufferCommand);
+              bufferCommand = "";
+              break;
+            default:
+              terminal.write(key);
+              bufferCommand += key;
+          }
+        });
+      terminal && setTerminal(terminal);
+    }
+    return () => {
+      terminal && terminal.dispose();
+    };
+  }, [ws]);
+
+  useEffect(() => {
+    // console.log({ terminal }, { terminalData });
     terminal && terminalData && terminal.write(terminalData);
   }, [terminalData]);
 
@@ -69,28 +70,20 @@ const TerminalXTerm = React.memo(function TerminalXTerm({
     if (terminalRef.current) {
       terminal.open(terminalRef.current);
     }
+    console.log("terminal rendered");
   }
 
   function fitTerminalToParentDiv() {
     const fitAddon = new FitAddon();
     terminal.loadAddon(fitAddon);
     fitAddon.fit();
+    console.log("terminal fit");
   }
 
-  // const fetchEditorData = async () => {
-  //   try {
-  //     const responseData = await getEditorData(credentials);
-  //     if (responseData) {
-  //       setFilesData(responseData);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching editor data:", error);
-  //   }
-  // };
-  // const batchGetEditorData = debounce(fetchEditorData, 500);
-
-  async function processCommand(bufferCommand: string) {
+  function processCommand(bufferCommand: string) {
     // console.log("bufferCommand: ", bufferCommand);
+    // console.log(ws);
+    // console.log(ws?.readyState);
     if (ws && ws.readyState == WebSocket.OPEN) {
       let msg = JSON.stringify({
         type: "xterm",

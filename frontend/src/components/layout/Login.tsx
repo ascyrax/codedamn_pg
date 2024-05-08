@@ -8,13 +8,14 @@ import {
   LoginProps,
   LoginServerResponse,
 } from "../../models/interfaces";
-import { createWebSocket } from "../../services/ws";
+// import { createWebSocket } from "../../services/ws";
 import { useEffect } from "react";
 
 function Login({
   ws,
   credentials,
   focusedTabName,
+  tree,
   setTree,
   setWs,
   setTerminalData,
@@ -98,14 +99,15 @@ function Login({
         "login successful + jwt token saved in localStorage",
         serverResponse
       );
-      ws = await createWebSocket(
-        ws,
-        credentials,
-        setTerminalData,
-        setTree
-        // token
-      );
-      setWs(ws);
+      // ws = await createWebSocket(
+      //   ws,
+      //   credentials,
+      //   tree,
+      //   setTerminalData,
+      //   setTree
+      //   // token
+      // );
+      // setWs(ws);
       await fetchDataEfficiently();
     } else {
       console.log("could not login");

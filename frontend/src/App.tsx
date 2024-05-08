@@ -6,7 +6,7 @@ import { FileDescription, credentials } from "./models/interfaces.tsx";
 import "./styles/app.css";
 import { getFileData, updateEditorTabs } from "./services/services.tsx";
 import { TreeData } from "@atlaskit/tree";
-import { initialData } from "./utils/utils.tsx";
+import { initialData, SERVER_WSDOMAIN, SERVER_PORT } from "./utils/utils.tsx";
 
 function App() {
   const [tabNames, setTabNames] = useState<string[]>([]);
@@ -28,12 +28,117 @@ function App() {
     useState<boolean>(true);
   const [isInitialTabsLoad, setIsInitialTabsLoad] = useState<boolean>(true);
 
-  const [ws, setWs] = useState<WebSocket | null>(null);
-  const [terminalData, setTeminalData] = useState("");
+  let [ws, setWs] = useState<WebSocket | null>(null);
+  const [terminalData, setTerminalData] = useState("");
   const [tree, setTree] = useState<TreeData>(initialData);
+  // let [updateTree, setUpdateTree] = useState<(newTree: TreeData) => void>(
+  //   (newTree: TreeData) => {
+  //     console.log(tree, newTree);
+  //     if (newTree && newTree.items)
+  //       for (let [key, val] of Object.entries(newTree.items)) {
+  //         if (key == "playground/da") console.log(key, val);
+  //         if (
+  //           val.isExpanded &&
+  //           tree.items &&
+  //           tree.items[key] &&
+  //           tree.items[key].isExpanded
+  //         ) {
+  //           if (key) val.isExpanded = tree.items[key].isExpanded;
+  //         }
+  //       }
+  //     setTree(newTree);
+  //   }
+  // );
+  console.log("RENDER App: ", { tree });
 
-  // console.log("RENDER App: ", { tree });
+  useEffect(() => {
+    if (hasUserLoggedIn) {
+      console.log(
+        hasUserLoggedIn,
+        SERVER_WSDOMAIN,
+        SERVER_PORT,
+        credentials.username
+      );
+      ws = new WebSocket(
+        `${SERVER_WSDOMAIN}:${SERVER_PORT}?username=${credentials.username}`
+      );
 
+      ws.onopen = function () {
+        console.log("connection open");
+        // if (token) ws.send(JSON.stringify({ type: "token", token }));
+      };
+
+      ws.onerror = function (event) {
+        console.error("WebSocket error observed by the client :)", event);
+      };
+
+      ws.onmessage = function (event) {
+        // console.log("ws receive -> : ", event);
+        const msg = JSON.parse(event.data);
+        // console.log("ws receive -> ", msg);
+        if (msg.type == "stdout" || msg.type == "stderr") {
+          console.log(msg.data);
+          setTerminalData(msg.data);
+        } else if (msg.type == "explorer") {
+          updateTree(msg.explorerData);
+        }
+      };
+
+      ws.onclose = function (event) {
+        console.log("WebSocket connection closed.", event);
+      };
+
+      setWs(ws);
+    }
+
+    const updateTree = (newTree: TreeData) => {
+      console.log(tree, newTree);
+      for (let [key, val] of Object.entries(newTree.items)) {
+        if (key == "playground/da") console.log(key, val);
+        if (
+          val.isExpanded &&
+          tree.items &&
+          tree.items[key] &&
+          tree.items[key].isExpanded
+        ) {
+          if (key) val.isExpanded = tree.items[key].isExpanded;
+        }
+      }
+      setTree(newTree);
+    };
+
+    function closeWebSocket(ws: WebSocket | null) {
+      if (!ws) {
+        console.log("WebSocket is not initialized.");
+        return;
+      }
+
+      switch (ws.readyState) {
+        case WebSocket.CONNECTING:
+          console.log("WebSocket is still connecting.");
+          break;
+        case WebSocket.OPEN:
+          console.log("Closing WebSocket.");
+          ws.close();
+          break;
+        case WebSocket.CLOSING:
+          console.log("WebSocket is already closing.");
+          break;
+        case WebSocket.CLOSED:
+          console.log("WebSocket is already closed.");
+          break;
+        default:
+          console.error("Unknown WebSocket state.");
+      }
+    }
+
+    return () => {
+      console.log("APP USEEFFECT RETURN");
+      closeWebSocket(ws);
+    };
+  }, [hasUserLoggedIn]);
+
+  useEffect(() => {}, [tree]);
   // these two useEffects will only work once.
   // viz, next time the focusedTabName or the tabNames change, data fetch won't be triggered.
   useEffect(() => {
@@ -45,7 +150,7 @@ function App() {
       setIsInitialFocusedFileLoad(false); // we don't load the file=focusedTabName every time the focusedTabName state changes
       wrapperAsyncFunc();
     }
-    if (focusedTabName && tabNames) {
+    if (focusedTabName && tabNames && !isInitialFocusedFileLoad) {
       updateEditorTabs(credentials, tabNames, focusedTabName);
     }
   }, [focusedTabName]);
@@ -62,7 +167,7 @@ function App() {
         wrapperAsyncFunc(fileName);
       }
     }
-    if (focusedTabName && tabNames) {
+    if (focusedTabName && tabNames && !isInitialFocusedFileLoad) {
       // let serverResponse = await
       updateEditorTabs(credentials, tabNames, focusedTabName);
     }
@@ -136,11 +241,12 @@ function App() {
       ) : (
         <Login
           ws={ws}
+          tree={tree}
           credentials={credentials}
           focusedTabName={focusedTabName}
           setTree={setTree}
           setWs={setWs}
-          setTerminalData={setTeminalData}
+          setTerminalData={setTerminalData}
           setNeedToRegister={setNeedToRegister}
           setHasUserLoggedIn={setHasUserLoggedIn}
           setFilesData={setFilesData}

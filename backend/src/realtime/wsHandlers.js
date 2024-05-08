@@ -13,6 +13,8 @@ export async function handleNewWSConnection(ws, req) {
   const username = queryParams.get("username");
   if (username) currentUsername = username;
 
+  console.log({ currentUsername });
+
   let volumeName = "vid_cid_" + currentUsername;
   let watcher;
   try {
@@ -68,10 +70,12 @@ export async function handleNewWSConnection(ws, req) {
       );
       ws.on("message", async (msg) => {
         let parsedMsg = JSON.parse(msg);
-        if (parsedMsg.type == "xterm")
+        if (parsedMsg.type == "xterm") {
+          console.log("ws receive-> ", parsedMsg);
           if (execStream.writable) {
             execStream.write(parsedMsg.command + "\r");
           }
+        }
       });
 
       // let data = "";

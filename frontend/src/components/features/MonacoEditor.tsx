@@ -13,7 +13,7 @@ import { Preview } from "../layout/Preview";
 import TerminalXTerm from "../layout/TerminalXTerm";
 
 // batch update to the api endpoint
-const batchUploadFilesData = debounce(postCodeChange, 200);
+const batchUploadFilesData = debounce(postCodeChange, 400);
 
 // frontend
 const MonacoEditor = ({

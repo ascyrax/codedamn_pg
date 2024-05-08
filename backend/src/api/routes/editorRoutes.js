@@ -1,7 +1,7 @@
 import express from "express";
 import {
   // getEditorData,
-  setEditorData,
+  setFileData,
   getEditorTabs,
   getFileData,
   updateEditorTabs
@@ -15,7 +15,7 @@ const editorRoutes = express.Router();
 editorRoutes.get("/tabs", getEditorTabs);
 editorRoutes.post("/tabs", updateEditorTabs);
 editorRoutes.get("/file", getFileData);
-editorRoutes.post("/", setEditorData);
+editorRoutes.post("/file", setFileData);
 // editorRoutes.post("/tabs", setEditorData);
 
 export { editorRoutes };

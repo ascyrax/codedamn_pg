@@ -113,7 +113,7 @@ const formatForAtlaskitTree = (directoryStructure) => {
 };
 
 export function initWatcher(ws, volumeName) {
-  // console.log("initWatcher -> ", { volumeName });
+  console.log("initWatcher -> ", { volumeName });
   let volumePath = `/var/tmp/codedamn/volumes/${volumeName}`;
   let watcher = chokidar.watch(`${volumePath}`, {
     ignored: /^\./,

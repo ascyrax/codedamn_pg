@@ -93,6 +93,7 @@ export interface LoginProps {
   ws: WebSocket | null;
   credentials: credentials;
   focusedTabName: string | undefined;
+  tree: TreeData;
   setTree: (value: TreeData) => void;
   setTerminalData: (value: string) => void;
   setWs: (ws: React.SetStateAction<WebSocket | null>) => void;

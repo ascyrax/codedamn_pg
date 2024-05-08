@@ -11,7 +11,7 @@ export const getEditorTabs = async (req, res) => {
   if (req.username) {
     username = req.username;
   }
-
+  // console.log("getEditorTabs: ", { username });
   const userTabObj = await getUserTabFromDB(username);
   if (userTabObj) {
     // console.log("getEditorTabs -> userTabObj: ", userTabObj);
@@ -24,22 +24,24 @@ export const getEditorTabs = async (req, res) => {
 export async function updateEditorTabs(req, res) {
   let { tabs, focusedTabName, credentials } = req.body;
   let username = credentials.username ? credentials.username : "";
-  // console.log(tabs, focusedTabName, username);
+  // console.log("updateEditorTabs:", { tabs }, { focusedTabName }, { username });
   try {
     let result = await UserTabsModel.updateOne(
       { username },
       { $set: { tabs, focusedTabName } }
     );
+    // console.log({ result });
     // console.log("result.modifiedCount:", result.modifiedCount);
     if (result.modifiedCount) {
-      return { success: true };
+      console.log("user tabs updated");
+      return res.status(200).json({ success: true });
     } else {
-      console.error("could not update tabs. internal server error");
-      return { success: false };
+      console.error("nothing to update");
+      return res.status(500).json({ success: false });
     }
   } catch (err) {
-    console.error("could not update tabs. internal server error", err);
-    return { success: false };
+    console.error("could not update tabs. internal server error: ", err);
+    return res.status(500).json({ success: false });
   }
 }
 
@@ -225,13 +227,18 @@ async function updateFile({ fileName, fileContent }, volumeName) {
     );
 
     await fs.writeFile(filePath, fileContent);
+    return { success: true };
     // console.log(`Updated file: ${filePath}`);
   } catch (error) {
-    console.error("Failed to update files:", error);
+    console.error(
+      `Failed to update file: ${fileName} in volume:${volumeName}. error: `,
+      error
+    );
+    return { success: false };
   }
 }
 
-const setEditorData = async (req, res) => {
+export const setFileData = async (req, res) => {
   let username = "",
     fileName = "",
     volumeName = "",
@@ -247,14 +254,24 @@ const setEditorData = async (req, res) => {
     filePatch = req.body.filePatch.patch;
   }
 
+  // console.log("setFileData: ", username, fileName, volumeName, filePatch);
+
   let originalText = await getFileContentFromFS(volumeName, fileName);
-  // console.log("setEditorData: ", { originalText });
+  // console.log("setFileData: ", { originalText });
   let newText = await applyPatch(originalText ? originalText : "", filePatch);
-  // console.log("setEditorData: ", { newText });
+  // console.log("setFileData: ", { newText });
 
-  await updateFile({ fileName, fileContent: newText }, volumeName);
-
-  res.status(200).json({ success: true, msg: "filesData updated" });
+  let fileUpdateResult = await updateFile(
+    { fileName, fileContent: newText },
+    volumeName
+  );
+  if (fileUpdateResult.success) {
+    res
+      .status(200)
+      .json({ success: true, msg: `${fileName} updated successfully` });
+  } else {
+    res.status(500).json({ success: false, msg: `error updating ${fileName}` });
+  }
 };
 
 async function getFileContentFromFS(volumeName, fileName) {
@@ -288,5 +305,3 @@ async function applyPatch(originalText, filePatch) {
     return originalText;
   }
 }
-
-export { setEditorData };
