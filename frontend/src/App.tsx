@@ -4,9 +4,16 @@ import Register from "./components/layout/Register.tsx";
 import Login from "./components/layout/Login.tsx";
 import { FileDescription, credentials } from "./models/interfaces.tsx";
 import "./styles/app.css";
-import { getFileData, updateEditorTabs } from "./services/services.tsx";
+import {
+  getFileData,
+  updateEditorTabs,
+  postCodeChange,
+} from "./services/services.tsx";
+import { debounce } from "lodash-es";
 import { TreeData } from "@atlaskit/tree";
 import { initialData, SERVER_WSDOMAIN, SERVER_PORT } from "./utils/utils.tsx";
+
+const batchUploadFilesData = debounce(postCodeChange, 400);
 
 function App() {
   const [tabNames, setTabNames] = useState<string[]>([]);
@@ -49,22 +56,39 @@ function App() {
   //     setTree(newTree);
   //   }
   // );
-  console.log("RENDER App: ", { tree });
+  // console.log("RENDER App: ", { tabNames });
+
+  useEffect(() => {
+    console.log({filesData})
+    // debounce ie batch the change requests,
+    // also keep a maxWait after which the function is forced to be executed
+    focusedFileName &&
+      batchUploadFilesData(
+        filesData,
+        credentials,
+        focusedFileName,
+        prevFilesData[focusedFileName]
+          ? prevFilesData[focusedFileName].value
+          : "",
+        filesData[focusedFileName] ? filesData[focusedFileName].value : "",
+        setPrevFilesData
+      );
+  }, [filesData]);
 
   useEffect(() => {
     if (hasUserLoggedIn) {
-      console.log(
-        hasUserLoggedIn,
-        SERVER_WSDOMAIN,
-        SERVER_PORT,
-        credentials.username
-      );
+      // console.log(
+      //   hasUserLoggedIn,
+      //   SERVER_WSDOMAIN,
+      //   SERVER_PORT,
+      //   credentials.username
+      // );
       ws = new WebSocket(
         `${SERVER_WSDOMAIN}:${SERVER_PORT}?username=${credentials.username}`
       );
 
       ws.onopen = function () {
-        console.log("connection open");
+        // console.log("connection open");
         // if (token) ws.send(JSON.stringify({ type: "token", token }));
       };
 
@@ -77,10 +101,18 @@ function App() {
         const msg = JSON.parse(event.data);
         // console.log("ws receive -> ", msg);
         if (msg.type == "stdout" || msg.type == "stderr") {
-          console.log(msg.data);
+          // console.log(msg.data);
           setTerminalData(msg.data);
         } else if (msg.type == "explorer") {
           updateTree(msg.explorerData);
+        } else if (msg.sender == "chokidar") {
+          const basePath = msg.volumePath;
+          const filePath = msg.filePath;
+          const relativePath = filePath.replace(`${basePath}`, "");
+          console.log(msg, relativePath);
+          if (relativePath) {
+            getAndSetFileData(relativePath);
+          }
         }
       };
 
@@ -92,9 +124,9 @@ function App() {
     }
 
     const updateTree = (newTree: TreeData) => {
-      console.log(tree, newTree);
+      // console.log(tree, newTree);
       for (let [key, val] of Object.entries(newTree.items)) {
-        if (key == "playground/da") console.log(key, val);
+        // if (key == "playground/da") console.log(key, val);
         if (
           val.isExpanded &&
           tree.items &&
@@ -109,13 +141,13 @@ function App() {
 
     function closeWebSocket(ws: WebSocket | null) {
       if (!ws) {
-        console.log("WebSocket is not initialized.");
+        // console.log("WebSocket is not initialized.");
         return;
       }
 
       switch (ws.readyState) {
         case WebSocket.CONNECTING:
-          console.log("WebSocket is still connecting.");
+          // console.log("WebSocket is still connecting.");
           break;
         case WebSocket.OPEN:
           console.log("Closing WebSocket.");
@@ -133,12 +165,11 @@ function App() {
     }
 
     return () => {
-      console.log("APP USEEFFECT RETURN");
       closeWebSocket(ws);
     };
   }, [hasUserLoggedIn]);
 
-  useEffect(() => {}, [tree]);
+  // useEffect(() => {}, [tree]);
   // these two useEffects will only work once.
   // viz, next time the focusedTabName or the tabNames change, data fetch won't be triggered.
   useEffect(() => {

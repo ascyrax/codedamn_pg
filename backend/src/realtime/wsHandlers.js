@@ -13,7 +13,6 @@ export async function handleNewWSConnection(ws, req) {
   const username = queryParams.get("username");
   if (username) currentUsername = username;
 
-  console.log({ currentUsername });
 
   let volumeName = "vid_cid_" + currentUsername;
   let watcher;
@@ -71,7 +70,7 @@ export async function handleNewWSConnection(ws, req) {
       ws.on("message", async (msg) => {
         let parsedMsg = JSON.parse(msg);
         if (parsedMsg.type == "xterm") {
-          console.log("ws receive-> ", parsedMsg);
+          // console.log("ws receive-> ", parsedMsg);
           if (execStream.writable) {
             execStream.write(parsedMsg.command + "\r");
           }
@@ -100,6 +99,7 @@ export async function handleNewWSConnection(ws, req) {
 
       ws.on("close", () => {
         console.log("WebSocket closed");
+        watcher.close()
         execStream.end();
       });
 
@@ -120,6 +120,7 @@ export async function handleNewWSConnection(ws, req) {
   }
 
   ws.on("close", () => {
+    watcher.close();
     console.log("Client disconnected from the WebSocket Server");
   });
 }

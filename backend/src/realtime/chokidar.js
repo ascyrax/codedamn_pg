@@ -2,6 +2,8 @@ import * as chokidar from "chokidar";
 import path from "path";
 import fs from "fs";
 
+export const fileUpdateOrigin = new Map();
+
 const getDirectoryStructure = (dirPath, parentId = "playground") => {
   let structure = {};
   try {
@@ -124,36 +126,30 @@ export function initWatcher(ws, volumeName) {
 
   watcher.on("add", (filePath) => {
     // console.log(`File ${filePath} has been added`);
-    // if (fileOrigins.get(filePath) === "frontend") {
-    //   // Change was made by frontend, reset the flag and do not notify frontend
-    //   fileOrigins.set(filePath, null);
-    // } else {
-    //   // Change was made by backend or external process, notify frontend
-    //   socket.send(
-    //     JSON.stringify({
-    //       type: "fileChange",
-    //       filePath: filePath,
-    //       contents: fs.readFileSync(filePath).toString(),
-    //     })
-    //   );
-    // }
-    const relativePath = path.relative(volumePath, filePath);
-    const fileName = path.basename(filePath);
-    const dirName = path.dirname(filePath);
-    let msg = JSON.stringify({
-      type: "add",
-      description: "file added",
-      sender: "chokidar",
-      filePath,
-      dirPath: "",
-      volumePath,
-    });
-    ws.send(msg);
-    updateExplorer(ws, volumePath);
+    if (fileUpdateOrigin.get(filePath) === "editor") {
+      // Change was made by editor, reset the flag and do not notify frontend
+      fileUpdateOrigin.set(filePath, null);
+    } else {
+      // Change was made by backend or external process, notify frontend
+      const relativePath = path.relative(volumePath, filePath);
+      const fileName = path.basename(filePath);
+      const dirName = path.dirname(filePath);
+      let msg = JSON.stringify({
+        type: "add",
+        description: "file added",
+        sender: "chokidar",
+        filePath,
+        dirPath: "",
+        volumePath,
+      });
+      ws.send(msg);
+      updateExplorer(ws, volumePath);
+    }
   });
 
   watcher.on("addDir", (dirPath) => {
     // console.log(`Directory ${dirPath} has been added`);
+
     let msg = JSON.stringify({
       type: "addDir",
       description: "directory added",
@@ -167,31 +163,47 @@ export function initWatcher(ws, volumeName) {
   });
 
   watcher.on("change", (filePath) => {
-    // console.log(`File ${filePath} has been changed`);
-    let msg = JSON.stringify({
-      type: "change",
-      description: "file change",
-      sender: "chokidar",
-      filePath,
-      dirPath: "",
-      volumePath,
-    });
-    ws.send(msg);
-    updateExplorer(ws, volumePath);
+    console.log(
+      `File ${filePath} has been changed`,
+      fileUpdateOrigin.get(filePath)
+    );
+    if (fileUpdateOrigin.get(filePath) == "editor") {
+      console.log("if:", filePath, fileUpdateOrigin.get(filePath));
+      // Change was made by editor, reset the flag and do not notify frontend
+      fileUpdateOrigin.set(filePath, "none");
+      // } else if (fileUpdateOrigin.get(filePath) == "terminal") {
+    } else {
+      console.log("else:", filePath, fileUpdateOrigin.get(filePath));
+      let msg = JSON.stringify({
+        type: "change",
+        description: "file change",
+        sender: "chokidar",
+        filePath,
+        dirPath: "",
+        volumePath,
+      });
+      ws.send(msg);
+      updateExplorer(ws, volumePath);
+    }
   });
 
   watcher.on("unlink", (filePath) => {
     // console.log(`File ${filePath} has been removed`);
-    let msg = JSON.stringify({
-      type: "unlink",
-      description: "file removed",
-      sender: "chokidar",
-      filePath,
-      dirPath: "",
-      volumePath,
-    });
-    ws.send(msg);
-    updateExplorer(ws, volumePath);
+    if (fileUpdateOrigin.get(filePath) === "editor") {
+      // Change was made by editor, reset the flag and do not notify frontend
+      fileUpdateOrigin.set(filePath, null);
+    } else {
+      let msg = JSON.stringify({
+        type: "unlink",
+        description: "file removed",
+        sender: "chokidar",
+        filePath,
+        dirPath: "",
+        volumePath,
+      });
+      ws.send(msg);
+      updateExplorer(ws, volumePath);
+    }
   });
 
   watcher.on("unlinkDir", (dirPath) => {

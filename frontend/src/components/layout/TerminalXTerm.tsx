@@ -70,14 +70,12 @@ const TerminalXTerm = React.memo(function TerminalXTerm({
     if (terminalRef.current) {
       terminal.open(terminalRef.current);
     }
-    console.log("terminal rendered");
   }
 
   function fitTerminalToParentDiv() {
     const fitAddon = new FitAddon();
     terminal.loadAddon(fitAddon);
     fitAddon.fit();
-    console.log("terminal fit");
   }
 
   function processCommand(bufferCommand: string) {

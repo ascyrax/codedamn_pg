@@ -3,6 +3,7 @@ import * as fs from "fs/promises";
 import { createVolumeAndContainer, docker } from "./terminalController.js";
 import { UserTabsModel } from "../../models/UserTabsModel.js";
 import { diff_match_patch } from "diff-match-patch";
+import { fileUpdateOrigin } from "../../realtime/chokidar.js";
 
 const dmp = new diff_match_patch();
 
@@ -37,7 +38,7 @@ export async function updateEditorTabs(req, res) {
       return res.status(200).json({ success: true });
     } else {
       console.error("nothing to update");
-      return res.status(500).json({ success: false });
+      return res.status(200).json({ success: false, msg: "nothing to modify" });
     }
   } catch (err) {
     console.error("could not update tabs. internal server error: ", err);
@@ -107,6 +108,9 @@ async function checkForVolume(volumeName) {
 
 // get one files
 async function getFileDataFromFS(res, volumeName, fileName) {
+  if (!fileName) {
+    return res.status(404).json({ success: false, msg: `fileName is empty` });
+  }
   try {
     // Assuming the volume is mounted on the host in a known directory
     const volumePath = path.join("/var/tmp/codedamn/volumes", volumeName);
@@ -225,7 +229,8 @@ async function updateFile({ fileName, fileContent }, volumeName) {
       volumeName,
       fileName
     );
-
+    fileUpdateOrigin.set(filePath, "editor");
+    console.log("updateFile -> ", fileUpdateOrigin, { fileUpdateOrigin });
     await fs.writeFile(filePath, fileContent);
     return { success: true };
     // console.log(`Updated file: ${filePath}`);
@@ -265,12 +270,21 @@ export const setFileData = async (req, res) => {
     { fileName, fileContent: newText },
     volumeName
   );
+
   if (fileUpdateResult.success) {
-    res
-      .status(200)
-      .json({ success: true, msg: `${fileName} updated successfully` });
+    res.status(200).json({
+      success: true,
+      msg: `${fileName} updated successfully`,
+      map: Object.fromEntries(fileUpdateOrigin),
+      fileName,
+    });
   } else {
-    res.status(500).json({ success: false, msg: `error updating ${fileName}` });
+    res.status(500).json({
+      success: false,
+      msg: `error updating ${fileName}`,
+      map: Object.fromEntries(fileUpdateOrigin),
+      fileName,
+    });
   }
 };
 

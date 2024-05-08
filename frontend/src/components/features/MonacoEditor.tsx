@@ -1,19 +1,15 @@
 import { useEffect, useState } from "react";
-import { Monaco } from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
 import CodeEditor from "../layout/CodeEditor";
 import Explorer from "../layout/Explorer";
 import Tabs from "../layout/Tabs";
 import { Rnd, RndResizeCallback } from "react-rnd";
-import { debounce, get } from "lodash-es";
 import * as utils from "../../utils/utils";
-import { postCodeChange } from "../../services/services";
 import { MonacoEditorProps, FileDescription } from "../../models/interfaces";
 import { Preview } from "../layout/Preview";
 import TerminalXTerm from "../layout/TerminalXTerm";
 
 // batch update to the api endpoint
-const batchUploadFilesData = debounce(postCodeChange, 400);
 
 // frontend
 const MonacoEditor = ({
@@ -35,8 +31,6 @@ const MonacoEditor = ({
   setFocusedTabName,
   getAndSetFileData,
 }: MonacoEditorProps) => {
-  const [_, setFileNames] = useState<string[]>([]);
-
   // for resizing the explorer & the editor & the preview
   const [widthExplorer, setWidthExplorer] = useState<number>(
     utils.initialExplorerWidth
@@ -47,30 +41,6 @@ const MonacoEditor = ({
   const [widthPreview, setWidthPreview] = useState<number>(
     utils.initialPreviewWidth
   );
-
-  useEffect(() => {
-    let listFileNames: string[] = [];
-    for (const [fileName, fileData] of Object.entries(filesData)) {
-      listFileNames.push(fileName);
-      // if (fileData.isAnOpenedTab) listTabNames.push(fileName);
-    }
-    setFileNames(listFileNames);
-    // setTabNames(listTabNames);
-
-    // debounce ie batch the change requests,
-    // also keep a maxWait after which the function is forced to be executed
-    focusedFileName &&
-      batchUploadFilesData(
-        filesData,
-        credentials,
-        focusedFileName,
-        prevFilesData[focusedFileName]
-          ? prevFilesData[focusedFileName].value
-          : "",
-        filesData[focusedFileName] ? filesData[focusedFileName].value : "",
-        setPrevFilesData
-      );
-  }, [filesData]);
 
   function handleCodeChange(
     changedValue: string | undefined,
