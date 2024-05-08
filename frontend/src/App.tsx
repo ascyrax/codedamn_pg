@@ -59,7 +59,6 @@ function App() {
   // console.log("RENDER App: ", { tabNames });
 
   useEffect(() => {
-    console.log({filesData})
     // debounce ie batch the change requests,
     // also keep a maxWait after which the function is forced to be executed
     focusedFileName &&
@@ -109,9 +108,8 @@ function App() {
           const basePath = msg.volumePath;
           const filePath = msg.filePath;
           const relativePath = filePath.replace(`${basePath}`, "");
-          console.log(msg, relativePath);
           if (relativePath) {
-            getAndSetFileData(relativePath);
+            getAndSetFileData(`playground${relativePath}`);
           }
         }
       };
@@ -206,12 +204,12 @@ function App() {
 
   const fetchInitialFileData = async (fileName: string | undefined) => {
     if (fileName) {
-      // console.log({ fileName });
       getAndSetFileData(fileName);
     }
   };
 
   async function getAndSetFileData(fileName: string) {
+    console.log({fileName})
     try {
       const response = await getFileData(fileName);
       // console.log("response Loaded: ", response);
