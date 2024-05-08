@@ -4,7 +4,7 @@ import Register from "./components/layout/Register.tsx";
 import Login from "./components/layout/Login.tsx";
 import { FileDescription, credentials } from "./models/interfaces.tsx";
 import "./styles/app.css";
-import { getFileData } from "./services/services.tsx";
+import { getFileData, updateEditorTabs } from "./services/services.tsx";
 import { TreeData } from "@atlaskit/tree";
 import { initialData } from "./utils/utils.tsx";
 
@@ -24,7 +24,7 @@ function App() {
   });
   const [focusedTabName, setFocusedTabName] = useState<string>();
   const [focusedFileName, setFocusedFileName] = useState<string>();
-  const [isInitialFocusedFileLoad, setInitialFocusedFileLoad] =
+  const [isInitialFocusedFileLoad, setIsInitialFocusedFileLoad] =
     useState<boolean>(true);
   const [isInitialTabsLoad, setIsInitialTabsLoad] = useState<boolean>(true);
 
@@ -42,8 +42,11 @@ function App() {
       await fetchInitialFileData(focusedTabName); // do this only after focusedTabName has been set
     }
     if (isInitialFocusedFileLoad && focusedTabName) {
-      setInitialFocusedFileLoad(false); // we don't load the file=focusedTabName every time the focusedTabName state changes
+      setIsInitialFocusedFileLoad(false); // we don't load the file=focusedTabName every time the focusedTabName state changes
       wrapperAsyncFunc();
+    }
+    if (focusedTabName && tabNames) {
+      updateEditorTabs(credentials, tabNames, focusedTabName);
     }
   }, [focusedTabName]);
 
@@ -58,6 +61,10 @@ function App() {
         if (fileName == focusedTabName) continue;
         wrapperAsyncFunc(fileName);
       }
+    }
+    if (focusedTabName && tabNames) {
+      // let serverResponse = await
+      updateEditorTabs(credentials, tabNames, focusedTabName);
     }
   }, [tabNames]);
 

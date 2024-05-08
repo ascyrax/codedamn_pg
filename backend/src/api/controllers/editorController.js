@@ -17,9 +17,31 @@ export const getEditorTabs = async (req, res) => {
     // console.log("getEditorTabs -> userTabObj: ", userTabObj);
     res.status(200).json({ success: true, userTabObj });
   } else {
-    res.status(404).json({ success: true, userTabObj });
+    res.status(404).json({ success: false });
   }
 };
+
+export async function updateEditorTabs(req, res) {
+  let { tabs, focusedTabName, credentials } = req.body;
+  let username = credentials.username ? credentials.username : "";
+  // console.log(tabs, focusedTabName, username);
+  try {
+    let result = await UserTabsModel.updateOne(
+      { username },
+      { $set: { tabs, focusedTabName } }
+    );
+    // console.log("result.modifiedCount:", result.modifiedCount);
+    if (result.modifiedCount) {
+      return { success: true };
+    } else {
+      console.error("could not update tabs. internal server error");
+      return { success: false };
+    }
+  } catch (err) {
+    console.error("could not update tabs. internal server error", err);
+    return { success: false };
+  }
+}
 
 // TODO IMPLEMENT FETCH STREAMING FOR THIS
 export const getFileData = async (req, res) => {
@@ -53,11 +75,11 @@ async function getUserTabFromDB(username) {
       // console.log("getUserTabFromDB() -> userTabObj: ", userTabObj);
       return userTabObj;
     } else {
-      return [];
+      return undefined;
     }
   } catch (error) {
     console.error("Error getting userTabObj from the db:", error);
-    return [];
+    return undefined;
   }
 }
 

@@ -162,6 +162,8 @@ const MonacoEditor = ({
       >
         <Explorer
           ws={ws}
+          tabNames={tabNames}
+          credentials={credentials}
           filesData={filesData}
           focusedFileName={focusedFileName}
           tree={tree}

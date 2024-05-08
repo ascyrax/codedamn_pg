@@ -9,13 +9,15 @@ const dmp = new diff_match_patch();
 export async function postCodeChange(
   filesData: Record<string, FileDescription>,
   _: credentials,
-  fileName: string,
+  fileName: string | undefined,
   originalText: string,
   newText: string,
   setPrevFilesData: (
     value: React.SetStateAction<Record<string, FileDescription>>
   ) => void
 ) {
+  fileName = removePlaygroundPrefix(fileName);
+
   const diffs = dmp.diff_main(originalText, newText);
   dmp.diff_cleanupSemantic(diffs);
   // console.log("Diffs:", diffs);
@@ -47,8 +49,42 @@ export async function postCodeChange(
   setPrevFilesData(filesData);
 }
 
+export async function updateEditorTabs(
+  credentials: credentials,
+  tabs: string[],
+  focusedTabName: string
+) {
+  // const token = localStorage.getItem(credentials.username);
+  // if (token) {
+  //   // Set up common headers
+  //   axios.defaults.headers.common["token"] = token;
+  // }
+  // post request
+  try {
+    const response = await axios.post(
+      `${SERVER_DOMAIN}:${SERVER_PORT}/editorData/tabs`,
+      {
+        title: "update editor tabs",
+        credentials: credentials,
+        tabs: tabs,
+        focusedTabName: focusedTabName,
+      }
+    );
+    if (response.data) {
+      console.log("updateEditorTabs ", response.data);
+      return response.data;
+    }
+    return undefined;
+  } catch (error) {
+    console.error(error);
+    return undefined;
+  }
+}
+
 export async function getEditorTabs(credentials: credentials) {
-  const token = localStorage.getItem(credentials.username);
+  let token;
+  if (credentials && credentials.username)
+    token = localStorage.getItem(credentials.username);
   if (token) {
     // Set up common headers
     axios.defaults.headers.common["token"] = token;
@@ -59,19 +95,29 @@ export async function getEditorTabs(credentials: credentials) {
       `${SERVER_DOMAIN}:${SERVER_PORT}/editorData/tabs`
     );
     if (response.data) {
-      if (response.data.success) {
-        console.log("getEditorTabs ", response.data);
-        return response.data.userTabObj;
-      }
-    }
-    return undefined;
+      console.log("getEditorTabs ", response.data);
+      return response.data;
+    } else return undefined;
   } catch (error) {
     console.error(error);
     return undefined;
   }
 }
 
+// Function to remove the prefix 'playground' from a filename
+function removePlaygroundPrefix(filename: string | undefined) {
+  const prefix = "playground";
+  // Check if the filename starts with the prefix and remove it
+  if (filename && filename.startsWith(prefix)) {
+    console.log(filename);
+    return filename.slice(prefix.length);
+  }
+  return filename;
+}
+
 export async function getFileData(fileName: string | undefined) {
+  //  TODO  REMOVE  THE PREFIX "playground" from the file name
+  fileName = removePlaygroundPrefix(fileName);
   let response;
   try {
     response = await axios.get(
@@ -89,46 +135,22 @@ export async function getFileData(fileName: string | undefined) {
   return response ? response.data : response;
 }
 
-// export async function getEditorData(credentials: credentials) {
-//   // const token = localStorage.getItem(credentials.username);
-//   // if (token) {
-//   //   // Set up common headers
-//   //   axios.defaults.headers.common["token"] = token;
-//   // }
-//   // get request
-//   let modifiedResponseData = {};
-//   try {
-//     const response = await axios.get(
-//       `${SERVER_DOMAIN}:${SERVER_PORT}/editorData`
-//     );
-//     if (response.data && response.data.filesData) {
-//       console.log("getEditorData", response.data);
-//       modifiedResponseData = convertFilesData(response.data.filesData);
-//       console.log("getEditorData", modifiedResponseData);
-//     }
-//     return modifiedResponseData;
-//   } catch (error) {
-//     console.error(error);
-//     return undefined;
-//   }
-// }
-
 export async function postRegisterData(user: user) {
   try {
     const response = await axios.post(
       `${SERVER_DOMAIN}:${SERVER_PORT}/auth/register`,
       {
         title: "register new user",
-        body: user,
-        userId: 1,
-        // withCredentials: true,
+        user: user,
       }
     );
     if (response && response.data) {
       return response.data;
     }
   } catch (error) {
-    console.error(error);
+    console.error(
+      `error in user registration: user: ${user} , error: ${error}`
+    );
     return undefined;
   }
 }
@@ -139,8 +161,7 @@ export async function postLoginData(credentials: credentials) {
       `${SERVER_DOMAIN}:${SERVER_PORT}/auth/login`,
       {
         title: "login user",
-        body: credentials,
-        userId: 1,
+        credentials: credentials,
       }
     );
     if (response && response.data) {

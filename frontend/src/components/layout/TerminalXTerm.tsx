@@ -90,7 +90,7 @@ const TerminalXTerm = React.memo(function TerminalXTerm({
   // const batchGetEditorData = debounce(fetchEditorData, 500);
 
   async function processCommand(bufferCommand: string) {
-    console.log("bufferCommand: ", bufferCommand);
+    // console.log("bufferCommand: ", bufferCommand);
     if (ws && ws.readyState == WebSocket.OPEN) {
       let msg = JSON.stringify({
         type: "xterm",

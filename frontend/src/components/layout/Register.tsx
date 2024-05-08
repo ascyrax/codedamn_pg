@@ -15,11 +15,16 @@ function Register({ setNeedToRegister }: RegisterProps) {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!user.username || !user.password) {
+      console.log("username or password is empty. not allowed");
+      return;
+    }
     // Here you would usually integrate your backend API
-    let regResponseFromServer = await postRegisterData(user);
-    if (regResponseFromServer.success) {
+    let serverResponse = await postRegisterData(user);
+    if (serverResponse.success) {
       setNeedToRegister(false);
-      console.log("registration successful", regResponseFromServer);
+      console.log("registration successful", serverResponse);
     } else console.log("registration could not complete.");
   };
 

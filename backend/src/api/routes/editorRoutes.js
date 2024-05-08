@@ -3,7 +3,8 @@ import {
   // getEditorData,
   setEditorData,
   getEditorTabs,
-  getFileData
+  getFileData,
+  updateEditorTabs
 } from "../controllers/editorController.js";
 
 const editorRoutes = express.Router();
@@ -12,6 +13,7 @@ const editorRoutes = express.Router();
 
 // editorRoutes.get("/", getEditorData);
 editorRoutes.get("/tabs", getEditorTabs);
+editorRoutes.post("/tabs", updateEditorTabs);
 editorRoutes.get("/file", getFileData);
 editorRoutes.post("/", setEditorData);
 // editorRoutes.post("/tabs", setEditorData);

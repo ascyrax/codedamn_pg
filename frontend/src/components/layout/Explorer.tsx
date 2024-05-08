@@ -3,11 +3,14 @@ import React, { useEffect, useState } from "react";
 import Tree, { RenderItemParams, TreeData, mutateTree } from "@atlaskit/tree";
 import "@atlaskit/css-reset";
 import { ExplorerProps } from "../../models/interfaces";
+import { updateEditorTabs } from "../../services/services";
 // import { initialData } from "../../utils/utils";
 // import { getFileData } from "../../services/services";
 
 const Explorer: React.FC<ExplorerProps> = ({
   ws,
+  tabNames,
+  credentials,
   focusedFileName,
   filesData,
   tree,
@@ -39,16 +42,15 @@ const Explorer: React.FC<ExplorerProps> = ({
         ? renderItemParams.onCollapse(renderItemParams.item.id)
         : renderItemParams.onExpand(renderItemParams.item.id);
     else if (item.data.type == "file") {
-      setFocusedTabName(item.data.title);
-      setFocusedFileName(item.data.title);
-
+      setFocusedTabName(item.id.toString());
+      setFocusedFileName(item.id.toString());
       setTabNames((prevTabNames) => {
         // Check if the new Tab already exists in the array
-        if (!prevTabNames.includes(item.data.title)) {
+        if (!prevTabNames.includes(item.id.toString())) {
           // load file data
-          getAndSetFileData(item.data.title);
+          getAndSetFileData(item.id.toString());
           // If not, add the new tab to the array
-          return [...prevTabNames, item.data.title];
+          return [...prevTabNames, item.id.toString()];
         }
         // Otherwise, return the array unchanged
         return prevTabNames;

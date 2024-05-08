@@ -54,6 +54,9 @@ export interface CustomTreeData extends TreeData {
 
 export interface ExplorerProps {
   ws: WebSocket | null;
+  tabNames: string[];
+  credentials: credentials;
+
   focusedFileName: string | undefined;
   filesData: Record<string, FileDescription>;
   // setFilesData: (

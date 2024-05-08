@@ -24,9 +24,12 @@ const Preview: React.FC<PreviewProps> = ({ filesData }) => {
 
   useEffect(() => {
     if (filesData) {
-      if (filesData["index.html"]) setHtmlCode(filesData["index.html"].value);
-      if (filesData["style.css"]) setCssCode(filesData["style.css"].value);
-      if (filesData["script.js"]) setJsCode(filesData["script.js"].value);
+      if (filesData["playground/index.html"])
+        setHtmlCode(filesData["playground/index.html"].value);
+      if (filesData["playground/style.css"])
+        setCssCode(filesData["playground/style.css"].value);
+      if (filesData["playground/script.js"])
+        setJsCode(filesData["playground/script.js"].value);
     }
   }, [filesData]);
 

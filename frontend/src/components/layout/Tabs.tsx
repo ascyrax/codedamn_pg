@@ -40,7 +40,9 @@ const Tabs: React.FC<TabsProps> = ({
               key={tabName}
               onClick={(e) => handleTabClick(e, tabName, index)}
             >
-              <span>{tabName}</span>
+              <span>
+                {tabName && tabName.split("/") && tabName.split("/").pop()}
+              </span>
               <span
                 className="closeTab"
                 onClick={(e) => handleTabClose(e, tabName, index)}

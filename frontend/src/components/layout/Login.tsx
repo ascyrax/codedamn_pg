@@ -46,12 +46,15 @@ function Login({
 
   const fetchEditorTabs = async () => {
     try {
-      const userTabObj = await getEditorTabs(credentials);
+      const serverResponse = await getEditorTabs(credentials);
       // console.log("userTabObj: ", userTabObj);
-      if (userTabObj) {
+      let userTabObj;
+      if (serverResponse && serverResponse.success)
+        userTabObj = serverResponse.userTabObj;
+      if (userTabObj && userTabObj.tabs) {
         setTabNames(userTabObj.tabs);
       }
-      if (userTabObj.focusedTabName) {
+      if (userTabObj && userTabObj.focusedTabName) {
         setFocusedTabName(userTabObj.focusedTabName);
         setFocusedFileName(userTabObj.focusedTabName);
       }
@@ -61,8 +64,9 @@ function Login({
   };
 
   async function fetchDataEfficiently() {
-    ws = await createWebSocket(ws, credentials, setTerminalData, setTree);
-    setWs(ws);
+    // let token:string | null="";
+    // if (credentials && credentials.username)
+    //   token = localStorage.getItem(credentials.username);
 
     await fetchEditorTabs();
 
@@ -76,22 +80,39 @@ function Login({
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Here you would typically authenticate against your backend API
-    let serverResponseLogin: LoginServerResponse = await postLoginData(
-      credentials
-    );
-    if (serverResponseLogin.success) {
+
+    if (!credentials || !credentials.username || !credentials.password) {
+      console.log(
+        "username or password should not be empty. retry loggin in with non-trivial credentials."
+      );
+      return;
+    }
+
+    let serverResponse: LoginServerResponse = await postLoginData(credentials);
+    if (serverResponse.success) {
       setHasUserLoggedIn(true);
       // save the jwt in localStorage, corresponding to the credentials.username
-      localStorage.setItem(credentials.username, serverResponseLogin.token);
-
-      console.log("login successful", serverResponseLogin);
+      if (credentials && credentials.username && serverResponse.token)
+        localStorage.setItem(credentials.username, serverResponse.token);
+      console.log(
+        "login successful + jwt token saved in localStorage",
+        serverResponse
+      );
+      ws = await createWebSocket(
+        ws,
+        credentials,
+        setTerminalData,
+        setTree
+        // token
+      );
+      setWs(ws);
       await fetchDataEfficiently();
     } else {
       console.log("could not login");
     }
   };
 
-  const handleClick = (_: React.MouseEvent<HTMLButtonElement>) => {
+  const handleRegClick = (_: React.MouseEvent<HTMLButtonElement>) => {
     setNeedToRegister(true);
   };
 
@@ -121,7 +142,7 @@ function Login({
       </form>
       <div className="goto">
         Not Registered yet ?
-        <button type="button" onClick={handleClick}>
+        <button type="button" onClick={handleRegClick}>
           Go to Register
         </button>
       </div>

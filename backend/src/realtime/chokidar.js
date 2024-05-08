@@ -4,46 +4,50 @@ import fs from "fs";
 
 const getDirectoryStructure = (dirPath, parentId = "playground") => {
   let structure = {};
-  const items = fs.readdirSync(dirPath, { withFileTypes: true });
+  try {
+    const items = fs.readdirSync(dirPath, { withFileTypes: true });
 
-  for (let item of items) {
-    const itemId = path.join(parentId, item.name);
-    if (item.isDirectory()) {
-      structure[itemId] = {
-        id: itemId,
-        children: [],
-        hasChildren: true,
-        parent: parentId,
-        isExpanded: false,
-        isChildrenLoading: false,
-        data: {
-          title: item.name,
-          type: "folder",
-        },
-      };
-      const childStructure = getDirectoryStructure(
-        path.join(dirPath, item.name),
-        itemId
-      );
-      let arrChildren = [];
-      for (let [key, val] of Object.entries(childStructure)) {
-        if (val.parent == itemId) arrChildren.push(key);
+    for (let item of items) {
+      const itemId = path.join(parentId, item.name);
+      if (item.isDirectory()) {
+        structure[itemId] = {
+          id: itemId,
+          children: [],
+          hasChildren: true,
+          parent: parentId,
+          isExpanded: false,
+          isChildrenLoading: false,
+          data: {
+            title: item.name,
+            type: "folder",
+          },
+        };
+        const childStructure = getDirectoryStructure(
+          path.join(dirPath, item.name),
+          itemId
+        );
+        let arrChildren = [];
+        for (let [key, val] of Object.entries(childStructure)) {
+          if (val.parent == itemId) arrChildren.push(key);
+        }
+        // console.log("ARRCHILDREN:", arrChildren);
+        structure[itemId].children = [...arrChildren];
+        structure = { ...structure, ...childStructure };
+      } else {
+        structure[itemId] = {
+          id: itemId,
+          children: [],
+          hasChildren: false,
+          parent: parentId,
+          data: {
+            title: item.name,
+            type: "file",
+          },
+        };
       }
-      // console.log("ARRCHILDREN:", arrChildren);
-      structure[itemId].children = [...arrChildren];
-      structure = { ...structure, ...childStructure };
-    } else {
-      structure[itemId] = {
-        id: itemId,
-        children: [],
-        hasChildren: false,
-        parent: parentId,
-        data: {
-          title: item.name,
-          type: "file",
-        },
-      };
     }
+  } catch (err) {
+    console.error("error setting up chokidar: ", err);
   }
 
   return structure;

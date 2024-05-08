@@ -3,22 +3,16 @@ import { UserTabsModel } from "../../models/UserTabsModel.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { createUser } from "../services/userServices.js";
-// import { fileURLToPath } from "url";
-// import { dirname, basename } from "path";
-
-// const __filename = fileURLToPath(import.meta.url);
 
 export async function handleRegister(req, res) {
-  if (!req.body || !req.body.body) {
+  if (!req.body || !req.body.user) {
     return res.status(400).json({
       success: false,
-      token,
-      msg: "Could not register. insufficient data from the client side",
+      msg: "Could not register. insufficient data from the client side. provide username and password please.",
     });
   }
 
-  let { username, password } = req.body.body;
-  // console.log("handleRegister", { username }, { password });
+  let { username, password } = req.body.user;
   try {
     // Generate a salt and hash on separate function calls
     const salt = await bcrypt.genSalt(10); // 10 rounds is generally enough
@@ -30,7 +24,6 @@ export async function handleRegister(req, res) {
       if (tabsCreated.success)
         res.send({ success: true, msg: userCreation.msg });
       else {
-        // TODO -> delete the user
         await deleteUser(username);
         res.send({
           success: false,
@@ -44,6 +37,7 @@ export async function handleRegister(req, res) {
     console.error("could not create user. internal server error", err);
   }
 }
+
 async function deleteUser(userId) {
   try {
     await UserTabsModel.findByIdAndDelete(userId);
@@ -54,7 +48,11 @@ async function deleteUser(userId) {
 }
 
 async function createUserTabs(username) {
-  let defaultTabs = ["index.html", "style.css", "script.js"];
+  let defaultTabs = [
+    "playground/index.html",
+    "playground/style.css",
+    "playground/script.js",
+  ];
   try {
     let tabs = await UserTabsModel.create({
       username,
@@ -76,16 +74,14 @@ async function createUserTabs(username) {
 // Authentication endpoint
 export async function handleLogin(req, res) {
   // console.log(handleLogin.name, req.url);
-  if (!req.body || !req.body.body) {
+  if (!req.body || !req.body.credentials) {
     return res.json({
-      success: true,
-      token,
+      success: false,
       msg: "Could not login. insufficient data from the client side",
     });
   }
 
-  const { username, password } = req.body.body;
-  // console.log("handleLogin", { username }, { password });
+  const { username, password } = req.body.credentials;
 
   try {
     const user = await UserModel.findOne({ username });
@@ -130,6 +126,11 @@ export async function handleLogin(req, res) {
     }
   } catch (err) {
     console.error("login failed. user could not be found", err);
-    throw new Error(":( Login Failed");
+    return res
+      .status(401)
+      .json({
+        success: false,
+        msg: "login failed. user could not be found",
+      });
   }
 }
