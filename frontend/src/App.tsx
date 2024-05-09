@@ -39,6 +39,7 @@ function App() {
   const [terminalData, setTerminalData] = useState("");
   const [tree, setTree] = useState<TreeData>(initialData);
   const [filesToLoad, setFilesToLoad] = useState<string[]>([]);
+  const [TabToRemove, setTabToRemove] = useState<string>("");
   const [treeUpdates, setTreeUpdates] = useState<TreeData>();
   // let [updateTree, setUpdateTree] = useState<(newTree: TreeData) => void>(
   //   (newTree: TreeData) => {
@@ -77,6 +78,18 @@ function App() {
   }, [filesToLoad]);
 
   useEffect(() => {
+    // update tabs -> whatif a file opened in the tab is removed using xterm
+    let arrTabs = [...tabNames];
+    arrTabs = arrTabs.filter((tabName) => {
+      console.log(tabName === TabToRemove);
+      return !(tabName === TabToRemove);
+    });
+    setTabNames(arrTabs);
+
+    if (TabToRemove) setTabToRemove("");
+  }, [TabToRemove]);
+
+  useEffect(() => {
     treeUpdates && updateTree(treeUpdates);
     if (treeUpdates && !(Object.keys(treeUpdates).length === 0))
       setTreeUpdates(undefined);
@@ -92,6 +105,7 @@ function App() {
   };
 
   useEffect(() => {
+    console.log({ filesData });
     // debounce ie batch the change requests,
     // also keep a maxWait after which the function is forced to be executed
     focusedFileName &&
@@ -135,9 +149,13 @@ function App() {
           const filePath = msg.filePath;
           const relativePath = filePath.replace(`${basePath}`, "");
           if (relativePath) {
-            setFilesToLoad((prevFilesToLoad) => {
-              return [...prevFilesToLoad, `playground${relativePath}`];
-            });
+            if (msg.type == "unlink") {
+              setTabToRemove(`playground${relativePath}`);
+            } else {
+              setFilesToLoad((prevFilesToLoad) => {
+                return [...prevFilesToLoad, `playground${relativePath}`];
+              });
+            }
           }
         }
       };
@@ -221,7 +239,6 @@ function App() {
   };
 
   async function getAndSetFileData(fileName: string) {
-    console.log({ fileName });
     try {
       const response = await getFileData(
         fileName,
