@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import MonacoEditor from "./components/features/MonacoEditor.tsx";
 import Register from "./components/layout/Register.tsx";
 import Login from "./components/layout/Login.tsx";
@@ -230,6 +230,7 @@ function App() {
       // let serverResponse = await
       updateEditorTabs(credentials, tabNames, focusedTabName);
     }
+    setFilesToLoad(tabNames);
   }, [tabNames]);
 
   const fetchInitialFileData = async (fileName: string | undefined) => {

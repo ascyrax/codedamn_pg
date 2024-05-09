@@ -19,7 +19,7 @@ export async function handleNewWSConnection(ws, req) {
   try {
     let container = await startContainer(currentUsername);
 
-    watcher = initWatcher(ws, volumeName);
+    watcher = await initWatcher(ws, volumeName);
 
     const execOptions = {
       Cmd: ["bash"], // Command to start bash

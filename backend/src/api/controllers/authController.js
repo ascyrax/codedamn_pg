@@ -49,9 +49,9 @@ async function deleteUser(userId) {
 
 async function createUserTabs(username) {
   let defaultTabs = [
-    "playground/index.html",
-    "playground/style.css",
-    "playground/script.js",
+    "playground/basic/index.html",
+    "playground/basic/style.css",
+    "playground/basic/script.js",
   ];
   try {
     let tabs = await UserTabsModel.create({
