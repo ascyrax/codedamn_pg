@@ -1,5 +1,6 @@
 import * as path from "path";
-import * as fs from "fs/promises";
+import * as fsPromises from "fs/promises";
+import * as fs from "fs";
 import { createVolumeAndContainer, docker } from "./terminalController.js";
 import { UserTabsModel } from "../../models/UserTabsModel.js";
 import { diff_match_patch } from "diff-match-patch";
@@ -60,7 +61,6 @@ export const getFileData = async (req, res) => {
   }
 
   // console.log("getFileData -> ", username, fileName);
-
   // check if the volume exist or not
   let volCheck = await checkForVolume(volumeName);
   if (!volCheck) {
@@ -69,6 +69,20 @@ export const getFileData = async (req, res) => {
   }
 
   await getFileDataFromFS(res, volumeName, fileName);
+
+  // let count = 0;
+  // const interval = setInterval(() => {
+  //   res.write(
+  //     `${JSON.stringify({ count, timestamp: new Date().toISOString() })}\n`
+  //   );
+  //   count++;
+
+  //   // Stop after 10 JSON objects
+  //   if (count >= 10) {
+  //     clearInterval(interval);
+  //     res.end('{"message": "Streaming completed."}\n');
+  //   }
+  // }, 1000);
 };
 
 async function getUserTabFromDB(username) {
@@ -111,29 +125,46 @@ async function getFileDataFromFS(res, volumeName, fileName) {
   if (!fileName) {
     return res.status(404).json({ success: false, msg: `fileName is empty` });
   }
+
   try {
     // Assuming the volume is mounted on the host in a known directory
     const volumePath = path.join("/var/tmp/codedamn/volumes", volumeName);
     const filePath = path.join(volumePath, fileName);
     const language = detectLanguage(fileName);
 
-    let fileData = {};
-    const content = await fs.readFile(filePath, "utf8");
+    const stat = fs.statSync(filePath);
+    res.writeHead(200, {
+      "Content-Type": "text/html",
+      "Content-Length": stat.size,
+      "Transfer-Encoding": "chunked",
+    });
 
-    fileData = {
-      name: fileName,
-      value: content,
-      isAnOpenedTab: true,
-      language,
-    };
+    const readStream = fs.createReadStream(filePath, {
+      encoding: "utf8",
+      highWaterMark: 1024,
+    });
 
-    if (fileData)
-      return res.status(200).json({ success: true, fileData: fileData });
-    else
-      return res.status(500).json({
-        success: false,
-        msg: `Error accessing ${fileName} in the volume ${volumePath}`,
-      });
+    readStream.on("data", (chunk) => {
+      let fileData = {
+        name: fileName,
+        value: chunk,
+        isAnOpenedTab: true,
+        language,
+      };
+      res.write(`${JSON.stringify({ success: true, fileData })}`);
+    });
+
+    readStream.on("end", () => {
+      res.end(); // End the response when the file stream ends
+    });
+
+    readStream.on("error", (err) => {
+      console.error("Error streaming file read:", err);
+      res
+        .status(500)
+        .send({ success: false, msg: "Error streaming file read" });
+    });
+
   } catch (error) {
     console.error(`Error accessing ${fileName} in the volume`, error);
     return res.status(500).json({
@@ -142,61 +173,6 @@ async function getFileDataFromFS(res, volumeName, fileName) {
     });
   }
 }
-
-// // get all files
-// async function getFilesDataFromFS(res, volumeName) {
-//   try {
-//     // Assuming the volume is mounted on the host in a known directory
-//     const volumePath = path.join("/var/tmp/codedamn/volumes", volumeName);
-
-//     // Read files from the volume directory
-//     fs.readdir(volumePath, (err, files) => {
-//       if (err) {
-//         console.error("Error reading volume directory:", err);
-//         return res
-//           .status(500)
-//           .json({ success: false, msg: "Failed to read volume" });
-//       }
-
-//       let fileData = [];
-//       files.forEach((file) => {
-//         const language = detectLanguage(file);
-//         const filePath = path.join(volumePath, file);
-//         const content = fs.readFileSync(filePath, "utf8");
-//         results.push({
-//           name: file,
-//           value: content,
-//           isAnOpenedTab: true,
-//           language,
-//         });
-//       });
-//       return res.status(200).json({ success: true, filesData: results });
-//     });
-//   } catch (error) {
-//     console.error("Error:", error);
-//     return res
-//       .status(500)
-//       .json({ success: false, msg: "Error accessing volume data" });
-//   }
-// }
-
-// const getEditorData = async (req, res) => {
-//   let volumeName = "",
-//     username = "";
-//   if (req.username) {
-//     username = req.username;
-//     volumeName = "vid_cid_" + req.username;
-//   }
-
-//   // check if the volume exist or not
-//   let volCheck = await checkForVolume(volumeName);
-//   if (!volCheck) {
-//     let containerId = "cid_" + username;
-//     await createVolumeAndContainer(containerId);
-//   }
-
-//   return await getFilesDataFromFS(res, volumeName);
-// };
 
 // Function to determine the programming language from the file extension
 function detectLanguage(filename) {
@@ -231,7 +207,7 @@ async function updateFile({ fileName, fileContent }, volumeName) {
     );
     fileUpdateOrigin.set(filePath, "editor");
     console.log("updateFile -> ", fileUpdateOrigin, { fileUpdateOrigin });
-    await fs.writeFile(filePath, fileContent);
+    await fsPromises.writeFile(filePath, fileContent);
     return { success: true };
     // console.log(`Updated file: ${filePath}`);
   } catch (error) {
@@ -294,7 +270,7 @@ async function getFileContentFromFS(volumeName, fileName) {
     const volumePath = path.join("/var/tmp/codedamn/volumes", volumeName);
     const filePath = path.join(volumePath, fileName);
 
-    const content = await fs.readFile(filePath, "utf8");
+    const content = await fsPromises.readFile(filePath, "utf8");
     return content;
   } catch (error) {
     console.error(`Error accessing ${fileName} in the volume`, error);

@@ -120,24 +120,140 @@ function removePlaygroundPrefix(filename: string | undefined) {
   return filename;
 }
 
-export async function getFileData(fileName: string | undefined) {
-  //  TODO  REMOVE  THE PREFIX "playground" from the file name
+export async function getFileData(
+  fileName: string | undefined,
+  credentials: credentials,
+  setFilesData: React.Dispatch<
+    React.SetStateAction<Record<string, FileDescription>>
+  >,
+  setPrevFilesData: React.Dispatch<
+    React.SetStateAction<Record<string, FileDescription>>
+  >
+) {
   fileName = removePlaygroundPrefix(fileName);
-  let response;
+  await fetchJSONStream(
+    `${SERVER_DOMAIN}:${SERVER_PORT}/editorData/file?fileName=${fileName}`,
+    credentials.username,
+    setFilesData,
+    setPrevFilesData
+  );
+}
+
+async function fetchJSONStream(
+  url: string,
+  username: string,
+  setFilesData: React.Dispatch<
+    React.SetStateAction<Record<string, FileDescription>>
+  >,
+  setPrevFilesData: React.Dispatch<
+    React.SetStateAction<Record<string, FileDescription>>
+  >
+) {
+  let token = localStorage.getItem(username);
+  if (!token) token = "";
+
   try {
-    response = await axios.get(
-      `${SERVER_DOMAIN}:${SERVER_PORT}/editorData/file?fileName=${fileName}`
-    );
-    if (response.data) {
-      console.log("getFileData -> ", response.data);
+    const response = await fetch(url, { headers: { token: token } });
+
+    if (!response.ok) {
+      throw new Error(`Network response was not ok: ${response.statusText}`);
     }
+
+    if (!response.body) {
+      console.error("ReadableStream not supported in this browser.");
+      return;
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder("utf-8");
+    let buffer = "";
+    let done = false;
+
+    while (!done) {
+      const { value, done: streamDone } = await reader.read();
+      if (streamDone) {
+        done = true;
+        break;
+      }
+
+      const chunk = decoder.decode(value, { stream: true });
+
+      // Regular expression to extract individual JSON objects
+      const regex = /{"success":true,"fileData":{.*?}}/g;
+
+      // Extract all matches
+      const matches = chunk.match(regex);
+
+      // Parse each JSON object
+      const jsonArray =
+        matches &&
+        matches
+          .map((jsonString) => {
+            try {
+              return JSON.parse(jsonString);
+            } catch (error) {
+              console.error("Error parsing JSON:", error);
+              return null;
+            }
+          })
+          .filter(Boolean); // Filter out any null values due to errors
+
+      // Display the final parsed array
+      // console.log(JSON.stringify(jsonArray, null, 2));
+
+      let name = "",
+        isAnOpenedTab = true,
+        language = "";
+      for (let i = 0; i < (jsonArray ? jsonArray.length : 0); i++) {
+        if (jsonArray && jsonArray[i]) {
+          try {
+            if (jsonArray[i] && jsonArray[i].fileData) {
+              if (jsonArray[i].fileData.name)
+                name = `playground/${jsonArray[i].fileData.name}`;
+              if (jsonArray[i].fileData.value)
+                buffer += jsonArray[i].fileData.value;
+              if (jsonArray[i].fileData.language)
+                language = jsonArray[i].fileData.language;
+              if (jsonArray[i].fileData.isAnOpenedTab)
+                isAnOpenedTab = jsonArray[i].fileData.isAnOpenedTab;
+            }
+          } catch (err) {
+            console.log("error parsing the chunk:", err);
+          }
+        }
+      }
+
+      // if (parsedChunk.success && parsedChunk.fileData) {
+      setFilesData((prevFilesData) => {
+        return {
+          ...prevFilesData,
+          [name]: {
+            ...prevFilesData[name],
+            name,
+            value: buffer,
+            isAnOpenedTab,
+            language,
+          },
+        } as Record<string, FileDescription>;
+      });
+      setPrevFilesData((prevFilesData) => {
+        return {
+          ...prevFilesData,
+          [name]: {
+            ...prevFilesData[name],
+            name,
+            value: buffer,
+            isAnOpenedTab,
+            language,
+          },
+        } as Record<string, FileDescription>;
+      });
+      // }
+    }
+    console.log("Finished streaming file data");
   } catch (error) {
-    console.error(
-      "could not get file data for the first focused file: ",
-      error
-    );
+    console.error(`Fetch JSON stream error: ${error}`);
   }
-  return response ? response.data : response;
 }
 
 export async function postRegisterData(user: user) {

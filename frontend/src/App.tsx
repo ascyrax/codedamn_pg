@@ -223,31 +223,13 @@ function App() {
   async function getAndSetFileData(fileName: string) {
     console.log({ fileName });
     try {
-      const response = await getFileData(fileName);
+      const response = await getFileData(
+        fileName,
+        credentials,
+        setFilesData,
+        setPrevFilesData
+      );
       // console.log("response Loaded: ", response);
-      if (response.success && response.fileData) {
-        // console.log("FETCH FILE DATA -> ", filesData);
-        setFilesData((prevFilesData) => {
-          return {
-            ...prevFilesData,
-            [fileName]: {
-              ...prevFilesData[fileName],
-              name: fileName,
-              value: response.fileData.value,
-            },
-          } as Record<string, FileDescription>;
-        });
-        setPrevFilesData((prevFilesData) => {
-          return {
-            ...prevFilesData,
-            [fileName]: {
-              ...prevFilesData[fileName],
-              name: fileName,
-              value: response.fileData.value,
-            },
-          } as Record<string, FileDescription>;
-        });
-      }
     } catch (error) {
       console.error("Error fetching editor data:", error);
     }
