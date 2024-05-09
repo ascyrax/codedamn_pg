@@ -77,20 +77,17 @@ function App() {
   }, [filesToLoad]);
 
   useEffect(() => {
-    // console.log({treeUpdates})
     treeUpdates && updateTree(treeUpdates);
     if (treeUpdates && !(Object.keys(treeUpdates).length === 0))
       setTreeUpdates(undefined);
   }, [treeUpdates]);
 
   const updateTree = (newTree: TreeData) => {
-    console.log(tree, newTree);
     for (let [key, val] of Object.entries(newTree.items)) {
       if (tree.items && tree.items[key]) {
         val.isExpanded = tree.items[key].isExpanded;
       }
     }
-    console.log(newTree);
     setTree(newTree);
   };
 
@@ -131,7 +128,7 @@ function App() {
           // console.log(msg.data);
           setTerminalData(msg.data);
         } else if (msg.type == "explorer") {
-          console.log("ws receive -> ", msg);
+          // console.log("ws receive -> ", msg);
           setTreeUpdates(msg.explorerData);
         } else if (msg.sender == "chokidar") {
           const basePath = msg.volumePath;
