@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import MonacoEditor from "./components/features/MonacoEditor.tsx";
 import Register from "./components/layout/Register.tsx";
 import Login from "./components/layout/Login.tsx";
@@ -38,6 +38,8 @@ function App() {
   let [ws, setWs] = useState<WebSocket | null>(null);
   const [terminalData, setTerminalData] = useState("");
   const [tree, setTree] = useState<TreeData>(initialData);
+  const [filesToLoad, setFilesToLoad] = useState<string[]>([]);
+  const [treeUpdates, setTreeUpdates] = useState<TreeData>();
   // let [updateTree, setUpdateTree] = useState<(newTree: TreeData) => void>(
   //   (newTree: TreeData) => {
   //     console.log(tree, newTree);
@@ -57,6 +59,40 @@ function App() {
   //   }
   // );
   // console.log("RENDER App: ", { tabNames });
+  const isAnOpenedTab = (relativePath: string) => {
+    for (let i = 0; i < tabNames.length; i++) {
+      if (tabNames[i].includes(relativePath)) return true;
+    }
+    return false;
+  };
+
+  useEffect(() => {
+    for (let i = 0; i < filesToLoad.length; i++) {
+      let fileName = filesToLoad[i];
+      if (isAnOpenedTab(fileName)) {
+        getAndSetFileData(fileName);
+      }
+    }
+    if (filesToLoad.length > 0) setFilesToLoad([]);
+  }, [filesToLoad]);
+
+  useEffect(() => {
+    // console.log({treeUpdates})
+    treeUpdates && updateTree(treeUpdates);
+    if (treeUpdates && !(Object.keys(treeUpdates).length === 0))
+      setTreeUpdates(undefined);
+  }, [treeUpdates]);
+
+  const updateTree = (newTree: TreeData) => {
+    console.log(tree, newTree);
+    for (let [key, val] of Object.entries(newTree.items)) {
+      if (tree.items && tree.items[key]) {
+        val.isExpanded = tree.items[key].isExpanded;
+      }
+    }
+    console.log(newTree);
+    setTree(newTree);
+  };
 
   useEffect(() => {
     // debounce ie batch the change requests,
@@ -76,12 +112,6 @@ function App() {
 
   useEffect(() => {
     if (hasUserLoggedIn) {
-      // console.log(
-      //   hasUserLoggedIn,
-      //   SERVER_WSDOMAIN,
-      //   SERVER_PORT,
-      //   credentials.username
-      // );
       ws = new WebSocket(
         `${SERVER_WSDOMAIN}:${SERVER_PORT}?username=${credentials.username}`
       );
@@ -96,20 +126,21 @@ function App() {
       };
 
       ws.onmessage = function (event) {
-        // console.log("ws receive -> : ", event);
         const msg = JSON.parse(event.data);
-        // console.log("ws receive -> ", msg);
         if (msg.type == "stdout" || msg.type == "stderr") {
           // console.log(msg.data);
           setTerminalData(msg.data);
         } else if (msg.type == "explorer") {
-          updateTree(msg.explorerData);
+          console.log("ws receive -> ", msg);
+          setTreeUpdates(msg.explorerData);
         } else if (msg.sender == "chokidar") {
           const basePath = msg.volumePath;
           const filePath = msg.filePath;
           const relativePath = filePath.replace(`${basePath}`, "");
           if (relativePath) {
-            getAndSetFileData(`playground${relativePath}`);
+            setFilesToLoad((prevFilesToLoad) => {
+              return [...prevFilesToLoad, `playground${relativePath}`];
+            });
           }
         }
       };
@@ -120,22 +151,6 @@ function App() {
 
       setWs(ws);
     }
-
-    const updateTree = (newTree: TreeData) => {
-      // console.log(tree, newTree);
-      for (let [key, val] of Object.entries(newTree.items)) {
-        // if (key == "playground/da") console.log(key, val);
-        if (
-          val.isExpanded &&
-          tree.items &&
-          tree.items[key] &&
-          tree.items[key].isExpanded
-        ) {
-          if (key) val.isExpanded = tree.items[key].isExpanded;
-        }
-      }
-      setTree(newTree);
-    };
 
     function closeWebSocket(ws: WebSocket | null) {
       if (!ws) {
@@ -173,7 +188,7 @@ function App() {
   useEffect(() => {
     // console.log("useEffect -> focusedTabName: ", focusedTabName);
     async function wrapperAsyncFunc() {
-      await fetchInitialFileData(focusedTabName); // do this only after focusedTabName has been set
+      // await fetchInitialFileData(focusedTabName); // do this only after focusedTabName has been set
     }
     if (isInitialFocusedFileLoad && focusedTabName) {
       setIsInitialFocusedFileLoad(false); // we don't load the file=focusedTabName every time the focusedTabName state changes
@@ -186,7 +201,7 @@ function App() {
 
   useEffect(() => {
     async function wrapperAsyncFunc(fileName: string) {
-      await fetchInitialFileData(fileName);
+      // await fetchInitialFileData(fileName);
     }
     if (isInitialTabsLoad) {
       for (let i = 0; i < tabNames.length; i++) {
@@ -209,7 +224,7 @@ function App() {
   };
 
   async function getAndSetFileData(fileName: string) {
-    console.log({fileName})
+    console.log({ fileName });
     try {
       const response = await getFileData(fileName);
       // console.log("response Loaded: ", response);

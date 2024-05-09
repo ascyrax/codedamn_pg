@@ -168,12 +168,9 @@ export function initWatcher(ws, volumeName) {
       fileUpdateOrigin.get(filePath)
     );
     if (fileUpdateOrigin.get(filePath) == "editor") {
-      console.log("if:", filePath, fileUpdateOrigin.get(filePath));
-      // Change was made by editor, reset the flag and do not notify frontend
+      // Change was made by editor, reset the flag and2 do not notify frontend
       fileUpdateOrigin.set(filePath, "none");
-      // } else if (fileUpdateOrigin.get(filePath) == "terminal") {
     } else {
-      console.log("else:", filePath, fileUpdateOrigin.get(filePath));
       let msg = JSON.stringify({
         type: "change",
         description: "file change",

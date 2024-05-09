@@ -86,6 +86,7 @@ export async function handleNewWSConnection(ws, req) {
       // Handle stream close/error
       execStream.on("close", () => {
         console.log("Stream closed");
+        watcher.close();
         ws.close();
       });
 
