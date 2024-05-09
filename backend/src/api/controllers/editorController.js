@@ -164,7 +164,6 @@ async function getFileDataFromFS(res, volumeName, fileName) {
         .status(500)
         .send({ success: false, msg: "Error streaming file read" });
     });
-
   } catch (error) {
     console.error(`Error accessing ${fileName} in the volume`, error);
     return res.status(500).json({
@@ -188,6 +187,33 @@ function detectLanguage(filename) {
     ".ts": "typescript",
     ".html": "html",
     ".css": "css",
+    ".scss": "scss",
+    ".less": "less",
+    ".json": "json",
+    ".cpp": "cpp",
+    ".cc": "cpp",
+    ".c": "c",
+    ".h": "cpp",
+    ".cs": "csharp",
+    ".htm": "html",
+    ".sql": "sql",
+    ".xml": "xml",
+    ".yaml": "yaml",
+    ".yml": "yaml",
+    ".md": "markdown",
+    ".r": "r",
+    ".pl": "perl",
+    ".lua": "lua",
+    ".dart": "dart",
+    ".swift": "swift",
+    ".go": "go",
+    ".rs": "rust",
+    ".vbs": "vbscript",
+    ".ps1": "powershell",
+    ".sh": "shell",
+    ".bash": "shell",
+    ".zsh": "shell",
+    ".m": "objective-c",
   };
 
   // Extract the file extension

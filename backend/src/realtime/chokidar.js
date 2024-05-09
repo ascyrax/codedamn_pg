@@ -115,7 +115,7 @@ const formatForAtlaskitTree = (directoryStructure) => {
 };
 
 export async function initWatcher(ws, volumeName) {
-  console.log("initWatcher -> ", { volumeName });
+  console.log("begin initWatcher -> ", { volumeName });
   let volumePath = `/var/tmp/codedamn/volumes/${volumeName}`;
   let watcher = chokidar.watch(`${volumePath}`, {
     ignored: /(^|[\/\\])\..|node_modules/, // Ignore dotfiles and node_modules
@@ -234,5 +234,6 @@ export async function initWatcher(ws, volumeName) {
     // console.log(`chokidar for ${volumeName} is tired now. closing. bye.`);
   });
 
+  console.log("end initWatcher", { volumeName });
   return watcher;
 }

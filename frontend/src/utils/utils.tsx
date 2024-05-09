@@ -7,7 +7,7 @@ export const SERVER_PORT = "3000";
 // export const SERVER_DOMAIN =
 //   "http://ec2-13-201-4-165.ap-south-1.compute.amazonaws.com"; //Public IPv4 DNS
 
-export const initialExplorerWidth = 250,
+export const initialExplorerWidth = 350,
   initialEditorHeight = 700,
   initialPreviewWidth = 350;
 

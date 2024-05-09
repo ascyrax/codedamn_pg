@@ -90,7 +90,7 @@ function Login({
     }
 
     let serverResponse: LoginServerResponse = await postLoginData(credentials);
-    if (serverResponse.success) {
+    if (serverResponse && serverResponse.success) {
       setHasUserLoggedIn(true);
       // save the jwt in localStorage, corresponding to the credentials.username
       if (credentials && credentials.username && serverResponse.token)

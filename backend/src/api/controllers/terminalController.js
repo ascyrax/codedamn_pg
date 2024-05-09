@@ -32,8 +32,31 @@ async function copyDirectory(src, dest) {
     throw error; // rethrow the error for caller to handle if necessary
   }
 }
+async function checkVolumeExists(volumeName) {
+  try {
+    const volumes = await docker.listVolumes();
+    const volume = volumes.Volumes.find((vol) => vol.Name === volumeName);
+
+    if (volume) {
+      console.log(`Volume "${volumeName}" already exists.`);
+      return true;
+    } else {
+      console.log(`Volume "${volumeName}" does not exist.`);
+      return false;
+    }
+  } catch (error) {
+    console.error(`Error checking volume existence: ${error.message}`);
+    return false;
+  }
+}
 
 export async function createVolume(volumeName) {
+  console.log("begin createVolume -> ", { volumeName });
+
+  if (await checkVolumeExists(volumeName)) {
+    return;
+  }
+
   let volume, volumeInfo;
   try {
     // Ensure the volume exists, or create it if it doesn't
@@ -49,7 +72,7 @@ export async function createVolume(volumeName) {
       await copyDirectory(sourceDir, destinationDir);
       console.log("Copy operation complete.");
 
-      return await docker.createVolume({
+      await docker.createVolume({
         Name: volumeName,
       });
     });
@@ -57,9 +80,11 @@ export async function createVolume(volumeName) {
   } catch (err) {
     console.log("could not create a new volume.");
   }
+  console.log("end createVolume -> ", { volumeName });
 }
 
 export async function createVolumeAndContainer(containerId) {
+  console.log("begin createVolumeAndContainer -> ", { containerId });
   const volumeName = "vid_" + containerId; // Name of the Docker volume
   await createVolume(volumeName);
   const containerOptions = {
@@ -72,22 +97,27 @@ export async function createVolumeAndContainer(containerId) {
     Tty: true,
     HostConfig: {
       Binds: [`/var/tmp/codedamn/volumes/${volumeName}:/home/codedamn/`], // Bind the volume
+      NetworkMode: "host",
     },
   };
   try {
     // Create the container
+    console.log("try block -> create the container -> ");
     const container = await docker.createContainer(containerOptions);
     console.log("New container created with ID:", container.id);
 
     // Start the container
     await container.start();
-    console.log("New container started successfully.");
+
+    console.log("-------------> started the container ");
   } catch (error) {
     console.error("Failed to create And start the container:", error.message);
   }
+  console.log("end createVolumeAndContainer -> ", { containerId });
 }
 
 export async function startContainer(username) {
+  console.log("begin startContainer -> ", { username });
   let containerId = "cid_" + username; // container corresponding to the user
   let container;
   try {
@@ -116,6 +146,6 @@ export async function startContainer(username) {
       console.error("An error occurred:", error.message);
     }
   }
-
+  console.log("end startContainer -> ", { username });
   return container;
 }
