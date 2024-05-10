@@ -1,5 +1,5 @@
 import { UserModel } from "../../models/userModel.js";
-import { UserTabsModel } from "../../models/UserTabsModel.js";
+import { UserTabsModel } from "../../models/userTabsModel.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { createUser } from "../services/userServices.js";
