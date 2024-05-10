@@ -53,9 +53,9 @@ async function createUserTabs(username) {
   // "playground/basic/script.js",
 
   let defaultTabs = [
-    "playground/react/src/App.tsx",
+    "playground/react/src/App.jsx",
     "playground/react/src/App.css",
-    "playground/react/src/main.tsx",
+    "playground/react/src/main.jsx",
     "playground/react/index.html",
   ];
   try {

@@ -43,25 +43,6 @@ function App() {
   const [treeUpdates, setTreeUpdates] = useState<TreeData>();
   let [previewSrc, setPreviewSrc] = useState("http://localhost:55002");
 
-  // let [updateTree, setUpdateTree] = useState<(newTree: TreeData) => void>(
-  //   (newTree: TreeData) => {
-  //     console.log(tree, newTree);
-  //     if (newTree && newTree.items)
-  //       for (let [key, val] of Object.entries(newTree.items)) {
-  //         if (key == "playground/da") console.log(key, val);
-  //         if (
-  //           val.isExpanded &&
-  //           tree.items &&
-  //           tree.items[key] &&
-  //           tree.items[key].isExpanded
-  //         ) {
-  //           if (key) val.isExpanded = tree.items[key].isExpanded;
-  //         }
-  //       }
-  //     setTree(newTree);
-  //   }
-  // );
-  // console.log("RENDER App: ", { tabNames });
   const isAnOpenedTab = (relativePath: string) => {
     for (let i = 0; i < tabNames.length; i++) {
       if (tabNames[i].includes(relativePath)) return true;

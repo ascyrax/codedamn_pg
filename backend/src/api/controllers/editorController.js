@@ -178,6 +178,7 @@ function detectLanguage(filename) {
   // A mapping of file extensions to languages
   const extensionToLanguage = {
     ".js": "javascript",
+    ".jsx": "javascript",
     ".py": "python",
     ".java": "java",
     ".cpp": "c++",
