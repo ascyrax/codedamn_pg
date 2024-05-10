@@ -117,7 +117,15 @@ function App() {
       };
 
       ws.onmessage = function (event) {
-        const msg = JSON.parse(event.data);
+        let msg;
+        try {
+          msg = JSON.parse(event.data);
+        } catch (err) {
+          console.log("error parsing ws message", msg);
+        }
+
+        if(!msg)return;
+
         if (msg.type == "stdout" || msg.type == "stderr") {
           setTerminalData(msg.data);
         } else if (msg.type == "explorer") {
@@ -203,12 +211,7 @@ function App() {
 
   async function getAndSetFileData(fileName: string) {
     try {
-      await getFileData(
-        fileName,
-        credentials,
-        setFilesData,
-        setPrevFilesData
-      );
+      await getFileData(fileName, credentials, setFilesData, setPrevFilesData);
     } catch (error) {
       console.error("Error fetching editor data:", error);
     }
