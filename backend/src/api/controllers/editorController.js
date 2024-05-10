@@ -2,7 +2,7 @@ import * as path from "path";
 import * as fsPromises from "fs/promises";
 import * as fs from "fs";
 import { createVolumeAndContainer, docker } from "./terminalController.js";
-import { UserTabsModel } from "../../models/UserTabsModel.js";
+import { UserTabsModel } from "../../models/userTabsModel.js";
 import { diff_match_patch } from "diff-match-patch";
 import { fileUpdateOrigin } from "../../realtime/chokidar.js";
 
