@@ -51,7 +51,6 @@ async function checkVolumeExists(volumeName) {
 }
 
 export async function createVolume(volumeName) {
-  console.log("begin createVolume -> ", { volumeName });
 
   if (await checkVolumeExists(volumeName)) {
     return;
@@ -80,11 +79,9 @@ export async function createVolume(volumeName) {
   } catch (err) {
     console.log("could not create a new volume.");
   }
-  console.log("end createVolume -> ", { volumeName });
 }
 
 export async function createVolumeAndContainer(containerId) {
-  console.log("begin createVolumeAndContainer -> ", { containerId });
   const volumeName = "vid_" + containerId; // Name of the Docker volume
   await createVolume(volumeName);
   const containerOptions = {
@@ -116,22 +113,18 @@ export async function createVolumeAndContainer(containerId) {
   };
   try {
     // Create the container
-    console.log("try block -> create the container -> ");
     const container = await docker.createContainer(containerOptions);
     console.log("New container created with ID:", container.id);
 
     // Start the container
     await container.start();
 
-    console.log("-------------> started the container ");
   } catch (error) {
     console.error("Failed to create And start the container:", error.message);
   }
-  console.log("end createVolumeAndContainer -> ", { containerId });
 }
 
 export async function startContainer(username) {
-  console.log("begin startContainer -> ", { username });
   let containerId = "cid_" + username; // container corresponding to the user
   let container;
   try {
@@ -160,6 +153,5 @@ export async function startContainer(username) {
       console.error("An error occurred:", error.message);
     }
   }
-  console.log("end startContainer -> ", { username });
   return container;
 }

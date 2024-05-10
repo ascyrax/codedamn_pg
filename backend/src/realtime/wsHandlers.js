@@ -16,11 +16,8 @@ export async function handleNewWSConnection(ws, req) {
   let volumeName = "vid_cid_" + currentUsername;
   let watcher;
   try {
-    console.log("19 wsHandler.js");
     let container = await startContainer(currentUsername);
-    console.log("21 wsHandler.js");
     watcher = await initWatcher(ws, volumeName);
-    console.log("23 wsHanlder.js");
     const execOptions = {
       Cmd: ["bash"], // Command to start bash
       AttachStdin: true,

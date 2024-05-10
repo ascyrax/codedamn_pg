@@ -11,7 +11,7 @@ import {
 } from "./services/services.tsx";
 import { debounce } from "lodash-es";
 import { TreeData } from "@atlaskit/tree";
-import { initialData, SERVER_WSDOMAIN, SERVER_PORT } from "./utils/utils.tsx";
+import { initialData, SERVER_WSDOMAIN, SERVER_PORT, SERVER_DOMAIN } from "./utils/utils.tsx";
 
 const batchUploadFilesData = debounce(postCodeChange, 400);
 
@@ -41,7 +41,7 @@ function App() {
   const [filesToLoad, setFilesToLoad] = useState<string[]>([]);
   const [TabToRemove, setTabToRemove] = useState<string>("");
   const [treeUpdates, setTreeUpdates] = useState<TreeData>();
-  let [previewSrc, setPreviewSrc] = useState("http://localhost:55002");
+  let [previewSrc, setPreviewSrc] = useState(SERVER_DOMAIN);
 
   const isAnOpenedTab = (relativePath: string) => {
     for (let i = 0; i < tabNames.length; i++) {
@@ -144,7 +144,7 @@ function App() {
             }
           }
         } else if (msg.type == "exposedPorts") {
-          setPreviewSrc(`http://localhost:${msg.previewSrc}`);
+          setPreviewSrc(`${SERVER_DOMAIN}:${msg.previewSrc}`);
         }
       };
 

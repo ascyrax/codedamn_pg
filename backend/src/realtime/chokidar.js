@@ -32,7 +32,6 @@ const getDirectoryStructure = (dirPath, parentId = "playground") => {
         for (let [key, val] of Object.entries(childStructure)) {
           if (val.parent == itemId) arrChildren.push(key);
         }
-        // console.log("ARRCHILDREN:", arrChildren);
         structure[itemId].children = [...arrChildren];
         structure = { ...structure, ...childStructure };
       } else {
@@ -113,7 +112,6 @@ const formatForAtlaskitTree = (directoryStructure) => {
 };
 
 export async function initWatcher(ws, volumeName) {
-  console.log("begin initWatcher -> ", { volumeName });
   let volumePath = `/var/tmp/codedamn/volumes/${volumeName}`;
   let watcher = chokidar.watch(`${volumePath}`, {
     ignored: /(^|[\/\\])\..|node_modules/, // Ignore dotfiles and node_modules
