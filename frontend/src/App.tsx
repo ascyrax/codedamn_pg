@@ -64,7 +64,6 @@ function App() {
     // update tabs -> whatif a file opened in the tab is removed using xterm
     let arrTabs = [...tabNames];
     arrTabs = arrTabs.filter((tabName) => {
-      console.log(tabName === TabToRemove);
       return !(tabName === TabToRemove);
     });
     setTabNames(arrTabs);
