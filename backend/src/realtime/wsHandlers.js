@@ -60,6 +60,50 @@ export async function handleNewWSConnection(ws, req) {
         );
       }
 
+      async function getExposedPort(containerName, containerPort) {
+        try {
+          // Retrieve the container instance
+          const container = docker.getContainer(containerName);
+
+          // Inspect the container to fetch port mappings
+          const data = await container.inspect();
+
+          // Retrieve the mapping of the specified container port
+          const hostPortMapping =
+            data.NetworkSettings.Ports[`${containerPort}/tcp`];
+
+          // Check if there is a host port mapping
+          if (hostPortMapping && hostPortMapping.length > 0) {
+            const hostPort = hostPortMapping[0].HostPort;
+            console.log(
+              `Container Port ${containerPort} is mapped to Host Port ${hostPort}`
+            );
+            return hostPort;
+          } else {
+            console.log(`No mapping found for Container Port ${containerPort}`);
+            return null;
+          }
+        } catch (error) {
+          console.error("Error fetching port mappings:", error.message);
+          return null;
+        }
+      }
+
+      if (started.success) {
+        let hostReactPort = await getExposedPort(containerId, 5173);
+        let hostStaticPort = await getExposedPort(containerId, 1337);
+
+        console.log("EXPOSED PORTS ------>>>> ", hostReactPort, hostStaticPort);
+        let msg = {
+          type:'exposedPorts',
+          sender:'docker',
+          hostReactPort,
+          hostStaticPort,
+          previewSrc:hostReactPort,
+        };
+        ws.send(JSON.stringify(msg));
+      }
+
       const exec = await container.exec(execOptions);
       const execStream = await exec.start({
         hijack: true,

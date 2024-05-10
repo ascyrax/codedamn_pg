@@ -87,6 +87,8 @@ export interface TabsProps {
 
 export interface PreviewProps {
   filesData: Record<string, FileDescription>;
+  previewSrc: string;
+  setPreviewSrc: (val: string) => void;
 }
 
 export interface LoginProps {
@@ -116,6 +118,7 @@ export interface RegisterProps {
 }
 
 export interface MonacoEditorProps {
+  previewSrc: string;
   ws: WebSocket | null;
   terminalData: string;
   tabNames: string[];
@@ -124,6 +127,7 @@ export interface MonacoEditorProps {
   filesData: Record<string, FileDescription>;
   prevFilesData: Record<string, FileDescription>;
   // setTabNames: (tabNames: string[]) => void;
+  setPreviewSrc: (val: string) => void;
   tree: TreeData;
   setTree: (value: TreeData) => void;
   setTabNames: (value: React.SetStateAction<string[]>) => void;

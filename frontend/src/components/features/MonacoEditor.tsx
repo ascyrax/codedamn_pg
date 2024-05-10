@@ -14,6 +14,7 @@ import TerminalXTerm from "../layout/TerminalXTerm";
 // frontend
 const MonacoEditor = ({
   ws,
+  previewSrc,
   terminalData,
   tabNames,
   filesData,
@@ -22,6 +23,7 @@ const MonacoEditor = ({
   focusedTabName,
   focusedFileName,
   tree,
+  setPreviewSrc,
   setTree,
   setCredentials,
   setFilesData,
@@ -242,7 +244,11 @@ const MonacoEditor = ({
         onResize={handlePreviewResize}
         disableDragging={true}
       >
-        <Preview filesData={filesData} />
+        <Preview
+          filesData={filesData}
+          previewSrc={previewSrc}
+          setPreviewSrc={setPreviewSrc}
+        />
       </Rnd>
     </div>
   );

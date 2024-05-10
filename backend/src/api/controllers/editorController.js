@@ -185,6 +185,7 @@ function detectLanguage(filename) {
     ".rb": "ruby",
     ".php": "php",
     ".ts": "typescript",
+    ".tsx": "typescript",
     ".html": "html",
     ".css": "css",
     ".scss": "scss",

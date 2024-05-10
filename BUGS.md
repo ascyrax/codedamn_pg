@@ -26,3 +26,9 @@ closing the ssh closes the process started too. hence i had to use things like,
 & and disown %1,
 nohum command &,
 screen -> command -> ctrlA + ctrlD -> exit 
+
+
+macos, networkMode:host won't work
+
+yarn dev --host 
+cz yar dev listens only on the loopback interface

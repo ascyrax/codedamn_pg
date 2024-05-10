@@ -48,10 +48,15 @@ async function deleteUser(userId) {
 }
 
 async function createUserTabs(username) {
+  // "playground/basic/index.html",
+  // "playground/basic/style.css",
+  // "playground/basic/script.js",
+
   let defaultTabs = [
-    "playground/basic/index.html",
-    "playground/basic/style.css",
-    "playground/basic/script.js",
+    "playground/react/src/App.tsx",
+    "playground/react/src/App.css",
+    "playground/react/src/main.tsx",
+    "playground/react/index.html",
   ];
   try {
     let tabs = await UserTabsModel.create({
@@ -126,11 +131,9 @@ export async function handleLogin(req, res) {
     }
   } catch (err) {
     console.error("login failed. user could not be found", err);
-    return res
-      .status(401)
-      .json({
-        success: false,
-        msg: "login failed. user could not be found",
-      });
+    return res.status(401).json({
+      success: false,
+      msg: "login failed. user could not be found",
+    });
   }
 }

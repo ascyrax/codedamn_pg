@@ -1,65 +1,44 @@
 import { useEffect, useRef, useState } from "react";
 import { PreviewProps } from "../../models/interfaces";
 
-const Preview: React.FC<PreviewProps> = ({ filesData }) => {
-  let [htmlCode, setHtmlCode] = useState(
-    '<h1 style="color:white"> Welcome :) to the Live Preview </h1>'
-  );
-  let [cssCode, setCssCode] = useState("");
-  let [jsCode, setJsCode] = useState("");
-  let [iFrameContent, setIframeContent] = useState(`
-  <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <style>${cssCode}</style>
-        </head>
-        <body>
-            ${htmlCode}
-            <script>${jsCode}<\/script>
-        </body>
-        </html>
-  `);
+const Preview: React.FC<PreviewProps> = ({
+  filesData,
+  previewSrc,
+  setPreviewSrc,
+}) => {
+  let [refreshCnt, setRefreshCnt] = useState<number>(0);
   let refIframe = useRef<HTMLIFrameElement>(null);
 
-  useEffect(() => {
-    if (filesData) {
-      if (filesData["playground/index.html"])
-        setHtmlCode(filesData["playground/index.html"].value);
-      if (filesData["playground/style.css"])
-        setCssCode(filesData["playground/style.css"].value);
-      if (filesData["playground/script.js"])
-        setJsCode(filesData["playground/script.js"].value);
-    }
-  }, [filesData]);
+  // console.log("RENDER PREVIEW: ", refreshCnt, previewSrc);
 
-  useEffect(() => {
-    setIframeContent(`
-    <!DOCTYPE html>
-          <html lang="en">
-          <head>
-              <meta charset="UTF-8">
-              <style>${cssCode}</style>
-          </head>
-          <body>
-              ${htmlCode}
-              <script>${jsCode}<\/script>
-          </body>
-          </html>
-    `);
-  }, [htmlCode, cssCode, jsCode]);
+  function handleUrlChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setPreviewSrc(e.target.value);
+  }
 
-  useEffect(() => {
-    if (refIframe.current) refIframe.current.srcdoc = iFrameContent;
-  }, [iFrameContent]);
+  function handleRefresh() {
+    setRefreshCnt(refreshCnt + 1);
+    if (refIframe && refIframe.current && refIframe.current.src)
+      refIframe.current.src = previewSrc;
+  }
 
   return (
     <div id="preview" style={{ height: "100vh", padding: 0 }}>
+      {/* URL Input Field */}
+      {/* <div id="preview_header"> */}
+      <button onClick={handleRefresh} className="refresh-button">
+        refresh
+      </button>
+      <label>
+        <input type="text" value={previewSrc} onChange={handleUrlChange} />
+      </label>
+      {/* </div> */}
       <iframe
         id="iFrame"
         ref={refIframe}
-        style={{ width: "100%", height: "100%" }}
+        style={{ width: "100%", height: "100%", padding: "1rem" }}
         sandbox={"allow-scripts"}
+        src={previewSrc}
+        title="Preview"
       ></iframe>
     </div>
   );

@@ -41,6 +41,8 @@ function App() {
   const [filesToLoad, setFilesToLoad] = useState<string[]>([]);
   const [TabToRemove, setTabToRemove] = useState<string>("");
   const [treeUpdates, setTreeUpdates] = useState<TreeData>();
+  let [previewSrc, setPreviewSrc] = useState("http://localhost:55002");
+
   // let [updateTree, setUpdateTree] = useState<(newTree: TreeData) => void>(
   //   (newTree: TreeData) => {
   //     console.log(tree, newTree);
@@ -157,6 +159,8 @@ function App() {
               });
             }
           }
+        } else if (msg.type == "exposedPorts") {
+          setPreviewSrc(`http://localhost:${msg.previewSrc}`);
         }
       };
 
@@ -259,6 +263,7 @@ function App() {
         <div className="MonacoEditor">
           <MonacoEditor
             ws={ws}
+            previewSrc={previewSrc}
             terminalData={terminalData}
             tabNames={tabNames}
             focusedFileName={focusedFileName}
@@ -267,6 +272,7 @@ function App() {
             prevFilesData={prevFilesData}
             credentials={credentials}
             tree={tree}
+            setPreviewSrc={setPreviewSrc}
             setTree={setTree}
             setFocusedFileName={setFocusedFileName}
             setFocusedTabName={setFocusedTabName}

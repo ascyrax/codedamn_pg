@@ -97,7 +97,22 @@ export async function createVolumeAndContainer(containerId) {
     Tty: true,
     HostConfig: {
       Binds: [`/var/tmp/codedamn/volumes/${volumeName}:/home/codedamn/`], // Bind the volume
-      NetworkMode: "host",
+      // NetworkMode: "host",
+      // PortBindings: {
+      //   "5173/tcp": [{ HostPort: "5173" }],
+      //   "1337/tcp": [{ HostPort: "1337" }],
+      // },
+      PublishAllPorts: true // Equivalent to using `-P` in Docker CLI
+    },
+    ExposedPorts: {
+      "80/tcp": {},
+      "443/tcp": {},
+      "1337/tcp": {},
+      "3000/tcp":{},
+      "5000/tcp":{},
+      "5173/tcp": {},
+      "8000/tcp":{},
+      "8080/tcp":{},
     },
   };
   try {
