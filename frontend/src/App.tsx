@@ -41,7 +41,7 @@ function App() {
   const [filesToLoad, setFilesToLoad] = useState<string[]>([]);
   const [TabToRemove, setTabToRemove] = useState<string>("");
   const [treeUpdates, setTreeUpdates] = useState<TreeData>();
-  let [previewSrc, setPreviewSrc] = useState("http://localhost");
+  let [previewSrc, setPreviewSrc] = useState("http://localhost:55002");
 
   const isAnOpenedTab = (relativePath: string) => {
     for (let i = 0; i < tabNames.length; i++) {
