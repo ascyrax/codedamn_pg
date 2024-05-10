@@ -1,54 +1,22 @@
-import {
-  postLoginData,
-  getEditorTabs,
-  // getEditorData,
-} from "../../services/services";
-import {
-  FileDescription,
-  LoginProps,
-  LoginServerResponse,
-} from "../../models/interfaces";
-// import { createWebSocket } from "../../services/ws";
-import { useEffect } from "react";
+import { postLoginData, getEditorTabs } from "../../services/services";
+import { LoginProps, LoginServerResponse } from "../../models/interfaces";
 
 function Login({
-  ws,
   credentials,
-  focusedTabName,
-  tree,
-  setTree,
-  setWs,
-  setTerminalData,
   setNeedToRegister,
   setHasUserLoggedIn,
-  setFilesData,
   setCredentials,
   setTabNames,
   setFocusedTabName,
   setFocusedFileName,
 }: LoginProps) {
-  // console.log("RENDER Login");
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
   };
 
-  // const fetchEditorData = async () => {
-  //   try {
-  //     const editorData = await getEditorData(credentials);
-  //     // console.log("fetchEditorData -> editorData: ", editorData)
-  //     if (editorData) {
-  //       setFilesData(editorData);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error fetching editor data:", error);
-  //   }
-  // };
-
   const fetchEditorTabs = async () => {
     try {
       const serverResponse = await getEditorTabs(credentials);
-      // console.log("userTabObj: ", userTabObj);
       let userTabObj;
       if (serverResponse && serverResponse.success)
         userTabObj = serverResponse.userTabObj;
@@ -65,10 +33,6 @@ function Login({
   };
 
   async function fetchDataEfficiently() {
-    // let token:string | null="";
-    // if (credentials && credentials.username)
-    //   token = localStorage.getItem(credentials.username);
-
     await fetchEditorTabs();
 
     // fetch the focused tab data
@@ -99,15 +63,6 @@ function Login({
         "login successful + jwt token saved in localStorage",
         serverResponse
       );
-      // ws = await createWebSocket(
-      //   ws,
-      //   credentials,
-      //   tree,
-      //   setTerminalData,
-      //   setTree
-      //   // token
-      // );
-      // setWs(ws);
       await fetchDataEfficiently();
     } else {
       console.log("could not login");

@@ -9,8 +9,6 @@ const Preview: React.FC<PreviewProps> = ({
   let [refreshCnt, setRefreshCnt] = useState<number>(0);
   let refIframe = useRef<HTMLIFrameElement>(null);
 
-  // console.log("RENDER PREVIEW: ", refreshCnt, previewSrc);
-
   function handleUrlChange(e: React.ChangeEvent<HTMLInputElement>) {
     setPreviewSrc(e.target.value);
   }
@@ -23,15 +21,12 @@ const Preview: React.FC<PreviewProps> = ({
 
   return (
     <div id="preview" style={{ height: "100vh", padding: 0 }}>
-      {/* URL Input Field */}
-      {/* <div id="preview_header"> */}
       <button onClick={handleRefresh} className="refresh-button">
         refresh
       </button>
       <label>
         <input type="text" value={previewSrc} onChange={handleUrlChange} />
       </label>
-      {/* </div> */}
       <iframe
         id="iFrame"
         ref={refIframe}

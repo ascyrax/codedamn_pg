@@ -9,7 +9,6 @@ const Tabs: React.FC<TabsProps> = ({
   setFocusedFileName,
   handleTabClick,
 }) => {
-  // console.log("Tabs RENDER -> tabNames: ", tabNames);
   function handleTabClose(
     e: React.MouseEvent<HTMLSpanElement, MouseEvent>,
     tabName: string,

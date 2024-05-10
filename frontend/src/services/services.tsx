@@ -16,22 +16,18 @@ export async function postCodeChange(
     value: React.SetStateAction<Record<string, FileDescription>>
   ) => void
 ) {
-  // console.log("postCodeChange: ", fileName, originalText, newText);
   fileName = removePlaygroundPrefix(fileName);
 
   const diffs = dmp.diff_main(originalText, newText);
   dmp.diff_cleanupSemantic(diffs);
-  // console.log("Diffs:", diffs);
 
   // Create a patch
-  // const patch = dmp.patch_make(originalText, diffs);
   const patch = dmp.patch_toText(dmp.patch_make(originalText, diffs));
   if (!patch) {
     console.log("empty patch.");
     return;
   }
 
-  // console.log("Patch:", patch);
 
   async function makePostRequest() {
     try {
@@ -59,11 +55,6 @@ export async function updateEditorTabs(
   tabs: string[],
   focusedTabName: string
 ) {
-  // const token = localStorage.getItem(credentials.username);
-  // if (token) {
-  //   // Set up common headers
-  //   axios.defaults.headers.common["token"] = token;
-  // }
   // post request
   try {
     const response = await axios.post(
@@ -114,7 +105,6 @@ function removePlaygroundPrefix(filename: string | undefined) {
   const prefix = "playground/";
   // Check if the filename starts with the prefix and remove it
   if (filename && filename.startsWith(prefix)) {
-    // console.log(filename);
     return filename.slice(prefix.length);
   }
   return filename;
@@ -199,7 +189,6 @@ async function fetchJSONStream(
           .filter(Boolean); // Filter out any null values due to errors
 
       // Display the final parsed array
-      // console.log(JSON.stringify(jsonArray, null, 2));
 
       let name = "",
         isAnOpenedTab = true,
@@ -223,7 +212,6 @@ async function fetchJSONStream(
         }
       }
 
-      // if (parsedChunk.success && parsedChunk.fileData) {
       setFilesData((prevFilesData) => {
         return {
           ...prevFilesData,
@@ -248,7 +236,6 @@ async function fetchJSONStream(
           },
         } as Record<string, FileDescription>;
       });
-      // }
     }
     console.log("Finished streaming file data");
   } catch (error) {

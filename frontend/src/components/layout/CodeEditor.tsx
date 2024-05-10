@@ -16,7 +16,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   const [value, setValue] = useState("Loading...");
 
   useEffect(() => {
-    // console.log("useEffect -> codeEditor: ");
     if (filesData) {
       if (!focusedFileName) setFocusedFileName(Object.keys(filesData)[0]);
       if (!focusedTabName) setFocusedTabName(Object.keys(filesData)[0]);
@@ -29,7 +28,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   }, [filesData]);
 
   useEffect(() => {
-    // console.log("useEffect -> focusedFileName: ", focusedFileName);
     if (focusedFileName && filesData) {
       if (filesData[focusedFileName]) {
         setLanguage(filesData[focusedFileName].language);
@@ -150,14 +148,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
         height="100%"
         theme="vs-dark"
         path={focusedFileName}
-        // defaultLanguage={
-        //   focusedFileName && filesData
-        //     ? filesData[focusedFileName].language
-        //     : "javascript"
-        // }
-        // defaultValue={
-        //   focusedFileName && filesData ? filesData[focusedFileName].value : ""
-        // }
         value={value}
         language={language}
         onChange={handleCodeChange}

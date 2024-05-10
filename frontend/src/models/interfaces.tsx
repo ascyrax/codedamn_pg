@@ -1,4 +1,3 @@
-// import { Monaco } from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
 import { TreeData } from "@atlaskit/tree";
 
@@ -18,8 +17,6 @@ export interface FileDescription {
   language: string;
   value: string;
   isAnOpenedTab: boolean;
-  // _v: number;
-  // _id: string;
 }
 
 export interface CodeEditorProps {
@@ -59,13 +56,9 @@ export interface ExplorerProps {
 
   focusedFileName: string | undefined;
   filesData: Record<string, FileDescription>;
-  // setFilesData: (
-  //   value: React.SetStateAction<Record<string, FileDescription>>
-  // ) => void;
   tree: TreeData;
   setTree: (value: TreeData) => void;
   setTabNames: (value: React.SetStateAction<string[]>) => void;
-  // setTabNames: (tabNames: string[]) => void;
   setFocusedTabName: (tabName: string | undefined) => void;
   setFocusedFileName: (fileName: string | undefined) => void;
   getAndSetFileData: (fileName: string) => void;
@@ -74,7 +67,6 @@ export interface ExplorerProps {
 export interface TabsProps {
   tabNames: string[];
   focusedTabName: string | undefined;
-  // setTabNames: (tabNames: string[]) => void;
   setTabNames: (value: React.SetStateAction<string[]>) => void;
   setFocusedTabName: (tabName: string | undefined) => void;
   setFocusedFileName: (fileName: string | undefined) => void;
@@ -100,10 +92,8 @@ export interface LoginProps {
   setTerminalData: (value: string) => void;
   setWs: (ws: React.SetStateAction<WebSocket | null>) => void;
   setTabNames: (value: React.SetStateAction<string[]>) => void;
-  // setTabNames: (tabNames: string[]) => void;
   setNeedToRegister: (value: boolean) => void;
   setHasUserLoggedIn: (value: boolean) => void;
-  // setFilesData: (data: Record<string, FileDescription> | undefined) => void;
   setFilesData: (
     value: React.SetStateAction<Record<string, FileDescription>>
   ) => void;
@@ -126,13 +116,11 @@ export interface MonacoEditorProps {
   focusedFileName: string | undefined;
   filesData: Record<string, FileDescription>;
   prevFilesData: Record<string, FileDescription>;
-  // setTabNames: (tabNames: string[]) => void;
   setPreviewSrc: (val: string) => void;
   tree: TreeData;
   setTree: (value: TreeData) => void;
   setTabNames: (value: React.SetStateAction<string[]>) => void;
 
-  // setFilesData: (data: Record<string, FileDescription> | undefined) => void;
   setFilesData: (
     value: React.SetStateAction<Record<string, FileDescription>>
   ) => void;
@@ -149,7 +137,6 @@ export interface MonacoEditorProps {
 export interface TerminalXTermProps {
   terminalData: string;
   ws: WebSocket | null;
-  // setFilesData: (data: Record<string, FileDescription> | undefined) => void;
   setFilesData: (
     value: React.SetStateAction<Record<string, FileDescription>>
   ) => void;

@@ -48,10 +48,6 @@ async function deleteUser(userId) {
 }
 
 async function createUserTabs(username) {
-  // "playground/basic/index.html",
-  // "playground/basic/style.css",
-  // "playground/basic/script.js",
-
   let defaultTabs = [
     "playground/react/src/App.jsx",
     "playground/react/src/App.css",
@@ -78,7 +74,6 @@ async function createUserTabs(username) {
 
 // Authentication endpoint
 export async function handleLogin(req, res) {
-  // console.log(handleLogin.name, req.url);
   if (!req.body || !req.body.credentials) {
     return res.json({
       success: false,

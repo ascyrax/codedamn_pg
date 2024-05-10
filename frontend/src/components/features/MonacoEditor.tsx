@@ -9,16 +9,12 @@ import { MonacoEditorProps, FileDescription } from "../../models/interfaces";
 import { Preview } from "../layout/Preview";
 import TerminalXTerm from "../layout/TerminalXTerm";
 
-// batch update to the api endpoint
-
-// frontend
 const MonacoEditor = ({
   ws,
   previewSrc,
   terminalData,
   tabNames,
   filesData,
-  prevFilesData,
   credentials,
   focusedTabName,
   focusedFileName,
@@ -27,7 +23,6 @@ const MonacoEditor = ({
   setTree,
   setCredentials,
   setFilesData,
-  setPrevFilesData,
   setTabNames,
   setFocusedFileName,
   setFocusedTabName,

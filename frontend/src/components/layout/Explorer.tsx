@@ -5,11 +5,7 @@ import "@atlaskit/css-reset";
 import { ExplorerProps } from "../../models/interfaces";
 
 const Explorer: React.FC<ExplorerProps> = ({
-  ws,
-  tabNames,
-  credentials,
   focusedFileName,
-  filesData,
   tree,
   setTree,
   setTabNames,
@@ -17,11 +13,6 @@ const Explorer: React.FC<ExplorerProps> = ({
   setFocusedFileName,
   getAndSetFileData,
 }) => {
-  // const [tree, setTree] = useState<TreeData>(initialData);
-
-  // useEffect(() => {}, [tree]);
-  // console.log("RENDER EXPLORER -> ", tree);
-
   const handleExpand = (itemId: string | number) => {
     const newTree = mutateTree(tree, itemId, { isExpanded: true });
     setTree(newTree);

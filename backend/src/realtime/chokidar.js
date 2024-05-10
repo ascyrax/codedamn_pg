@@ -93,8 +93,6 @@ function updateExplorer(ws, volumePath) {
 
   const treeData = formatForAtlaskitTree(directoryStructure);
 
-  // console.log(treeData);
-  // console.dir(treeData, { depth: null, colors: true });
 
   let msg = JSON.stringify({
     type: "explorer",
@@ -219,11 +217,11 @@ export async function initWatcher(ws, volumeName) {
   });
 
   watcher.on("ready", async () => {
-    // console.log("Initial scan complete. Ready for changes");
+    console.log("Initial scan complete. Ready for changes");
   });
 
   watcher.on("error", async (error) => {
-    // console.log(`Watcher error: ${error}`);
+    console.log(`Watcher error: ${error}`);
   });
 
   watcher.on("all", async (event, path) => {
@@ -231,7 +229,7 @@ export async function initWatcher(ws, volumeName) {
   });
 
   watcher.on("close", async function () {
-    // console.log(`chokidar for ${volumeName} is tired now. closing. bye.`);
+    console.log(`chokidar for ${volumeName} is tired now. closing. bye.`);
   });
 
   console.log("end initWatcher", { volumeName });

@@ -13,10 +13,8 @@ export const getEditorTabs = async (req, res) => {
   if (req.username) {
     username = req.username;
   }
-  // console.log("getEditorTabs: ", { username });
   const userTabObj = await getUserTabFromDB(username);
   if (userTabObj) {
-    // console.log("getEditorTabs -> userTabObj: ", userTabObj);
     res.status(200).json({ success: true, userTabObj });
   } else {
     res.status(404).json({ success: false });
@@ -26,14 +24,11 @@ export const getEditorTabs = async (req, res) => {
 export async function updateEditorTabs(req, res) {
   let { tabs, focusedTabName, credentials } = req.body;
   let username = credentials.username ? credentials.username : "";
-  // console.log("updateEditorTabs:", { tabs }, { focusedTabName }, { username });
   try {
     let result = await UserTabsModel.updateOne(
       { username },
       { $set: { tabs, focusedTabName } }
     );
-    // console.log({ result });
-    // console.log("result.modifiedCount:", result.modifiedCount);
     if (result.modifiedCount) {
       console.log("user tabs updated");
       return res.status(200).json({ success: true });
@@ -47,7 +42,6 @@ export async function updateEditorTabs(req, res) {
   }
 }
 
-// TODO IMPLEMENT FETCH STREAMING FOR THIS
 export const getFileData = async (req, res) => {
   let username = "",
     fileName = "",
@@ -60,7 +54,6 @@ export const getFileData = async (req, res) => {
     fileName = req.query.fileName;
   }
 
-  // console.log("getFileData -> ", username, fileName);
   // check if the volume exist or not
   let volCheck = await checkForVolume(volumeName);
   if (!volCheck) {
@@ -70,26 +63,12 @@ export const getFileData = async (req, res) => {
 
   await getFileDataFromFS(res, volumeName, fileName);
 
-  // let count = 0;
-  // const interval = setInterval(() => {
-  //   res.write(
-  //     `${JSON.stringify({ count, timestamp: new Date().toISOString() })}\n`
-  //   );
-  //   count++;
-
-  //   // Stop after 10 JSON objects
-  //   if (count >= 10) {
-  //     clearInterval(interval);
-  //     res.end('{"message": "Streaming completed."}\n');
-  //   }
-  // }, 1000);
 };
 
 async function getUserTabFromDB(username) {
   try {
     const userTabObj = await UserTabsModel.findOne({ username });
     if (userTabObj) {
-      // console.log("getUserTabFromDB() -> userTabObj: ", userTabObj);
       return userTabObj;
     } else {
       return undefined;
@@ -101,7 +80,6 @@ async function getUserTabFromDB(username) {
 }
 
 async function checkForVolume(volumeName) {
-  // console.log("checkForVolume: ", volumeName);
   try {
     // Ensure the volume exists, or create it if it doesn't
     let volume = docker.getVolume(volumeName);
@@ -109,7 +87,6 @@ async function checkForVolume(volumeName) {
       console.error("checkForVolume -> error inspecting the volume");
       throw new Error("volume does not exist");
     });
-    // console.log(`checkForVolume -> Using volume: ${volumeInfo.Name}`);
     return true;
   } catch (error) {
     console.error(
@@ -263,12 +240,9 @@ export const setFileData = async (req, res) => {
     filePatch = req.body.filePatch.patch;
   }
 
-  // console.log("setFileData: ", username, fileName, volumeName, filePatch);
 
   let originalText = await getFileContentFromFS(volumeName, fileName);
-  // console.log("setFileData: ", { originalText });
   let newText = await applyPatch(originalText ? originalText : "", filePatch);
-  // console.log("setFileData: ", { newText });
 
   let fileUpdateResult = await updateFile(
     { fileName, fileContent: newText },
@@ -311,7 +285,6 @@ async function applyPatch(originalText, filePatch) {
     // Assuming `patches` is the patch object received or defined elsewhere
     const patches = dmp.patch_fromText(filePatch);
     const [newText, results] = dmp.patch_apply(patches, originalText);
-    // console.log("Patch results:", results); // This will show which patches were applied successfully
 
     if (results.some((result) => !result)) {
       console.log("Some patches did not apply successfully");

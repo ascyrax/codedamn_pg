@@ -151,12 +151,6 @@ export async function handleNewWSConnection(ws, req) {
         }
       });
 
-      // let data = "";
-
-      // execStream.on("data", async (chunk) => {
-      //   data += chunk.toString();
-      // });
-
       // Handle stream close/error
       execStream.on("close", () => {
         console.log("Stream closed");

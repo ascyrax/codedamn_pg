@@ -41,7 +41,7 @@ function App() {
   const [filesToLoad, setFilesToLoad] = useState<string[]>([]);
   const [TabToRemove, setTabToRemove] = useState<string>("");
   const [treeUpdates, setTreeUpdates] = useState<TreeData>();
-  let [previewSrc, setPreviewSrc] = useState("http://localhost:55002");
+  let [previewSrc, setPreviewSrc] = useState("http://localhost");
 
   const isAnOpenedTab = (relativePath: string) => {
     for (let i = 0; i < tabNames.length; i++) {
@@ -110,10 +110,7 @@ function App() {
         `${SERVER_WSDOMAIN}:${SERVER_PORT}?username=${credentials.username}`
       );
 
-      ws.onopen = function () {
-        // console.log("connection open");
-        // if (token) ws.send(JSON.stringify({ type: "token", token }));
-      };
+      ws.onopen = function () {};
 
       ws.onerror = function (event) {
         console.error("WebSocket error observed by the client :)", event);
@@ -122,10 +119,8 @@ function App() {
       ws.onmessage = function (event) {
         const msg = JSON.parse(event.data);
         if (msg.type == "stdout" || msg.type == "stderr") {
-          // console.log(msg.data);
           setTerminalData(msg.data);
         } else if (msg.type == "explorer") {
-          // console.log("ws receive -> ", msg);
           setTreeUpdates(msg.explorerData);
         } else if (msg.sender == "chokidar") {
           const basePath = msg.volumePath;
@@ -154,13 +149,11 @@ function App() {
 
     function closeWebSocket(ws: WebSocket | null) {
       if (!ws) {
-        // console.log("WebSocket is not initialized.");
         return;
       }
 
       switch (ws.readyState) {
         case WebSocket.CONNECTING:
-          // console.log("WebSocket is still connecting.");
           break;
         case WebSocket.OPEN:
           console.log("Closing WebSocket.");
@@ -182,14 +175,8 @@ function App() {
     };
   }, [hasUserLoggedIn]);
 
-  // useEffect(() => {}, [tree]);
-  // these two useEffects will only work once.
-  // viz, next time the focusedTabName or the tabNames change, data fetch won't be triggered.
   useEffect(() => {
-    // console.log("useEffect -> focusedTabName: ", focusedTabName);
-    async function wrapperAsyncFunc() {
-      // await fetchInitialFileData(focusedTabName); // do this only after focusedTabName has been set
-    }
+    async function wrapperAsyncFunc() {}
     if (isInitialFocusedFileLoad && focusedTabName) {
       setIsInitialFocusedFileLoad(false); // we don't load the file=focusedTabName every time the focusedTabName state changes
       wrapperAsyncFunc();
@@ -200,15 +187,11 @@ function App() {
   }, [focusedTabName]);
 
   useEffect(() => {
-    async function wrapperAsyncFunc(fileName: string) {
-      // await fetchInitialFileData(fileName);
-    }
     if (isInitialTabsLoad) {
       for (let i = 0; i < tabNames.length; i++) {
         setIsInitialTabsLoad(false);
         let fileName = tabNames[i];
         if (fileName == focusedTabName) continue;
-        wrapperAsyncFunc(fileName);
       }
     }
     if (focusedTabName && tabNames && !isInitialFocusedFileLoad) {
@@ -218,21 +201,14 @@ function App() {
     setFilesToLoad(tabNames);
   }, [tabNames]);
 
-  const fetchInitialFileData = async (fileName: string | undefined) => {
-    if (fileName) {
-      getAndSetFileData(fileName);
-    }
-  };
-
   async function getAndSetFileData(fileName: string) {
     try {
-      const response = await getFileData(
+      await getFileData(
         fileName,
         credentials,
         setFilesData,
         setPrevFilesData
       );
-      // console.log("response Loaded: ", response);
     } catch (error) {
       console.error("Error fetching editor data:", error);
     }

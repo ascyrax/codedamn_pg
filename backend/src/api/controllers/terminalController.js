@@ -89,7 +89,6 @@ export async function createVolumeAndContainer(containerId) {
   await createVolume(volumeName);
   const containerOptions = {
     Image: "user-ubuntu", // Specify the image name
-    // Cmd: ["bash", "-c", 'while true; do echo "Hello, Dockerode!"; sleep 1; done'],
     Cmd: ["bash", "-c", "tail -f /dev/null"],
     name: containerId,
     AttachStdout: true, // Attach container's stdout to the Node.js process

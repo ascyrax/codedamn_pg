@@ -12,8 +12,6 @@ const TerminalXTerm = React.memo(function TerminalXTerm({
   const terminalRef = useRef(null);
   let bufferCommand = "";
 
-  // console.log("RENDER TERMINALXTERM", { terminalData });
-
   function initTerminal() {
     const terminal = new Terminal({
       letterSpacing: 2,
@@ -29,9 +27,7 @@ const TerminalXTerm = React.memo(function TerminalXTerm({
   }
 
   useEffect(() => {
-    // console.log("USEEFFECT WS", terminal);
     if (ws) {
-      // terminal && terminal.dispose();
       terminal = initTerminal();
       terminal && renderTerminal();
       terminal && fitTerminalToParentDiv();
@@ -62,7 +58,6 @@ const TerminalXTerm = React.memo(function TerminalXTerm({
   }, [ws]);
 
   useEffect(() => {
-    // console.log({ terminal }, { terminalData });
     terminal && terminalData && terminal.write(terminalData);
   }, [terminalData]);
 
@@ -79,9 +74,6 @@ const TerminalXTerm = React.memo(function TerminalXTerm({
   }
 
   function processCommand(bufferCommand: string) {
-    // console.log("bufferCommand: ", bufferCommand);
-    // console.log(ws);
-    // console.log(ws?.readyState);
     if (ws && ws.readyState == WebSocket.OPEN) {
       let msg = JSON.stringify({
         type: "xterm",
@@ -90,7 +82,6 @@ const TerminalXTerm = React.memo(function TerminalXTerm({
         command: bufferCommand,
       });
       ws.send(msg);
-      // await batchGetEditorData();
     }
   }
 
