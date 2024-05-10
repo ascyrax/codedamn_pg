@@ -214,6 +214,8 @@ The frontend is built with React and TypeScript, using Monaco Editor for the cod
 
    NOTE: YOU MUST DO yarn dev --host instead of just yarn dev. Reason is the usage of docker containers & how they expose their ports on the host.
 
+   YOU MIGHT NEED TO REFRESH THE PREVIEW SECTION (ONLY) TO SEE THE LIVE REACT APP.
+
 ### Troubleshooting
 
 - **Docker Containers Not Starting**: Ensure Docker is running and that you have the necessary permissions to start containers.
